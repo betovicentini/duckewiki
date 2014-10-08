@@ -17,4 +17,7 @@ O sistema inclui arquivos php, javascript e plugins e tem uma base mysql associa
 
 Em fase de normatização! 
 
+LEIA O ARQUIVO dhtmlxconnecto_README.txt
+A base de dados limpa será colocada em breve.
+
 
