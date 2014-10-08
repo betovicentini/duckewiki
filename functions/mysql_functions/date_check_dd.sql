@@ -1,0 +1,14 @@
+CREATE FUNCTION date_check_dd(diadd VARCHAR(200)) RETURNS INT
+BEGIN
+DECLARE yyll INT(10) DEFAULT 0;
+DECLARE yyan INT(10) DEFAULT 0;
+DECLARE ress INT(10) DEFAULT 0;
+SELECT CHAR_LENGTH(TRIM(diadd)) INTO yyll;
+SET yyan = TRIM(diadd)+0;
+IF (yyan>0 AND yyan<=31) THEN
+SET ress = yyan;
+ELSE
+SET ress = 0;
+END IF;
+RETURN ress;
+END

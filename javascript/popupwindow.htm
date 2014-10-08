@@ -1,0 +1,134 @@
+<HTML>
+<HEAD>
+	<TITLE>JavaScript Toolbox - PopupWindow</TITLE>
+<SCRIPT LANGUAGE="JavaScript" SRC="combined-compact/PopupWindow.js"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript">
+// Create PopupWindow objects
+var testpopup1 = new PopupWindow("testdiv1");
+testpopup1.offsetY = 25;
+testpopup1.autoHide();
+
+var testpopup2 = new PopupWindow();
+testpopup2.offsetX=100;
+testpopup2.offsetY=50;
+testpopup2.setSize(200,200);
+testpopup2.autoHide();
+testpopup2.populate("<B>THIS IS A TEST</B>");
+
+var testpopup3 = new PopupWindow("testdiv2");
+testpopup3.offsetY=20;
+
+var testpopup4 = new PopupWindow();
+testpopup4.setSize(200,200);
+testpopup4.autoHide();
+testpopup4.setUrl("http://www.cnn.com/");
+
+var testpopup5 = new PopupWindow("testdiv5");
+testpopup5.offsetX=-20;
+testpopup5.offsetY=20;
+testpopup5.autoHide();
+var testpopup5input=null;
+testpopup5.populate('<CENTER><FORM>Select: <SELECT NAME="sel" onChange="testpopup5pick(this.options[this.selectedIndex].value);"><OPTION VALUE="A">A<OPTION VALUE="B">B<OPTION VALUE="C">C</SELECT></FORM></CENTER>');
+function test5popupactivate(obj,anchor) {
+	testpopup5input=obj;
+	testpopup5.showPopup(anchor);
+	}
+function testpopup5pick(val) {
+	testpopup5input.value = val;
+	testpopup5.hidePopup();
+	}
+
+function popup1(anchorname) {
+	testpopup1.populate(document.forms[0].textfield.value);
+	testpopup1.showPopup(anchorname);
+	}
+
+</SCRIPT>
+</HEAD>
+<BODY BGCOLOR=#FFFFFF LINK="#00615F" VLINK="#00615F" ALINK="#00615F">
+<div style="border:50px solid red;padding:10px;">
+<h1>JavascriptToolbox.com Now Available!</h1>
+Almost all of my javascript code has been moved over to its new home at <a href="http://www.JavascriptToolbox.com/">The Javascript Toolbox</a>. Please go there to find the latest scripts, information, etc. These pages will remain here for a while for historical purposes in case anyone needs a production copy of old code.
+</div>
+
+<TABLE WIDTH=600 CELLPADDING=5>
+<TR>
+	<TD><IMG SRC="../icon.gif" WIDTH="130" HEIGHT="107" ALT="" BORDER="0"></TD>
+	<TD VALIGN=MIDDLE>
+		<FONT SIZE="+3">PopupWindow</FONT>
+		<HR NOSHADE WIDTH=300 ALIGN=LEFT COLOR="black">
+		[<A HREF="../">Javascript Toolbox</A>]&nbsp;&nbsp;[<SPAN STYLE="background-color:yellow;">Example</SPAN>]&nbsp;&nbsp;[<A HREF="source.html">Source</A>]
+	</TD>
+</TR>
+</TABLE>
+
+<U><B>Description:</B></U>
+<BR>
+
+This JavaScript Object fills a need that comes up often: A user does some action and you want a small window to popup, either with text to display, or an option to pick, or any other type of interface.
+<P>
+This object lets you quickly and easily get this done without having to mess around with all the dirty work. A few lines of code is all you need!
+<P>
+See the <a href="source.html">Source</a> for more details on usage of the code.
+<P>
+<B>NOTE:</B> This file also needs the <a href="../anchorposition/">AnchorPosition.js</a> file in order to work.
+
+<BR><BR>
+<B>Note:</B> Why are form elements or &lt;SELECT&gt; boxes showing
+over top of the DIV-style calendar popup? It's not a bug in the javascript -
+it's a bug/feature of browsers. See this
+<A href="http://www.webreference.com/dhtml/diner/seethru/">explanation</A>
+by WebReference.
+
+<BR><BR>
+<U><B>Example:</B></U>
+<BR>
+(View the source of this page to see how easily all this was done!!)<BR>
+
+<FORM>
+<CENTER>
+<TABLE BORDER="1">
+<TR>
+	<TD align="center">
+	This popup will automatically hide itself if you click anywhere else on the page.<BR>
+	<INPUT TYPE="text" NAME="textfield" SIZE=40 VALUE="Type text here to go into popup"><BR>
+	<A HREF="#" onClick="popup1('anchor1');return false;" NAME="anchor1" ID="anchor1">Test Anchor 1</A>
+	</TD>
+</TR>
+</TABLE>
+</CENTER>
+</FORM>
+
+This link will popup a browser popup window 100 pixels to the right and 50 pixels below the clicked link.<BR>
+It will close itself whenever you click anywhere else on this page.<BR>
+If the window would be positioned off the screen, it will automatically be adjusted so as to not be off-screen.<BR>
+<A HREF="#" onClick="testpopup2.showPopup('anchor2');return false;" NAME="anchor2" ID="anchor2">Test Anchor 2</A>
+<BR><BR><BR><BR>
+
+This popup will not hide itself automatically, so it will stay showing permanently unless the developer provides a method to close it, as I've done:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#" onClick="testpopup3.showPopup('anchor3');return false;" NAME="anchor3" ID="anchor3">Test Anchor 3</A>
+
+<DIV ID="testdiv1" STYLE="position:absolute;visibility:hidden;background-color:yellow"></DIV>
+
+<DIV ID="testdiv2" STYLE="position:absolute;visibility:hidden;background-color:#cccccc">
+<B>This DIV does not auto-hide</B>.<BR>
+<A HREF="#" onClick="testpopup3.hidePopup();return false;">Hide It</A>
+</DIV>
+<BR><BR><BR><BR>
+
+This window will open up a small window to cnn.com<BR>
+It will close itself whenever you click anywhere else on this page.<BR>
+If the window would be positioned off the screen, it will automatically be adjusted so as to not be off-screen.<BR>
+<A HREF="#" onClick="testpopup4.showPopup('anchor4');return false;" NAME="anchor4" ID="anchor4">Test Anchor 4</A>
+<BR><BR><BR><BR>
+
+This is an example of how to have a popup contain choices for the user to pick from, to populate a form field.<BR>
+<FORM NAME="form5">
+<INPUT NAME="test5" SIZE=30>
+<A HREF="#" onClick="test5popupactivate(document.forms['form5'].test5,'anchor5');return false;" NAME="anchor5" ID="anchor5">Select</A>
+</FORM>
+<DIV ID="testdiv5" STYLE="position:absolute;visibility:hidden;background-color:#CCCCCC;width:200px;height:50px;"></DIV>
+<BR><BR><BR><BR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,47 @@
+CREATE FUNCTION acentostosemacentos(texto varchar(10000)) returns varchar(10000)
+BEGIN
+declare semacento varchar(10000) default '';
+set semacento = replace(texto,'á','a');
+set semacento = replace(semacento,'Ä','A');
+set semacento = replace(semacento,'ä','a');
+set semacento = replace(semacento,'Á','A');
+set semacento = replace(semacento,'à','a');
+set semacento = replace(semacento,'À','A');
+set semacento = replace(semacento,'ã','a');
+set semacento = replace(semacento,'Ã','A');
+set semacento = replace(semacento,'â','a');
+set semacento = replace(semacento,'Â','A');
+set semacento = replace(semacento,'é','e');
+set semacento = replace(semacento,'É','E');
+set semacento = replace(semacento,'è','e');
+set semacento = replace(semacento,'È','E');
+set semacento = replace(semacento,'ê','e');
+set semacento = replace(semacento,'Ê','E');
+set semacento = replace(semacento,'í','i');
+set semacento = replace(semacento,'Í','I');
+set semacento = replace(semacento,'Ì','I');
+set semacento = replace(semacento,'ì','i');
+set semacento = replace(semacento,'î','i');
+set semacento = replace(semacento,'ó','o');
+set semacento = replace(semacento,'ò','o');
+set semacento = replace(semacento,'ô','o');
+set semacento = replace(semacento,'õ','o');
+set semacento = replace(semacento,'Ó','O');
+set semacento = replace(semacento,'Ò','O');
+set semacento = replace(semacento,'Õ','O');
+set semacento = replace(semacento,'Ö','O');
+set semacento = replace(semacento,'ö','o');
+set semacento = replace(semacento,'ú','u');
+set semacento = replace(semacento,'ù','u');
+set semacento = replace(semacento,'û','u');
+set semacento = replace(semacento,'Ú','U');
+set semacento = replace(semacento,'Ù','U');
+set semacento = replace(semacento,'Û','U');
+set semacento = replace(semacento,'ü','u');
+set semacento = replace(semacento,'Ü','U');
+set semacento = replace(semacento,'ç','c');
+set semacento = replace(semacento,'Ç','C');
+set semacento = replace(semacento,'ñ','n');
+set semacento = replace(semacento,'Ñ','N');
+return semacento;
+END

@@ -1,0 +1,48 @@
+CREATE FUNCTION acentosPorHTML(texto varchar(500)) returns varchar(500)
+BEGIN
+declare semacento varchar(500) default '';
+set semacento = replace(texto,'á','&aacute;');
+set semacento = replace(semacento,'Ä','&Auml; ');
+set semacento = replace(semacento,'ä','&auml; ');
+set semacento = replace(semacento,'Á','&Aacute;');
+set semacento = replace(semacento,'à','&agrave;');
+set semacento = replace(semacento,'À','&Agrave;');
+set semacento = replace(semacento,'ã','&atilde;');
+set semacento = replace(semacento,'Ã','&Atilde;');
+set semacento = replace(semacento,'â','&acirc;');
+set semacento = replace(semacento,'Â','&Acirc;');
+set semacento = replace(semacento,'é','&eacute;');
+set semacento = replace(semacento,'É','&Eacute;');
+set semacento = replace(semacento,'è','&egrave;');
+set semacento = replace(semacento,'È','&Egrave;');
+set semacento = replace(semacento,'ê','&ecirc;');
+set semacento = replace(semacento,'Ê','&Ecirc;');
+set semacento = replace(semacento,'í','&iacute;');
+set semacento = replace(semacento,'Í','&Iacute;');
+set semacento = replace(semacento,'Ì','&Igrave;');
+set semacento = replace(semacento,'ì','&igrave;');
+set semacento = replace(semacento,'î','&icirc;');
+set semacento = replace(semacento,'ó','&oacute;');
+set semacento = replace(semacento,'ò','&ograve;');
+set semacento = replace(semacento,'ô','&ocirc;');
+set semacento = replace(semacento,'Ô','&Ocirc;');
+set semacento = replace(semacento,'õ','&otilde;');
+set semacento = replace(semacento,'Ó','&Oacute;');
+set semacento = replace(semacento,'Ò','&Ograve;');
+set semacento = replace(semacento,'Õ','&Otilde;');
+set semacento = replace(semacento,'Ö','&Ouml;');
+set semacento = replace(semacento,'ö','&ouml;');
+set semacento = replace(semacento,'ú','&uacute;');
+set semacento = replace(semacento,'ù','&ugrave;');
+set semacento = replace(semacento,'û','&ucirc;');
+set semacento = replace(semacento,'Ú','&Uacute;');
+set semacento = replace(semacento,'Ù','&Ugrave;');
+set semacento = replace(semacento,'Û','&Ucirc;');
+set semacento = replace(semacento,'ü','&uuml;');
+set semacento = replace(semacento,'Ü','&Uuml;');
+set semacento = replace(semacento,'ç','&ccedil;');
+set semacento = replace(semacento,'Ç','&Ccedil;');
+set semacento = replace(semacento,'ñ','&ntilde;');
+set semacento = replace(semacento,'Ñ','&Ntiled;');
+return semacento;
+END

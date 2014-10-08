@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="docs.css" />
+		<link rel="stylesheet" type="text/css" href="bibtex.css" />
+		<title>phpBibLib: a PHP Bibtex Library for querying and showing references from bibtex files</title>
+	</head>
+	<body>
+		<div id="content">
+		<h2>phpBibLib: a PHP Bibtex Library</h2>
+		<p>
+			So, you've published a nice number of papers, keep their details in a .bib file, and want to easily display them on a website?
+			Or, you've got yourself some content on your website in which you would like to include some citations, and show the relevant publications below?<br /> 
+		</p>
+		<p>
+			Look no further.
+		</p>
+		<h2>Enter, phpBibLib</h2>
+		<p>
+			phpBibLib provides you an easy and modular way of parsing and displaying the contents of a .bib file. 
+			You can query the contents of the bibtex file either directly, or by making cites within a text. <br />
+			As an example of the former, say we want to display the publications of author '<i>Vreeken</i>' in the year <i>2011</i>:
+		</p>
+		<pre>$bib = new Bibtex('references.bib');
+$bib->Select(array('author' => 'Vreeken', 'year' => 2011));
+$bib->PrintBibliography();</pre>
+		<p>
+			Which gives as output:
+		</p>
+		<div class="example-output">
+			<table class="bibtex-biblio">
+				<tr id="mampaey11kdd" class="bibtex-entry bibtex-numeric">
+					<td class="bibtex-reference bibtex-numeric"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-mampaey11kdd">1</span><span class="bibtex-list-end">]</span></span></td>
+					<td class="bibtex-citation"><span class="bibtex-inproceedings"><span class="bibtex-author">Mampaey, M., Tatti, N. &amp; Vreeken, J.</span> <span class="bibtex-title"><a href="http://www.google.com/search?q=Tell Me What I Need To Know: Succinctly Summarising Data by  Itemsets">Tell Me What I Need To Know: Succinctly Summarising Data by  Itemsets</a></span>. In <span class="bibtex-booktitle">Proc. KDD'11</span>, <span class="bibtex-year">2011</span>.</span></td>
+				</tr>
+				<tr id="miettinen11mdl4bmf" class="bibtex-entry bibtex-numeric">
+					<td class="bibtex-reference bibtex-numeric"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-miettinen11mdl4bmf">2</span><span class="bibtex-list-end">]</span></span></td>
+					<td class="bibtex-citation"><span class="bibtex-inproceedings"><span class="bibtex-author">Miettinen, P. &amp; Vreeken, J.</span> <span class="bibtex-title"><a href="http://www.google.com/search?q=Model Order Selection for Boolean Matrix Factorization">Model Order Selection for Boolean Matrix Factorization</a></span>. In <span class="bibtex-booktitle">Proc. KDD'11</span>, <span class="bibtex-publisher">ACM</span>, <span class="bibtex-year">2011</span>.</span></td>
+				</tr>
+				<tr id="remmerie11bnpage" class="bibtex-entry bibtex-numeric">
+					<td class="bibtex-reference bibtex-numeric"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-remmerie11bnpage">3</span><span class="bibtex-list-end">]</span></span></td>
+					<td class="bibtex-citation"><span class="bibtex-article"><span class="bibtex-author">Remmerie, N., Vijlder, T.D., Valkenborg, D., Laukens, K., Smets, K., Vreeken, J., Mertens, I., Carpentier, S., Panis, B., Jaeger, G.d., Prinsen, E. &amp; Witters, E.</span> <span class="bibtex-title"><a href="http://www.google.com/search?q=Unraveling tobacco BY-2 protein complexes with BN PAGE/LC-MS/MS and clustering methods">Unraveling tobacco BY-2 protein complexes with BN PAGE/LC-MS/MS and clustering methods</a></span>.  <span class="bibtex-jname">Journal of Proteomics</span>, <span class="bibtex-publisher">Elsevier</span>, <span class="bibtex-year">2011</span>.</span></td>
+				</tr>
+				<tr id="smets11odd" class="bibtex-entry bibtex-numeric">
+					<td class="bibtex-reference bibtex-numeric"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-smets11odd">4</span><span class="bibtex-list-end">]</span></span></td>
+					<td class="bibtex-citation"><span class="bibtex-inproceedings"><span class="bibtex-author">Smets, K. &amp; Vreeken, J.</span> <span class="bibtex-title"><a href="http://www.google.com/search?q=The Odd One Out - Identifying and Characterising Anomalies">The Odd One Out - Identifying and Characterising Anomalies</a></span>. In <span class="bibtex-booktitle">Proc. SDM'11</span>, <span class="bibtex-year">2011</span>.</span></td>
+				</tr>
+				<tr id="tatti11apples" class="bibtex-entry bibtex-numeric">
+					<td class="bibtex-reference bibtex-numeric"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-tatti11apples">5</span><span class="bibtex-list-end">]</span></span></td>
+					<td class="bibtex-citation"><span class="bibtex-inproceedings"><span class="bibtex-author">Tatti, N. &amp; Vreeken, J.</span> <span class="bibtex-title"><a href="http://www.google.com/search?q=Comparing Apples and Oranges: Measuring Differences between Data Mining Results">Comparing Apples and Oranges: Measuring Differences between Data Mining Results</a></span>. In <span class="bibtex-booktitle">Proc. ECMLPKDD'11</span>, <span class="bibtex-year">2011</span>.</span></td>
+				</tr>
+			</table>
+		</div>
+		<p>
+			Which is pretty neat, for such simple code.
+		</p>
+		<p>
+			Alternatively, we could have some content in which we would like to refer to bibliographic entries printed below. E.g.
+		</p>
+		<pre>This and that has long been known to be such and so &lt;?cite('vreeken15', 'siebes06', 
+'DBLP:journals/tkde/MiettinenMGDM08');?>. Furthermore, &lt;?citet('agrawal93')?> 
+clearly did not &lt;?cite('agrawal93')?>.</pre>
+		<p>with which we get</p>
+		<div class="example-output">
+			This and that has long been known to be such and so <span class="bibtex-cite"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-">?</span><span class="bibtex-list-sep">,</span><span class="bibtex-ref bibtex-key-siebes06">1</span><span class="bibtex-list-sep">,</span><span class="bibtex-ref bibtex-key-DBLP_journals_tkde_MiettinenMGDM08">2</span><span class="bibtex-list-end">]</span></span></span>. Furthermore, <span class="bibtex-cite">Agrawal et al. [<span class="bibtex-ref bibtex-key-agrawal93">3</span>]</span> 
+			clearly did not <span class="bibtex-cite"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-agrawal93">3</span><span class="bibtex-list-end">]</span></span></span>.<br /><br/>
+			<table class="bibtex-biblio">
+				<tr id="siebes06" class="bibtex-entry bibtex-numeric">
+					<td class="bibtex-reference bibtex-numeric"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-siebes06">1</span><span class="bibtex-list-end">]</span></span></td>
+					<td class="bibtex-citation"><span class="bibtex-inproceedings"><span class="bibtex-author">Siebes, A., Vreeken, J. &amp; van Leeuwen, M.</span> <span class="bibtex-title"><a href="http://www.google.com/search?q=Item Sets that Compress">Item Sets that Compress</a></span>. In <span class="bibtex-booktitle">Proc. SDM'06</span>, <span class="bibtex-pages">pages 393-404</span>, <span class="bibtex-year">2006</span>.</span></td>
+				</tr>
+				<tr id="DBLP_journals_tkde_MiettinenMGDM08" class="bibtex-entry bibtex-numeric">
+					<td class="bibtex-reference bibtex-numeric"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-DBLP_journals_tkde_MiettinenMGDM08">2</span><span class="bibtex-list-end">]</span></span></td>
+					<td class="bibtex-citation"><span class="bibtex-article"><span class="bibtex-author">Miettinen, P., Mielik&auml;inen, T., Gionis, A., Das, G. &amp; Mannila, H.</span> <span class="bibtex-title"><a href="http://www.google.com/search?q=The Discrete Basis Problem">The Discrete Basis Problem</a></span>.  <span class="bibtex-jname">IEEE Trans. Knowl. Data Eng.</span>, <span class="bibtex-volume">20</span><span class="bibtex-number">(10)</span><span class="bibtex-pages">:1348-1362</span>, <span class="bibtex-year">2008</span>.</span></td>
+				</tr>
+				<tr id="agrawal93" class="bibtex-entry bibtex-numeric">
+					<td class="bibtex-reference bibtex-numeric"><span class="bibtex-list bibtex-numeric"><span class="bibtex-list-start">[</span><span class="bibtex-ref bibtex-key-agrawal93">3</span><span class="bibtex-list-end">]</span></span></td>
+					<td class="bibtex-citation"><span class="bibtex-incollection"><span class="bibtex-author">Agrawal, R., Imielinksi, T. &amp; Swami, A.</span> <span class="bibtex-title"><a href="http://www.google.com/search?q=Mining association rules between sets of items in large databases">Mining association rules between sets of items in large databases</a></span>. In <span class="bibtex-booktitle">Proc. SIGMOD'93</span>, <span class="bibtex-pages">pages 207-216</span>, <span class="bibtex-publisher">ACM</span>, <span class="bibtex-year">1993</span>.</span></td>
+				</tr>
+			</table>
+		</div>
+		<p>
+			Which, again, is pretty neat, especially considering we can handle different bibliographic styles (numeric, abbreviated, natbib), orders, and can combine the above demonstrated cites and selections; all through a very simple interface.
+		</p>
+		<a id="#download"></a>
+		<h2>Download</h2>
+		<p>
+    	The library (currently v1.0.3, 13/07/2012) is available for download <a href="lib_bibtex.zip">here</a>.
+    </p>
+    <p>
+    	phpBibLib is postcard-ware, that is, it may be used freely for non-commerical purposes; if you use it, however, 
+    	I would be thrilled to receive a (tacky?) (touristy?) <i>real</i> postcard from wherever you
+    	are (see <a href="http://www.adrem.ua.ac.be/~jvreeken/">here</a> for my current address).
+    	(If you are a cheapskate, or afraid of postcards, just let me know by email that you use it. You know, for kicks.)
+    </p>
+		<h2>Usage</h2>
+		<p>
+			Documentation for the library is, well, neither not yet completly finished nor very likely to become so in the near future. 
+			Instead, I do provide live demonstrations <a href="example/example-static.php">here</a> and <a href="example/example-cached.php">here</a> for the static, and sqlite cached versions respectively.
+		</p>
+		<p>
+			In addition, I provide basic templates <a href="example/template-static.php">here</a> and <a href="example/template-cached.php">here</a>, again for static and cached versions resp., that should help you to get quickly started with phpBibLib.
+		</p>
+		<h2>Contributors</h2>
+		<p>
+			The main author of the library is <a href="http://www.adrem.ua.ac.be/~jvreeken/">Jilles Vreeken</a>.<br />
+			However, many thanks go to Siegfried Nijssen for fixing bugs, and introducing features.
+		</p>
+		<div id="footer">
+			<hr />
+			&copy; <a href="http://www.adrem.ua.ac.be/~jvreeken/">Jilles Vreeken</a>
+		</div>
+		</div>
+	</body>
+</head>

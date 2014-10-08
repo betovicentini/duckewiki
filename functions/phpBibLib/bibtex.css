@@ -1,0 +1,64 @@
+.bibtex-biblio {
+	clear: both;
+	width: 100%;
+	margin-bottom: 0px;
+}
+.bibtex-entry {
+	width: 100%;
+	margin-bottom: 3px;
+}
+.bibtex-reference {
+	vertical-align: top;
+	width: 25px;
+	padding-right: 5px;
+}
+.bibtex-reference.bibtex-abbrv {
+	width: 75px;
+}
+.bibtex-citation {
+
+}
+
+.bibtex-mathmode {
+	font-family: Serif;
+	font-style: italic;
+}
+
+.bibtex-inproceedings.bibtex-natbib {
+	padding-left: 5px;
+}
+
+.bibtex-author {
+}
+.bibtex-title {
+	font-weight: 500;
+}
+.bibtex-booktitle {
+	font-style: italic;
+}
+.bibtex-pages {
+}
+.bibtex-publisher {
+}
+.bibtex-year {
+}
+
+.bibtex-journal {
+}
+.bibtex-author {
+}
+.bibtex-title {
+}
+.bibtex-year {
+}
+.bibtex-volume {
+}
+.bibtex-jname {
+	font-style: italic;
+}
+.bibtex-number {
+}
+.bibtex-pages {
+}
+.bibtex-publisher {
+}
