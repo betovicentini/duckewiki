@@ -18,9 +18,11 @@ DECLARE infaut VARCHAR(150) DEFAULT '';
 DECLARE nome VARCHAR(500) DEFAULT '';
 DECLARE nnsp VARCHAR(100) DEFAULT '';
 DECLARE npess INT(10) DEFAULT 0;
+DECLARE subspmorfo INT(10) DEFAULT 0;
+DECLARE spmorfo INT(10) DEFAULT 0;
 SELECT FamiliaID+0,GeneroID+0,EspecieID+0,InfraEspecieID+0 INTO famid,genid,specid,infspid FROM Identidade WHERE DetID=identid;
 IF infspid>0 THEN
-	SELECT TRIM(Tax_Familias.Familia),TRIM(Tax_Generos.Genero),TRIM(Tax_Especies.Especie),TRIM(Tax_Especies.EspecieAutor),TRIM(Tax_Especies.BasionymAutor),TRIM(Tax_InfraEspecies.InfraEspecieNivel),TRIM(Tax_InfraEspecies.InfraEspecie),TRIM(Tax_InfraEspecies.BasionymAutor),TRIM(Tax_InfraEspecies.InfraEspecieAutor) INTO fam, gen, sp, spaut, spbasio, infrni, infsp, infbasio, infaut FROM Tax_InfraEspecies JOIN Tax_Especies USING(EspecieID) JOIN Tax_Generos USING(GeneroID) JOIN Tax_Familias USING(FamiliaID) WHERE InfraEspecieID=infspid;
+	SELECT TRIM(Tax_Familias.Familia),TRIM(Tax_Generos.Genero),TRIM(Tax_Especies.Especie),TRIM(Tax_Especies.Morfotipo) , TRIM(Tax_Especies.EspecieAutor),TRIM(Tax_Especies.BasionymAutor),TRIM(Tax_InfraEspecies.InfraEspecieNivel),TRIM(Tax_InfraEspecies.InfraEspecie),TRIM(Tax_InfraEspecies.BasionymAutor),TRIM(Tax_InfraEspecies.InfraEspecieAutor),TRIM(Tax_InfraEspecies.Morfotipo) INTO fam, gen, sp, spmorfo, spaut, spbasio, infrni, infsp, infbasio, infaut ,subspmorfo FROM Tax_InfraEspecies JOIN Tax_Especies USING(EspecieID) JOIN Tax_Generos USING(GeneroID) JOIN Tax_Familias USING(FamiliaID) WHERE InfraEspecieID=infspid;
 	IF infbasio<>'' THEN
 		SELECT infaut LIKE CONCAT('%',infbasio,'%') INTO infbasiotest;
 		IF (infbasiotest=0) THEN
@@ -35,7 +37,7 @@ IF infspid>0 THEN
 	END IF;	
 	SET infaut = TRIM(infaut);
 	SET nnsp = UPPER(SUBSTRING(sp,1,3));
-	IF (nnsp='SP.' OR infrni='morfossp' OR infrni='') THEN
+	IF (subspmorfo=1) THEN
 			SET nome = 'morfotipo';
 	ELSE 
 			SET nome = 'infraespecie';
@@ -53,7 +55,7 @@ ELSE
 	SET nome = 'especie';
 END IF;
 IF (nome='especie' AND specid>0) THEN
-	SELECT TRIM(Tax_Familias.Familia),TRIM(Tax_Generos.Genero),TRIM(Tax_Especies.Especie),TRIM(Tax_Especies.EspecieAutor),TRIM(Tax_Especies.BasionymAutor) INTO fam,gen,sp,spaut,spbasio FROM Tax_Especies JOIN Tax_Generos USING(GeneroID) JOIN Tax_Familias USING(FamiliaID) WHERE EspecieID=specid;
+	SELECT TRIM(Tax_Familias.Familia),TRIM(Tax_Generos.Genero),TRIM(Tax_Especies.Especie),TRIM(Tax_Especies.Morfotipo) ,TRIM(Tax_Especies.EspecieAutor),TRIM(Tax_Especies.BasionymAutor) INTO fam,gen,sp,spmorfo,spaut,spbasio FROM Tax_Especies JOIN Tax_Generos USING(GeneroID) JOIN Tax_Familias USING(FamiliaID) WHERE EspecieID=specid;
 	IF spbasio<>'' THEN
 		SELECT spaut LIKE CONCAT('%',spbasio,'%') INTO spbasiotest;
 		IF (spbasiotest=0) THEN
@@ -61,8 +63,7 @@ IF (nome='especie' AND specid>0) THEN
 		END IF;
 	END IF;	
 	SET spaut = TRIM(spaut);
-	SET nnsp = UPPER(SUBSTRING(sp,1,3));
-	IF (nnsp='SP.' OR spaut='') THEN
+	IF (spmorfo=1) THEN
 			SET nome = 'morfotipo';
 	ELSE 
 		SET nome = 'especie';

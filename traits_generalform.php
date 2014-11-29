@@ -20,8 +20,10 @@ echo "
 //$rr = mysql_query($qq);
 //$row= mysql_fetch_assoc($rr);
 //$fieldids = explode(";",$row['FormFieldsIDS']);
-$qq = "SELECT * FROM Traits WHERE FormulariosIDS LIKE '%formid_".$formid."' OR FormulariosIDS LIKE '%formid_".$formid.";%' ORDER BY PathName";
-$rr = mysql_query($qq,$conn);
+//$qq = "SELECT * FROM Traits WHERE FormulariosIDS LIKE '%formid_".$formid."' OR FormulariosIDS LIKE '%formid_".$formid.";%' ORDER BY PathName";
+
+$qf = "SELECT tr.* FROM FormulariosTraitsList as ff JOIN Traits AS tr USING(TraitID) WHERE ff.FormID=".$formid."  ORDER BY ff.Ordem";
+$rr = mysql_query($qf,$conn);
 $nvar = mysql_numrows($rr);
 while ($row= mysql_fetch_assoc($rr)) { //para cada variavel no relatorio
 	$qzpt = "SELECT * FROM Traits WHERE TraitID='".$row['ParentID']."'";

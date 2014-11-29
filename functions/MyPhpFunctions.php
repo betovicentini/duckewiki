@@ -380,9 +380,9 @@ function getpessoa($pessoaid,$abb=TRUE,$conn){
 		$ff ='Abreviacao';
 	} else { $ff = 'Prenome,Sobrenome';}
 	if (empty($pessoaid)) {
-		$qq = "SELECT PessoaID,Prenome,Sobrenome,SegundoNome,Abreviacao,Email,Notes FROM Pessoas ORDER BY ".$ff." ASC";
+		$qq = "SELECT PessoaID,Prenome,Sobrenome,SegundoNome,Abreviacao,Email,Notes,checkiniciais(Prenome,SegundoNome,Sobrenome) as Iniciais FROM Pessoas ORDER BY ".$ff." ASC";
 	} else {
-		$qq = "SELECT PessoaID,Prenome,Sobrenome,SegundoNome,Abreviacao,Email,Notes FROM Pessoas WHERE PessoaID='$pessoaid'";
+		$qq = "SELECT PessoaID,Prenome,Sobrenome,SegundoNome,Abreviacao,Email,Notes,checkiniciais(Prenome,SegundoNome,Sobrenome) as Iniciais FROM Pessoas WHERE PessoaID=".$pessoaid;
 	}
 	$rr = mysql_query($qq,$conn);
 	return $rr;

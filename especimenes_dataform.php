@@ -149,6 +149,14 @@ if (!empty($final)) {
 	} else {
 		$misslocality = FALSE;
 	}	
+	//echo "AQUI ".$submeteu."<br >".$especimenid." ou aqui ".$gpspointid."<br />";
+	//SE ESTIVER EDITANDO, NAO SE PREOCUPA COM LOCALIDADE VAZIA OU DATA VAZIA
+	if ($especimenid>0) {
+		$misslocality = FALSE;
+		if (empty($datacol)) {
+			$datacol = "0000-00-00";
+		}
+	}
 	if (empty($datacol)  || empty($colnum) || empty($pessoaid) || $misslocality==TRUE) {
 	//if (empty($colnum) || empty($pessoaid) ) {
 		echo "
@@ -598,8 +606,7 @@ unset($detset);
 	unset($_SESSION['editando']);
 echo "
   <tr><td class='tdsmallbold' align='center' >
-  <form name='coletaform' action='especimenes_dataform.php' method='post'>
-<input type='hidden' value='$ispopup' name='ispopup' />";
+  <form action='especimenes_dataform.php' method='post'>";
 foreach ($ppost as $kk => $vv) {
 echo "<input type='hidden' value='".$vv."' name='".$kk."' />";
 
@@ -946,7 +953,7 @@ echo "
       <tr>
         <td class='tdformnotes' ><textarea name='addcoltxt' id='addcoltxt'  col=100 row=3 readonly>".$addcoltxt."</textarea></td>
         <td><input type=button value=\"+\" class='bsubmit'  ";
-		$myurl ="addcollpopup.php?valuevar=valuevar&addcoltxt=addcoltxt&getaddcollids=".$addcolvalue."&formname=coletaform"; 
+		$myurl ="addcollpopup.php?valuevar=addcolvalue&addcoltxt=addcoltxt&getaddcollids=".$addcolvalue."&formname=coletaform"; 
 		echo " onclick = \"javascript:small_window('$myurl',800,500,'Seleciona Coletores Adicionas');\" /></td>
       </tr>
     </table>

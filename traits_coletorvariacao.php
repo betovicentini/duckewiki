@@ -27,32 +27,29 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+//echopre($ppost);
+//echo "ANTES<br />";
+//$aa = unserialize($_SESSION['variation']);
+//echopre($aa);
 
 if ($apagavarsess==1 && $especimenid>0 && $saveit>0) {
+	//echo "ESTOU ENTRANDO AQUI<br />";
 	unset($_SESSION['variation']);
 	$oldvals = storeoriginaldatatopost($especimenid,'EspecimenID',0,$conn,'');
 	$_SESSION['variation'] = serialize($oldvals);
 }
 
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-//"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/Stickman.MultiUpload.css' />",
 "<link rel='stylesheet' href='javascript/magiczoomplus/magiczoomplus/magiczoomplus.css' type='text/css' media='screen' />"
 );
 
 //UPLOAD IMAGENS FIELD - para subir + de uma imagem individualmente em campos
 $which_java = array(
-//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/common.js\"></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/css.js\"></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/standardista-table-sorting.js\"></script>",
@@ -70,10 +67,15 @@ $body = '';
 //echopre($ppost);
 
 if ($resetar=='1') {
-	$qq = "SELECT * FROM Formularios WHERE FormID='$formid'";
-	$rr = mysql_query($qq,$conn);
+	echo "ESTOU ENTRANDO AQUI 2<br />";
+	#$qq = "SELECT * FROM Formularios WHERE FormID=".$formid;
+	#$rr = mysql_query($qq,$conn);
+	#$row= mysql_fetch_assoc($rr);
+	#$fieldids = explode(";",$row['FormFieldsIDS']);
+	$qf = "SELECT GROUP_CONCAT(TraitID SEPARATOR ';') AS TraitLIST FROM FormulariosTraitsList WHERE FormID=".$formid;
+	$rr = mysql_query($qf,$conn);
 	$row= mysql_fetch_assoc($rr);
-	$fieldids = explode(";",$row['FormFieldsIDS']);
+	$fieldids = explode(";",$row['TraitLIST']);
 	$i=0;
 	$valores = unserialize($_SESSION['variation']);
 	if ($valores) {
@@ -132,8 +134,7 @@ $aa = unserialize($_SESSION['variation']);
 @extract($aa);
 ///process submition to parent sending the whole array of values as arraynotes
 if ($option1=='2' || isset($imgdone)) {
-	if (!isset($imgdone)) {
-		$arval = $ppost;
+	if (!isset($imgdone)) {		$arval = $ppost;
 		unset($arval['MAX_FILE_SIZE'],  
 			$arval['formid' ],  $arval['option1'],  
 			$arval['especimenid'],  
@@ -146,7 +147,7 @@ if ($option1=='2' || isset($imgdone)) {
 			$arval['elementid'],  
 			$arval['traitids'],
 			$arval['final']
-			);
+		);
 		if (isset($_SESSION['variation'])) {
 			$variaveis = unserialize($_SESSION['variation']);
 		} else {
@@ -185,16 +186,16 @@ if ($option1=='2' || isset($imgdone)) {
 		//junta os novos valores para o array de resultados e imagens se estas tiverem sido postas
 		$arval = array_merge((array)$arval,(array)$result,(array)$_FILES);
 	
-		foreach ($variaveis as $kk => $vv) {
-			$arraykey = explode("_",$kk); 
-			$charid = $arraykey[1];
-			$varorunit = $arraykey[0];
-			if ($varorunit=='traitmulti') {
-				if (!array_key_exists($kk,$arval)) {
-					$variaveis[$kk] = NULL;
-				} 
-			}
-		}
+		//foreach ($variaveis as $kk => $vv) {
+			//$arraykey = explode("_",$kk); 
+			//$charid = $arraykey[1];
+			//$varorunit = $arraykey[0];
+			//if ($varorunit=='traitmulti') {
+				//if (!array_key_exists($kk,$arval)) {
+					//$variaveis[$kk] = NULL;
+				//} 
+			//}
+		//}
 		$newarr = array();
 		foreach ($variaveis as $kk => $vv) {
 			$arraykey = explode("_",$kk); 
@@ -222,7 +223,7 @@ if ($option1=='2' || isset($imgdone)) {
 		//armazena os dados novos e do novo relatorio a variavel de sessao variation....
 		$newimagefile = array();
 		//echopre($arval);
-		foreach ($arval as $key => $value) {	//para cada variavel no array
+		foreach ($arval as $key => $value) {//para cada variavel no array
 			$ttt = explode("_",$key);
 			if (!is_array($value) && $ttt[0]!='traitimg' && $ttt[0]!='traitmulti' && $ttt[0]!='traitimgautor' && $ttt[0]!='imagid' && $ttt[0]!= 'traitimgold' && $ttt[0]!= 'traitimgautortxt' && $ttt[0]!='imgtodel' ) { //se nao e uma imagem ou array com info de imagem
 				if (@array_key_exists($key,$variaveis)) { //se ela ja existe na variavel de sessao atualiza se diferente
@@ -376,11 +377,8 @@ if ($option1=='2' || isset($imgdone)) {
 			extract($_SESSION['othervars']);
 			$variaveis = unserialize($_SESSION['variation']);
 		}
-		
 		$elementid2txt = describetraits($variaveis,$img=FALSE,$conn);
-		
 		FazHeader($title,$body,$which_css,$which_java,$menu);
-		
 		if ($final==1) {
 			if ($saveit==1 && $especimenid>0) {
 						$changedtraits=0;
@@ -412,7 +410,8 @@ if ($option1=='2' || isset($imgdone)) {
 </table>
 <br>
 	";
-			} else {
+			} 
+			else {
 			echo "
 <br>
   <table class='sucessosmall' align='center' cellpadding='7'>
@@ -423,8 +422,6 @@ if ($option1=='2' || isset($imgdone)) {
 <br>
 	";
 			}
-
-	
 		} 
 		if ($final==2) {
 			echo "
@@ -439,12 +436,15 @@ if ($option1=='2' || isset($imgdone)) {
   </script>
 </form>";
 		}
-
 } 
 else {
 	FazHeader($title,$body,$which_css,$which_java,$menu);
 }
 ///////////////////////////////////////
+//echo "DEPOIS<br />";
+//$aa = unserialize($_SESSION['variation']);
+//echopre($aa);
+
 if (isset($_SESSION['variation'])) {
 	$variaveis = unserialize($_SESSION['variation']);
 	//EXTRAI MULTISTATES

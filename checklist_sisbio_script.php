@@ -35,21 +35,21 @@ CREATE TABLE IF NOT EXISTS ".$tbname." (SELECT
 0 as Marcado,
 pltb.EspecimenID, 
 'edit-icon.png' AS EDIT,
-getlatlong(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 1) AS Latitude_Dg,
-getlatlong(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 0) AS Longitude_Dg,
-'wgs84' AS DATUM,
-IF(ABS(pltb.Longitude)>0,'GPS', IF(pltb.GPSPointID>0,'GPS', IF(pltb.GazetteerID>0,'Gazetteer',IF(ABS(getlatlong(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 1))>0, 'Gazetteer','')))) AS CoorRef,
+ROUND(getlatlong(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 1),6) AS Latitude_Dg,
+ROUND(getlatlong(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 0),6) AS Longitude_Dg,
+'WGS-84' AS DATUM,
+IF(ABS(pltb.Longitude)>0,'Coordenada exata da ocorrência', IF(pltb.GPSPointID>0,'Coordenada exata da ocorrência', IF(pltb.GazetteerID>0,'Coordenada de referência da área amostrada',IF(ABS(getlatlong(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 1))>0, 'Coordenada de referência da área amostrada','')))) AS CoorRef,
 'Plantae' as REINO,
 (if(gettaxonname(pltb.DetID,0,0) IS NULL,'Plantae',gettaxonname(pltb.DetID,0,0))) as TAXON,
 (gettaxonlevel(pltb.DetID,0)) as NIVEL_TAXONOMICO,
-('Coleta aleatória') as METODO,
-'Exsicata' as UNIDADE,
+('Coleta de espécimes') as METODO,
+'Indivíduo' as UNIDADE,
 nduplicates(".$duplicatesTraitID.",pltb.EspecimenID,'Especimenes')+0 AS QUANTIDADE,
-if(CONCAT(pltb.Day,'-',pltb.Mes,'-',pltb.Ano)<>'00-00-0000',CONCAT(pltb.Day,'/',pltb.Mes,'/',pltb.Ano),'') as DATA_INICIAL,
-'' AS DATA_FINAL,
-('Herbário ".$herbariumsigla."') AS  TIPO_DESTINACAO,
+IF(CONCAT(pltb.Day,'-',pltb.Mes,'-',pltb.Ano)<>'00-00-0000',CONCAT(pltb.Day,'/',pltb.Mes,'/',pltb.Ano),'') as DATA_INICIAL,
+IF(CONCAT(pltb.Day,'-',pltb.Mes,'-',pltb.Ano)<>'00-00-0000',CONCAT(pltb.Day,'/',pltb.Mes,'/',pltb.Ano),'')  AS DATA_FINAL,
+('Depositado em coleção/museu') AS  TIPO_DESTINACAO,
 ('".$herbariumnome."') AS  INSTITUICAO,
-CONCAT(colpessoa.Abreviacao,' ',pltb.Number) as TOMBAMENTO
+CONCAT(colpessoa.Sobrenome,' ',pltb.Number) as TOMBAMENTO
 FROM Especimenes as pltb
 LEFT JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID ";
 if ($filtro>0) {

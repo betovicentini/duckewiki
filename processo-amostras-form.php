@@ -52,15 +52,11 @@ echo "<script type='text/javascript' src='javascript/wz_tooltip.js'></script>";
 $erro=0;
 if ($final==1) {
 //CHECA
-if ($processoid=='criar' && ($filtroid+0)==0 && empty($tbname)) {
-	$erro++;
-	echo "
-<br />
-<table cellpadding=\"7\" width='50%' align='center' class='erro'>
-  <tr><td class='tdsmallbold' align='center'>Para iniciar um processo precisa indicar um filtro!</td></tr>
-</table>
-<br />";
-}
+//&& ($filtroid+0)==0 
+//if ($processoid=='criar') {
+	//$erro++;
+	//echo "<br /><table cellpadding=\"7\" width='50%' align='center' class='erro'>  <tr><td class='tdsmallbold' align='center'>Para iniciar um processo precisa indicar um filtro!</td></tr></table><br />";
+//}
 if ($erro==0) {
 //Create table if not exists
 $qq = "CREATE TABLE IF NOT EXISTS ProcessosEspecs (

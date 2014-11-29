@@ -35,12 +35,12 @@ if ($ispopup==1) {
 }
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
+//"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
+//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
+//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
+//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
 $title = 'Pessoa';
 $body = '';
@@ -84,7 +84,7 @@ echo "
 			$wrr = getpessoa('',$abb=TRUE,$conn);
 			while ($aa = mysql_fetch_assoc($wrr)){
 				echo "
-      <option value='".$aa['PessoaID']."'>".$aa['Abreviacao']." (".$aa['Prenome'].") </option>";
+      <option value='".$aa['PessoaID']."'>".$aa['Abreviacao']." (".$aa['Prenome'].") - ".$aa['Iniciais']."</option>";
 			}
 	echo "
     </select>
@@ -191,9 +191,10 @@ echo "
 </tbody>
 </table>";
 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
+//,"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->","<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>"
+);
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>
