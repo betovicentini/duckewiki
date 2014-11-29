@@ -1,0 +1,25 @@
+CREATE FUNCTION checkcoordenadas(angu VARCHAR(200), latorlong VARCHAR(200)) RETURNS FLOAT
+BEGIN
+DECLARE yyll CHAR(10) DEFAULT '';
+DECLARE yyan FLOAT DEFAULT 0;
+DECLARE ress FLOAT DEFAULT NULL;
+SELECT TRIM(REPLACE(TRIM(angu),',','.')) INTO yyll;
+IF (yyll<>'') THEN
+SELECT TRIM(yyll)+0 INTO yyan;
+IF (UPPER(latorlong)='LATITUDE') THEN
+IF (yyan>90 OR yyan<(-90)) THEN
+SET ress = NULL;
+ELSE
+SET ress = yyan;
+END IF;
+END IF;
+IF (UPPER(latorlong)='LONGITUDE') THEN
+IF (yyan>180 OR yyan<(-180)) THEN
+SET ress = NULL;
+ELSE
+SET ress = yyan;
+END IF;
+END IF;
+END IF;
+RETURN ress;
+END

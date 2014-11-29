@@ -21,8 +21,4 @@ O sistema inclui arquivos php, javascript e vários plugins e tem uma base mysql
 
 Em fase de normatização! 
 
-LEIA O ARQUIVO dhtmlxconnecto_README.txt - essa é uma restrição que iremos brevemente solucionar pela substituição do plugin pela solução jQuery que não envolve o dhtmlX.
-
-A base de dados limpa será colocada em breve.
-
-
+Para instalação ver arquivo INSTALL.README!

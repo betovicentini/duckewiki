@@ -1,8 +1,0 @@
-﻿.search-wrap input{font-size:12px; width:auto;  color:#999999; padding:5px; border:solid 1px #999999;}
-.results{margin-left:10px; border:solid 1px #DEDEDE; background:#FFFFFF; display:none;}
-.results ul, #results li{padding:0; margin:0; border:0; list-style:none;}
-.results li {border-top:solid 1px #DEDEDE;}
-.results li a{display:block; padding:3px; text-decoration:none; color:#000000; font-size:0.8em;}
-.results li a small{display:block; text-decoration:none; color:#999999; font-weight:normal;}
-.results li a:hover{background:#FFFFCC;}
-.results ul {padding:1px;}

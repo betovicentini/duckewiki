@@ -1,0 +1,11 @@
+CREATE FUNCTION checalado(lld VARCHAR(100)) RETURNS  VARCHAR(10)
+BEGIN
+DECLARE ress VARCHAR(10) DEFAULT '';
+SET lld = UPPER(lld);
+IF (lld='E' OR lld='D') THEN
+SET ress = lld;
+ELSE
+SET ress = 'ERRO';
+END IF;
+RETURN ress;
+END

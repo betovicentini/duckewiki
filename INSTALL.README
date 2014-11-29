@@ -1,0 +1,30 @@
+INSTALACAO
+
+LEIA O ARQUIVO duckewiki/dhtmlxconnecto_README.txt - essa é uma restrição que iremos brevemente solucionar pela substituição do plugin pela solução jQuery que não envolve o dhtmlX.
+
+1) COPIAR PARA PASTA PÚBLICA DO SEU SERVIDOR (htdocs em XAMPP) AS SEGUINTES PASTAS:
+	duckewiki
+	cgi-coletor (requer imagemagick instalado no seu servidor para que os scripts nesta pasta possam trabalhar imagens)
+
+2) COPIAR PARA A PASTA NÃO PÚBLICA DO SEU SERVIDOR (../htdocs; ou seja, onde a pasta pública está) A PASTA:
+	includes
+
+3) EXECUTAR O ARQUIVO duckewiki.sql NO SEU MYSQL, o qual irá criar uma base de dados chamada duckewiki. 
+
+4) EDITAR OS ARQUIVOS NA PASTA includes ALTERANDO A CONFIGURAÇÃO PARA CONEXAO DA BASE COM O MYSQL CONFORME ESPECIFICACOES DE SUA INSTALACAO
+	duckewiki_clean.php
+	duckewiki.php
+
+5) ENTRAR NO SITE:
+localhost/duckewiki/index.php
+LOGIN:
+usuario: admin
+senha: @dm!n
+
+6) NO MENU ADMINISTRACAO:
+	a) Executar funções mysql;
+	
+7) PODE COMEÇAR A IMPORTAR DADOS. USE A INTERFACE, NAO O PHP MY ADMIN PARA FAZER ISSO.
+
+
+

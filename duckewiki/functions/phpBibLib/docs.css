@@ -1,0 +1,77 @@
+html {
+	height: 100%; 
+	margin-bottom: 1px;
+}
+body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: #414141;
+	font: 12px/15px Arial, Helvetica, sans-serif;
+	color: #222;
+}
+#content {
+	min-width: 600px; 
+	margin: 0px auto; 
+	width: 730px; 
+	background:#ffffff;
+	margin: 0px auto 0px auto;
+	padding: 15px 85px 10px 55px;
+}
+p {
+	width: 98%;
+	margin-top: 0;
+	margin-bottom: 5px;
+}
+
+a:link,
+a:visited {
+	color: #004b33;
+	text-decoration: none;
+	font-weight: bold;
+}
+a:hover,
+a:active {
+	color: #63914A;
+}
+.example-output {
+	border: 1px solid #ccc;
+	margin-left: 25px;
+	margin-right: 25px;
+	padding: 5px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+pre {
+	border: 1px solid #ccc;
+	margin-left: 25px;
+	margin-right: 25px;
+	padding: 5px 5px 5px 10px;
+}
+hr {
+}
+#footer {
+	margin: 20px 0px 0px 0px;
+	padding: 2px 0px 0px 0px; 
+	font: 10px Tahoma, Geneva, Arial, Helvetica, sans-serif;
+	text-align: right;
+	color: #ccc; 
+}
+#footer:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+
+#footer p {
+	padding-top: 10px;
+	font: 10px/1.5em Verdana, sans-serif;
+	text-align: right;
+	color: #999;
+}
+
+#footer a:link, #footer a:visited { color: #aaa; text-decoration: none; font-weight: normal;}
+#footer a:hover, #footer a:active { color: #000; text-decoration: none; font-weight: normal;}
+

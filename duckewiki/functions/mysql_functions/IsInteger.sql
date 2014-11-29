@@ -1,0 +1,4 @@
+CREATE FUNCTION IsInteger (sIn varchar(1024)) RETURNS int
+BEGIN
+RETURN sIn REGEXP '^-?[0-9]+$';
+END
