@@ -302,12 +302,13 @@ echo "
 <tr bgcolor = '".$bgcolor."'>
   <td class='tdsmallbold'>&nbsp;</td>
   <td class='tdsmallboldleft'>Localidade das plantas&nbsp;<img height=14 src=\"icons/icon_question.gif\" ";
-		$help = strip_tags(GetLangVar('helplocal_import_data'));
-			$localfile = 'search-gazetteer.php';
+		$help = "Como número de árvores podem repetir entre localidades, você precisa informar também uma das opções da localidade: (A) a localidade onde estão todas as plantas sendo importadas; ou (A+B), plantas em sublocalidade (B) de uma localidade geral (A); ou (C), coluna na sua tabela que tem o ID (GazetteerID) de localidades cadastradas da base";
+		$localfile = 'search-gazetteer.php';
 		echo " onclick=\"javascript:alert('$help');\" /></td>
   <td>
     <table>
       <tr>
+        <td>Opção&nbsp;A: </td>
         <td>
           <table>
             <tr>
@@ -323,12 +324,48 @@ echo "
         </td>
     </tr>
     <tr>
+        <td>Opção&nbsp;B: </td>
         <td>
           <table>
             <tr>
                 <td class='tdformnotes'>Coluna com localidade ou sub-localidade de localidade geral</td>
                 <td class='tdformnotes'>
                   <select name='plantagazfield'>
+                    <option value=''>".GetLangVar('nameselect')."</option>";
+					$qq = "SELECT * FROM `".$tbname."` PROCEDURE ANALYSE ()";
+					$rq = mysql_query($qq,$conn);
+					$i=0;
+					while ($rw = mysql_fetch_assoc($rq)) {
+						$fin = $rw['Field_name'];
+							$zz = explode(".",$fin);
+							$xt = count($zz)-1;
+							$fieldname = $zz[$xt];
+						if ($fieldname!="ImportID") {
+							$qq = "SELECT * FROM Import_Fields WHERE LOWER(NamesToMatch) LIKE '%".strtolower($fieldname)."%' AND FieldsToPut='GazetteerID'";
+							$rqq = mysql_query($qq,$conn);
+							$nrqq = mysql_numrows($qq,$conn);
+							if ($nrqq>0) {
+								$ch = 'selected'; 
+							} else {$ch =''; }
+								echo "
+                    <option  $ch value='".$fieldname."'>$fieldname</option>";
+						}
+					}
+			echo "
+                  </select>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>Opção&nbsp;C:</td>
+          <td>
+            <table>
+            <tr>
+                <td class='tdformnotes'>Coluna com um GazetteerID</td>
+                <td class='tdformnotes'>
+                  <select name='plantagazidfield'>
                     <option value=''>".GetLangVar('nameselect')."</option>";
 					$qq = "SELECT * FROM `".$tbname."` PROCEDURE ANALYSE ()";
 					$rq = mysql_query($qq,$conn);

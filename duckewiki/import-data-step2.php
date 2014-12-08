@@ -35,20 +35,16 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
 $title = 'Importar Dados Passo 02';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 $erro=0;
 if ($refdefined=='1') {
-if (($coletas==1 || $coletas==3) && empty($plantaidfield) && empty($tagnumfield)) {
+if (($coletas==1 || $coletas==3) && empty($plantaidfield) && empty($tagnumfield) ) {
 	echo "
 <br />
   <table cellpadding=\"1\" width='50%' align='center' class='erro'>
@@ -57,7 +53,7 @@ if (($coletas==1 || $coletas==3) && empty($plantaidfield) && empty($tagnumfield)
 <br />";
 		$erro++;
 }
-if (($coletas==1 || $coletas==3) && empty($plantaidfield) && !empty($tagnumfield) && empty($localid) && empty($plantagazfield)) {
+if (($coletas==1 || $coletas==3) && empty($plantaidfield) && !empty($tagnumfield) && empty($localid) && empty($plantagazfield) && empty($plantagazidfield)) {
 	echo "
 <br />
   <table cellpadding=\"1\" width='50%' align='center' class='erro'>
@@ -151,14 +147,26 @@ echo "
 				$qq = "UPDATE `".$tbname."` SET `".$coln."`=TRIM(`".$tagnumfield."`) WHERE `".$tagnumfield."`<>'' AND (`".$tagnumfield."` IS NOT NULL)";
 				@mysql_query($qq,$conn);
 			}
-				if (empty($plantagazfield)) {
+			if (!empty($plantagazidfield)) {
+				$qq = "UPDATE `".$tbname."` SET `".$colname."`=`".$plantagazidfield."` WHERE `".$plantagazidfield."`<>'' AND (`".$plantagazidfield."` IS NOT NULL)";
+				echo $qq."<br >";
+				$rgaz = @mysql_query($qq,$conn);
+				if ($rgaz) {
+					$plgaz=TRUE;
+				}
+				
+			}
+			if (!$plgaz) {
+			if (empty($plantagazfield) ) {
 					$qq = "UPDATE `".$tbname."` SET `".$colname."`=".$localid." WHERE `".$tagnumfield."`<>'' AND (`".$tagnumfield."` IS NOT NULL)";
 					$uplocal = mysql_query($qq,$conn);
 					if ($uplocal) { $plgaz=TRUE;}
-				} else {
+				} 
+			else {
 					if (empty($localid)) {
 						$qq = "UPDATE `".$tbname."` SET `".$colname."`=checkgazetteer(`".$plantagazfield."`,0,0,0,0) WHERE `".$plantagazfield."`<>'' AND (`".$plantagazfield."` IS NOT NULL) AND (`".$colname."`=0 OR `".$colname."` IS NULL)";
-					}  else  {
+					}  
+					else  {
 						//$qq = "SELECT GazetteerID,GazetteerTIPOtxt,Gazetteer,Municipio,Gazetteer.MunicipioID,Gazetteer.ParentID,Province,Municipio.ProvinceID,Province.CountryID FROM Gazetteer LEFT JOIN Municipio USING(MunicipioID) LEFT JOIN Province USING(ProvinceID) WHERE Gazetteer.GazetteerID='".$localid."'";
 						$qq = "SELECT GazetteerID,Gazetteer,Municipio,Gazetteer.MunicipioID,Gazetteer.ParentID,Province,Municipio.ProvinceID,Province.CountryID FROM Gazetteer LEFT JOIN Municipio USING(MunicipioID) LEFT JOIN Province USING(ProvinceID) WHERE Gazetteer.GazetteerID='".$localid."'";
 						$rloc = mysql_query($qq,$conn);
@@ -288,12 +296,13 @@ echo "
 		</table>";
 
 		} 
-					else {
-						$plgaz=TRUE;
-					}
-				} 
-			}
-			if ($plgaz) {
+		else {
+			$plgaz=TRUE;
+				}
+			} 
+			} 
+		}
+		if ($plgaz) {
 				$cll = $tbprefix."PlantaID";
 				$cl2 = $tbprefix."PlGazetteerID";
 				$qq = "UPDATE `".$tbname."` as tb, Plantas as pl, Gazetteer as gaz set tb.`".$cll."`= pl.`PlantaID` WHERE tb.`".$tagnumfield."`= pl.`PlantaTag` AND pl.`GazetteerID`=tb.`".$cl2."`";
@@ -419,8 +428,8 @@ echo"
    <!--- <input type='submit' value='Continuar' class='bsubmit' />--->
   </form>";
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
+);
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>
