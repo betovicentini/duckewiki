@@ -40,7 +40,7 @@ $which_css = array(
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>",
+"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
 );
 $title = 'Configurações';
 $body = '';
@@ -54,12 +54,16 @@ $vartxt = array('habtrname','pomtrname', 'statustrname', 'traitferttrname', 'alt
 //get traitnames
 foreach ($numvars as $kk => $tt) {
 		$tid = $$tt;
+		$vv = $vartxt[$kk];
+		if ($tid>0) {
 		$qu = "SELECT * FROM Traits WHERE TraitID='".$tid."'";
 		$ru = mysql_query($qu,$conn);
-		$rwu = mysql_fetch_assoc($ru);
-		$tgn = $rwu['TraitName']."  (".$rwu['PathName'].")";
-		$vv = $vartxt[$kk];
-		$$vv = $tgn;
+			$rwu = mysql_fetch_assoc($ru);
+			$tgn = $rwu['TraitName']."  (".$rwu['PathName'].")";
+			$$vv = $tgn;
+		} else {
+			$$vv = 'Selecione uma opção';
+		}
 }
 
 echo "
@@ -223,7 +227,7 @@ echo "
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts automáticos para dados de parcelas florestais. Selecione aqui a variável Diâmetro À Altura do Peito!';
 	echo " onclick=\"javascript:alert('$help');\" /></td>
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','daptrname',$daptrname,'daptraitres','daptraitid',$daptraitid,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','daptrname',$daptrname,'daptraitres','daptraitid',$daptraitid,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -233,7 +237,7 @@ echo "
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts automáticos para dados de parcelas florestais. Selecione aqui a variável POINT OF MEASUREMENT (POM) referente à altura no tronco quando não for 1.3 metros (AP).';
 	echo " onclick=\"javascript:alert('$help');\" /></td>
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','pomtrname',$pomtrname,'pomtraitres','pomtraitid',$pomtraitid,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','pomtrname',$pomtrname,'pomtraitres','pomtraitid',$pomtraitid,true,73); echo "</td>
 </tr>
 ";
 
@@ -244,7 +248,7 @@ echo "
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts automáticos para dados de parcelas florestais. Selecione aqui a variável Altura da Planta!';
 	echo " onclick=\"javascript:alert('$help');\" /></td>
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','alttrname',$alttrname,'alttraitres','alturatraitid',$alturatraitid,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','alttrname',$alttrname,'alttraitres','alturatraitid',$alturatraitid,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -254,7 +258,7 @@ echo "
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts automáticos. Selecione aqui a variável referente ao Habito de uma planta!';
 	echo " onclick=\"javascript:alert('$help');\" /></td>
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','habtrname',$habtrname,'habtraitres','habitotraitid',$habitotraitid,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','habtrname',$habtrname,'habtraitres','habitotraitid',$habitotraitid,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -264,7 +268,7 @@ echo "
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts automáticos para dados de parcelas florestais. Selecione aqui a variável Status da Planta na Parcela, morto ou vivo!';
 	echo " onclick=\"javascript:alert('$help');\" /></td>
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','statustrname',$statustrname,'statustraitres','statustraitid',$statustraitid,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','statustrname',$statustrname,'statustraitres','statustraitid',$statustraitid,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -274,7 +278,7 @@ echo "
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts para visualizar imagens de plantas herborizadas. Selecionar variável do tipo IMAGEM, onde são armazenadas imagens de exsicatas!';
 	echo " onclick=\"javascript:alert('$help');\" /></td>
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','exsicatatrname',$exsicatatrname,'exsicatatraitres','exsicatatrait',$exsicatatrait,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','exsicatatrname',$exsicatatrname,'exsicatatraitres','exsicatatrait',$exsicatatrait,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -284,7 +288,7 @@ echo "
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts para gerar etiquetas. Selecionar variável referente ao número de duplicatas de amostras herborizadas!';
 	echo " onclick=\"javascript:alert('$help');\" /></td>  
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','duplicatestrname',$duplicatestrname,'duplicatestraitres','duplicatesTraitID',$duplicatesTraitID,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','duplicatestrname',$duplicatestrname,'duplicatestraitres','duplicatesTraitID',$duplicatesTraitID,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -294,7 +298,7 @@ echo "
 &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts para gerar visualizações e downloads. Selecione variável que contém informações sobre a fertilidade de uma amostra coletada (fruto, flor, estéril)';
 	echo " onclick=\"javascript:alert('$help');\" /></td>  
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','traitferttrname',$traitferttrname,'traitfertres','traitfertid',$traitfertid,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','traitferttrname',$traitferttrname,'traitfertres','traitfertid',$traitfertid,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -304,7 +308,7 @@ echo "
 &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts para gerar visualizações e downloads. Selecione variável que contém informações sobre a existencia de material em silica de uma amostra coletada';
 	echo " onclick=\"javascript:alert('$help');\" /></td>  
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','traitsilicaname',$traitsilicaname,'traitsilicatres','traitsilica',$traitsilica,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','traitsilicaname',$traitsilicaname,'traitsilicatres','traitsilica',$traitsilica,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -314,7 +318,7 @@ echo "
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts. Selecionar variável referente a notas de localidade';
 	echo " onclick=\"javascript:alert('$help');\" /></td>  
-  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits-only.php','localidadestrname',$localidadestrname,'localidadestraitres','localidadetraitid',$localidadetraitid,true,73); echo "</td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','localidadestrname',$localidadestrname,'localidadestraitres','localidadetraitid',$localidadetraitid,true,73); echo "</td>
 </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -574,6 +578,7 @@ else {
 \$metaurl = \"".$url."\";";
 	foreach ($numvars as $kk) {
 		$vv = $ppost[$kk]+0;
+		//echo $vv."  em ".$kk."<br />";
 		$stringData .= "
 \$".$kk." = ".$vv.";";
 	}
@@ -603,9 +608,9 @@ else {
 ";
 }
 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
+);
 FazFooter($which_java,$calendar=TRUE,$footer=$menu);
 
 ?>

@@ -58,6 +58,7 @@ foreach ($vars as $kk => $vv) {
 	}
 	$ii++;
 }
+//echo "checklist_species_script.php?".$varstxt;
 
 
 //PREPARA ARQUIVO PARA LOOP DE PROGRESSO

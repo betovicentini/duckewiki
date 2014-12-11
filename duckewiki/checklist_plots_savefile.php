@@ -67,11 +67,11 @@ $plantastbname = 'checklist_pllist';
 //	mysql_query($qq,$conn);
 //}
 //
-$numericfilters = array();
+$numericfilter = array();
 //$numericfilters[] = "Marcado";
-$numericfilters[]  = 'NSPP'; 
-$numericfilters[]  = 'NPLANTAS'; 
-$numericfilters[]  = 'NSPECS'; 
+$numericfilter[]  = 'NSPP'; 
+$numericfilter[]  = 'NPLANTAS'; 
+$numericfilter[]  = 'NSPECS'; 
 
 //CABEÇALHO DA TABELA
 $headd = array("Marcado", "nomeid", "Pais", "MajorArea", "MinorArea", "Localidade", "LocalSimples", "Latitude", "Longitude", "Altitude", "Parcela", "idd", "tableref", "TempID", "HABT", "NSPP", "NPLANTAS", "NSPECS");
@@ -318,8 +318,8 @@ function custom_filter(\$filter_by){
 ";
 if (count($numericfilters)>0) {
 $i=1;
-$idxx = '
-$idxss = array('; 
+$idxx = "
+\$idxss = array("; 
 foreach ($numericfilters as $nuvar) {
 	$stringData .= "
     \$index".$i." = \$filter_by->index('".$nuvar."');";
@@ -333,7 +333,7 @@ foreach ($numericfilters as $nuvar) {
 $idxx .= ");";
 	$stringData .= $idxx;
 } else {
-	$stringData .= '\$idxss = array();';
+	$stringData .= "\$idxss = array();";
 }
 $stringData .= "
    foreach (\$idxss as \$idx) {
