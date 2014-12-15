@@ -64,26 +64,67 @@ $qq = "CREATE TABLE IF NOT EXISTS Censos (
 CensoID INT(10) unsigned NOT NULL auto_increment,
 CensoNome VARCHAR(200),
 ResponsavelID INT(10) NULL DEFAULT NULL COMMENT 'UserID',
+CensoAcesso INT(10) NULL DEFAULT 1,
+DapAcesso DOUBLE NULL DEFAULT 0,
+MetaDados TEXT NULL DEFAULT '',
 AddedBy INT(10),
 AddedDate DATE,
 PRIMARY KEY (CensoID)) CHARACTER SET utf8 ENGINE = InnoDB";
 @mysql_query($qq,$conn);
 
-$update = "ALTER TABLE Monitoramento ADD COLUMN CensoID INT(10) DEFAULT 0 AFTER DataOBS";
+$update = "ALTER TABLE `Monitoramento` ADD  `CensoID` INT(10) DEFAULT '0' AFTER `DataOBS`";
 @mysql_query($update,$conn);
 $qq = "ALTER TABLE `Monitoramento` ADD INDEX `data` (`DataObs`)";
 @mysql_query($qq,$conn);
+$update = "ALTER TABLE `ChangeMonitoramento` ADD `CensoID` INT(10) DEFAULT '0' AFTER `DataOBS`";
+@mysql_query($update,$conn);
+$qq = "ALTER TABLE `ChangeMonitoramento` ADD INDEX `data` (`DataObs`)";
+@mysql_query($qq,$conn);
 
+$update  = "ALTER TABLE `Censos`  ADD `CensoAcesso` INT(10) NULL DEFAULT '1' AFTER `ResponsavelID`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `Censos`  ADD `DapAcesso` DOUBLE NULL DEFAULT NULL AFTER `CensoAcesso`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `Censos`  ADD `MetaDados` TEXT NULL DEFAULT '' AFTER `DapAcesso`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `Censos`  ADD `MetaCensoID` INT(10) NULL DEFAULT NULL AFTER `MetaDados`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `Censos`  ADD `EquipePessoaID` CHAR(255) NULL DEFAULT NULL AFTER `MetaCensoID`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `Censos`  ADD `DataPolicy` TEXT NULL DEFAULT '' AFTER `EquipePessoaID`";
+@mysql_query($update,$conn);
+
+
+$update  = "ALTER TABLE `ChangeCensos`  ADD `CensoAcesso` INT(10) NULL DEFAULT '1' AFTER `ResponsavelID`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `ChangeCensos`  ADD `DapAcesso` DOUBLE NULL DEFAULT NULL AFTER `CensoAcesso`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `ChangeCensos`  ADD `MetaDados` TEXT NULL DEFAULT '' AFTER `DapAcesso`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `ChangeCensos`  ADD `MetaCensoID` INT(10) NULL DEFAULT NULL AFTER `MetaDados`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `ChangeCensos`  ADD `EquipePessoaID` CHAR(255) NULL DEFAULT NULL AFTER `MetaCensoID`";
+@mysql_query($update,$conn);
+$update  = "ALTER TABLE `ChangeCensos`  ADD `DataPolicy` TEXT NULL DEFAULT '' AFTER `EquipePessoaID`";
+@mysql_query($update,$conn);
 
 //SE ESTIVER SALVANDO
 if ($salvando>0 && trim($CensoNome)!='') {
 	$arrayofvalues = array(
 		'CensoNome' => $CensoNome,
-		'ResponsavelID' => $ResponsavelID
+		'ResponsavelID' => $ResponsavelID,
+		'CensoAcesso'  => $CensoAcesso,
+		'DapAcesso'  => $DapAcesso,
+		'MetaDados'  => $MetaDados,
+		'EquipePessoaID' => $addcolvalue,
+		'MetaCensoID' => $MetaCensoID,
+		'DataPolicy' => $DataPolicy
 	);
+	//echopre($arrayofvalues);
 	$censoset=0;
 	$upp = 0;
 	$traitarr = explode(";",$traitids);
+	$tt = 0;
 	if ($censoid>0) {
 		$upp = CompareOldWithNewValues('Censos','CensoID',$censoid,$arrayofvalues,$conn);
 		if (($upp+0)>0) { //if new values differ from old, then update
@@ -91,11 +132,15 @@ if ($salvando>0 && trim($CensoNome)!='') {
 			//faz o log do registro atual
 			CreateorUpdateTableofChanges($censoid,'CensoID','Censos',$conn);
 			//atualiza o registro
-			$censoid = UpdateTable($censoid,$arrayofvalues,'CensoID','Censos',$conn);
+			$tt =  UpdateTable($censoid,$arrayofvalues,'CensoID','Censos',$conn);
 		} 
 	} 
 	else {
-		$censoid = InsertIntoTable($arrayofvalues,'CensoID','Censos',$conn);
+		$tt =  InsertIntoTable($arrayofvalues,'CensoID','Censos',$conn);
+	}
+	if ($tt) {
+		echo "<div style='text-align=center; color: red; font-style: bold'  align='center'>O CENSO FOI ATUALIZADO COM SUCESSO</div>";
+	
 	}
 }
 ///SE ESTIVER EDITANDO, PEGA OS DADOS VELHOS
@@ -104,12 +149,32 @@ if ($censoid>0) {
 	$rr = mysql_query($qz,$conn);
 	$rw = mysql_fetch_assoc($rr);
 	@extract($rw);
+	
+			
+	$addcolvalue = $EquipePessoaID;
+	$addcolarr = explode(";",$addcolvalue);
+	$addcoltxt = '';
+	$j=1;
+	foreach ($addcolarr as $kk => $val) {
+		$qq = "SELECT * FROM Pessoas WHERE PessoaID='$val'";
+		$res = mysql_query($qq,$conn);
+		$rrw = mysql_fetch_assoc($res);
+		if ($j==1) {
+			$addcoltxt = 	$rrw['Abreviacao'];
+		} else {
+			$addcoltxt = $addcoltxt."; ".$rrw['Abreviacao'];
+		}
+		$j++;
+	}
+
+	//echopre($rw);
 }
 if ($novo==1) {
 	$txt = 'Cadastrando um novo censo';
 } else {
 	$txt = 'Editando '.$CensoNome;
 }
+//echo $uuid."  ".$ResponsavelID."  ".$acclevel;
 echo "
 <br />
 <form action='censo-edit-exec.php' name='finalform' method='post'>
@@ -187,11 +252,109 @@ echo  "
     } elseif ($ResponsavelID>0) {
 				$wr = mysql_query("SELECT * FROM Users WHERE UserID=".$ResponsavelID,$conn);
 				$ww = mysql_fetch_assoc($wr);
-				echo "<td>".$ww['FirstName']." ".$ww['LastName']."  você não tem autorização para mudar isso</td>";
+				echo "<td><b>".$ww['FirstName']." ".$ww['LastName']."</b>  Você não tem autorização para alterar!</td>";
     }
 echo "
 </tr>
 ";
+if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
+echo "
+<tr bgcolor = '".$bgcolor."'>
+  <td class='tdsmallboldright'>Equipe participante</td>
+  <td >
+    <table>
+      <tr>
+        <td class='tdformnotes' >
+          <input type='hidden' id='addcolvalue'  name='addcolvalue' value='$addcolvalue' />
+        <textarea name='addcoltxt' id='addcoltxt'  cols='40' rows=2 readonly>".$addcoltxt."</textarea></td>
+        <td><input type=button value=\"Selecione ou altere equipe\" class='bsubmit'  ";
+		$myurl ="addcollpopup.php?valuevar=addcolvalue&addcoltxt=addcoltxt&getaddcollids=".$addcolvalue."&formname=finalform"; 
+		echo " onclick = \"javascript:small_window('$myurl',800,500,'Seleciona Equipe');\" /></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+";
+if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else {$bgcolor = $linecolor1 ;} $bgi++;
+echo "
+<tr bgcolor = '".$bgcolor."'> 
+        <td class='tdsmallboldright'>Metadados & Política de Acesso</td>
+   <td>
+    <table>
+      <tr><td class='tdsmallboldright'>OPÇÃO&nbsp;1:</td><td><select name='MetaCensoID'>
+            <option value=''>Usar o mesmo definido para outro censo</option>";
+				$qk = "SELECT * FROM Censos";
+				$rk = @mysql_query($qk,$conn);
+				while ($rwk = @mysql_fetch_assoc($rk)) {
+				if ($MetaCensoID==$rwk['CensoID']) {
+					$optsel = "selected";
+				} else {
+					$optsel = '';
+				}
+				echo "
+            <option ".$optsel." value='".$rwk['CensoID']."'>".$rwk['CensoNome']."</option>";
+				}
+	echo "
+          </select>
+        </td></tr>
+      <tr><td class='tdsmallboldright'>OPÇÃO&nbsp;2:</td>
+      <td><table>
+        <tr><td>Metadados&nbsp;<img style='cursor: pointer;' height=\"12\" src=\"icons/icon_question.gif\" ";
+$help = "Detalhe aqui metadados adicionais sobre este censo OU indique outro censo que contém essa informação, a qual será adicionada ao arquivo de metadados na exportação de dados de censos. Dados de localidade, datas, pessoas responsáveis, NÃO precisam ser incluidas aqui"; 
+echo " onclick=\"javascript:alert('$help');\" /><br /><textarea name='MetaDados' cols='60' rows='3'>".$MetaDados."</textarea></td></tr>
+        <tr><td>Política&nbsp;de&nbsp;acesso&nbsp;<img style='cursor: pointer;' height=\"12\" src=\"icons/icon_question.gif\" ";
+$help = "Detalhe aqui a sua política de acesso a esses dados desse censo!"; 
+echo " onclick=\"javascript:alert('$help');\" /><br /><textarea name='DataPolicy' cols='60' rows='3'>".$DataPolicy."</textarea></td></tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+";
+if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else {$bgcolor = $linecolor1 ;} $bgi++;
+echo "
+<tr bgcolor = '".$bgcolor."'> 
+  <td class='tdsmallboldright'>Acesso aos dados&nbsp;<img style='cursor: pointer;' height=\"12\" src=\"icons/icon_question.gif\" ";
+   $CensoAcessoch1 = '';
+   $CensoAcessoch2 = '';
+   $CensoAcessoch3 = '';
+  if ($CensoAcesso==1) {
+     $CensoAcessoch1 = 'checked';
+     $txtpub = "Usuários cadastrados tem acesso";
+  }
+  if ($CensoAcesso==2) {
+     $CensoAcessoch2 = 'checked';
+     $txtpub = "Acesso é público e aberto";
+  }
+  if ($CensoAcesso==3) {
+     $CensoAcessoch3 = 'checked';
+     $txtpub = "Acesso é público e aberto, mas o nome das espécies e dos gênero são restritos";
+  }
+    if (($ResponsavelID+0)==0 || $ResponsavelID==$uuid || $acclevel=='admin') {
+$help = "Define o tipo de acesso aos dados deste censo. Mesmo se o dado for aberto, o responsável pelos dados receberá um email informando quando alguém baixar os dados do site. DADOS ESTARÃO ABERTOS APENAS SE A PLANILHA PLOT&LOCALIDADES ESTIVER ABERTA"; 
+echo " onclick=\"javascript:alert('$help');\" /></td>
+  <td >
+    <table>
+      <tr><td><input type='radio' ".$CensoAcessoch1." value='1'  name='CensoAcesso'>&nbsp;Usuários cadastrados tem acesso</td></tr>
+      <tr><td><input type='radio' ".$CensoAcessoch2." value='2' name='CensoAcesso'>&nbsp;Acesso é público e aberto</td></tr>
+      <tr><td><input type='radio' ".$CensoAcessoch3." value='3' name='CensoAcesso'>&nbsp;Acesso é público e aberto, mas o nome das espécies e dos gênero são restritos</td></tr>
+      <tr><td>DAPmin&nbsp;<img style='cursor: pointer;' height=\"12\" src=\"icons/icon_question.gif\" ";
+	$help = "Defina aqui um DAP mínimo (em cm) para a versão dos dados de acesso aberto e público, caso queira incluir esta restrição"; echo " onclick=\"javascript:alert('$help');\" />&nbsp;&nbsp;<input type='text' value='".$DapAcesso."' name='DapAcesso'></td></tr>
+    </table>";
+	} elseif ($ResponsavelID>0) {
+$help = "APENAS O RESPONSÁVEL OU ADMINISTRADOR PODE ALTERAR OPÇÕES DE ACESSO -Define o tipo de acesso aos dados deste censo. Mesmo se o dado for aberto, o responsável pelos dados receberá um email informando quando alguém baixar os dados do site"; 
+echo " onclick=\"javascript:alert('$help');\" /></td>
+  <td>
+    <table>
+      <tr><td><b>".strtoupper($txtpub)."</td></tr>
+      <tr><td>DAPmin&nbsp;<img style='cursor: pointer;' height=\"12\" src=\"icons/icon_question.gif\" ";
+	$help = "Defina aqui um DAP mínimo (em cm) para a versão dos dados de acesso aberto e público, caso queira incluir esta restrição"; echo " onclick=\"javascript:alert('$help');\" />&nbsp;&nbsp;<input type='text' value='".$DapAcesso."' name='DapAcesso' readonly></td></tr>
+    </table>";
+	}
+echo "
+  </td>
+</tr>";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else {$bgcolor = $linecolor1 ;} $bgi++;
 echo "
 <tr bgcolor = '".$bgcolor."'>

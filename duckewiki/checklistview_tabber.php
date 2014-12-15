@@ -257,10 +257,11 @@ function desmarcartodos(gridobject, tablename) {
 "<script type='text/javascript' src='dhtmlxconnector/dhtmlxConnector_php/codebase/connector.js'></script>"
 );
 FazHeader($title,$body,$which_css,$which_java,TRUE);
+
 echo "<script type='text/javascript' src='javascript/wz_tooltip.js'></script>";
 $quais = ReturnAcessList($acclevel);
+$_SESSION['introtext'] = $introtext;
 omenudeicons($quais, $vertical=FALSE, $position='left' , $iconwidth='30', $iconheight='30' );
-
 //CAIXA DE DIALOGO PARA PEDIR NOME 
 //echo "<div id='passing_ids'></div>";
 	if (($blockacess+0)==0) {
@@ -270,8 +271,6 @@ omenudeicons($quais, $vertical=FALSE, $position='left' , $iconwidth='30', $iconh
 	$tbwidth = $divwith+10;
 	$tbheight = 500;
 echo "
-<br />
-<br />
 <span id='counter' style=\"padding: 1px; color:  red; font-size: 1.8em;\"></span>
 <div style=\"position:absolute;top:0%;left:5%; width: 40%; padding: 20px; background-color:orange; color:  black; visibility: hidden;\" id=\"progressalert\"  ></div>
 <div id=\"a_tabbar\" style=\"width:".$tbwidth."px; height:".$tbheight."px;\">";

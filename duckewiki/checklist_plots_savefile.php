@@ -23,7 +23,11 @@ $tbname = "checklist_plots";
 $uuid = cleanQuery($_SESSION['userid'],$conn);
 if ($uuid>0) {
 	$newfilename = $tbname."_".$uuid;
+	$linktoplantas=1;
 } else {
+	if ($listsarepublic['plantas'] != 'on') {
+		$linktoplantas = 0;
+	}
 	$newfilename = $tbname."_".substr(session_id(),0,10);
 }
 $spectbname = 'checklist_speclist';
@@ -203,6 +207,8 @@ $nu = count($uu)-1;
 unset($uu[$nu]);
 $url = implode("/",$uu);
 
+
+
 //NOME DO ARQUIVO QUE EXECUTA O GRID
 //IF ($uuid>0) {
 $fnn = $newfilename.".php";
@@ -282,8 +288,15 @@ if ((\$data->get_value(\"NSPP\"))>0) {
 }
 \$data->set_value(\"NSPP\",\$imagen);
 
-if ((\$data->get_value(\"NPLANTAS\"))>0) {
-  \$imagen=\"<img style='cursor:pointer;' src='icons/tree-icon.png' height='17' onclick=\\\"javascript:small_window('".$url."/checkllist_plantas_save.php?tbname=".$spectbname."&tableref=\".\$tableref.\"&idd=\".\$idd.\"&ispopup=1',700,500,'Ver plantas');\\\" onmouseover=\\\"Tip('Ver plantas');\\\" \><sup>  \".\$data->get_value(\"NPLANTAS\").\"</sup>\";
+\$plnumb = \$data->get_value(\"NPLANTAS\");
+";
+if ($linktoplantas==1) {
+	$pltlktxt =   "\$imagen=\"<img style='cursor:pointer;' src='icons/tree-icon.png' height='17' onclick=\\\"javascript:small_window('".$url."/checkllist_plantas_save.php?tbname=".$spectbname."&tableref=\".\$tableref.\"&idd=\".\$idd.\"&ispopup=1',700,500,'Ver plantas');\\\" onmouseover=\\\"Tip('Ver plantas');\\\" \><sup>  \".\$plnumb.\"</sup>\";";
+} else {
+	$pltlktxt =   "\$imagen=\"<img style='cursor:pointer;' src='icons/tree-icon.png' height='17' onmouseover=\\\"Tip('Esta localidade tem árvores marcadas \\\n mas você não tem permissão para ver esses dados');\\\" alt=\\\"\\\" \><sup>  \".\$plnumb.\"</sup>\";";
+}
+$stringData .= " if (\$plnumb>0) {
+".$pltlktxt."
 } else {
   \$imagen = \" \";
 }
@@ -301,11 +314,16 @@ if ((\$data->get_value(\"NSPECS\"))>0) {
 \$plotm2 = \"<small>\".\$plotm2.\"m<sup>2</sup><small>\";
 if (!empty(\$plot)) {
   \$imagen=\"<img style='cursor:pointer;' src='icons/icon_plot.png' height='20' onclick=\\\"javascript:small_window('".$url."/speciesINplots-popup.php?gazetteerid=\".\$idd.\"&ispopup=1',1000,800,'Mapas de parcelas');\\\" onmouseover=\\\"Tip('Visualizar plantas na parcela');\\\" />\";
-  \$img2= \"<img style='cursor:pointer;' src='icons/download.png' height='20' onclick=\\\"javascript:small_window('".$url."/export-plotdata-save.php?gazetteerid=\".\$idd.\"&ispopup=1',900,500,'Baixar dados da parcela');\\\" onmouseover=\\\"Tip('Baixar dados da parcela');\\\" />\";
-  \$imagen = \$imagen.\"&nbsp;\".\$img2.\"&nbsp;\".\$plot;
 } else {
   \$imagen = \" \";
+  \$plot = \" \";
 }
+if (\$tableref==\"Gazetteer\") { 
+\$img2= \"<img style='cursor:pointer;' src='icons/download.png' height='20' onclick=\\\"javascript:small_window('".$url."/export-plotdata-save.php?tableref=\".\$tableref.\"&idd=\".\$idd.\"',900,500,'Baixar dados da parcela');\\\" onmouseover=\\\"Tip('Baixar dados de parcelas para essa localidade');\\\" />\";
+} else {
+\$img2 = \"\";
+}
+\$imagen = \$imagen.\"&nbsp;\".\$img2.\"&nbsp;\".\$plot;
 \$data->set_value(\"Parcela\",\$imagen);
 }
 function removeoperators(\$data){

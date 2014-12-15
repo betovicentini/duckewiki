@@ -299,15 +299,20 @@ $stringData .= "
 	 }
     \$data->set_value(\"ESPECIMENES\",\$imagen);
 
-	if ((\$data->get_value(\"PLANTAS\"))>0) {
- 		\$imagen= \"<sup>  \".\$data->get_value(\"PLANTAS\").\"</sup><img style='cursor:pointer;' src='icons/tree-icon.png' height='20'  onclick=\\\"javascript:small_window('".$url."/checkllist_plantas_save.php?tbname=".$plantastbname."&famid=\".\$famid.\"&genid=\".\$genid.\"&specid=\".\$specid.\"&infspecid=\".\$infspecid.\"',950,500,'Plantas');\\\"  onmouseover=\\\"Tip('Visualizar plantas desse taxon');\\\" />\";
-	 } else {
-	 	\$imagen = \" \";
-	 }
-    \$data->set_value(\"PLANTAS\",\$imagen);
-
-
-	if ((\$data->get_value(\"PLOTS\"))>0) {
+\$plnumb = \$data->get_value(\"PLANTAS\");
+";
+if ($linktoplantas==1) {
+	$pltlktxt =   "\$imagen= \"<sup>  \".\$data->get_value(\"PLANTAS\").\"</sup><img style='cursor:pointer;' src='icons/tree-icon.png' height='20'  onclick=\\\"javascript:small_window('".$url."/checkllist_plantas_save.php?tbname=".$plantastbname."&famid=\".\$famid.\"&genid=\".\$genid.\"&specid=\".\$specid.\"&infspecid=\".\$infspecid.\"',950,500,'Plantas');\\\"  onmouseover=\\\"Tip('Visualizar plantas desse taxon');\\\" />\";";
+} else {
+	$pltlktxt =   "\$imagen= \"<sup>  \".\$data->get_value(\"PLANTAS\").\"</sup><img style='cursor:pointer;' src='icons/tree-icon.png' height='20'  onmouseover=\\\"Tip('Este taxon tem árvores marcadas \\\n mas você não tem permissão para ver esses dados');\\\" alt=\\\"\\\" />\";";
+}
+$stringData .= " if (\$plnumb>0) {
+".$pltlktxt."
+} else {
+  \$imagen = \" \";
+}
+\$data->set_value(\"PLANTAS\",\$imagen);
+if ((\$data->get_value(\"PLOTS\"))>0) {
 		\$nomee = \$data->get_value(\"NOME\");
 		\$imagen=\"<sup>  \".\$data->get_value(\"PLOTS\").\"</sup><img style='cursor:pointer;' src='icons/icon_plot.png' height='20' onclick=\\\"javascript:small_window('".$url."/plantasINplots-popup.php?titulo=\".\$nomee.\"&ispopup=1&famid=\".\$famid.\"&genid=\".\$genid.\"&specid=\".\$specid.\"&infspecid=\".\$infspecid.\"',1000,800,'Mapas de parcelas');\\\" onmouseover=\\\"Tip('Visualizar parcelas com plantas desse taxon');\\\" />\";
 	} else {

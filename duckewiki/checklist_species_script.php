@@ -144,7 +144,7 @@ LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID
 WHERE (isvalidlocal(especs.GazetteerID, especs.GPSPointID, ".$idd.", '".$tableref."')>0 OR isvalidlocal(pl.GazetteerID, pl.GPSPointID, ".$idd.", '".$tableref."')>0)  AND iddet.EspecieID>0 GROUP BY CONCAT(famtb.Familia,gettaxonname(iddet.DetID,1,0))
 )";
 
-echo $qsql."<br />";
+//echo $qsql."<br />";
 mysql_query($qsql,$conn);
 $perc = 40;
 $qnu = "UPDATE `temp_progspp".$tbname."` SET percentage=".$perc; 

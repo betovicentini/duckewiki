@@ -56,15 +56,17 @@ foreach ($quais as $vv) {
 	$tp = $linkss[$vv];
 	$toprint .= $separador.$tp;
 }
-$toprint .= "</div>";
+$toprint .= "</div><br /><br />";
 }
 
 } else {
 $toprint = "
 <div style=' vertical-align:top; position:absolute;  top:10px; right:10px;  font-size: 0.8em;'>&nbsp;<img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\" onclick = \"javascript: self.location='login-form.php';\" />&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
-</div>";
+</div><br /><br /><br /><br /><br /><div width='100%'  style='padding-left: 5%; padding-top: 5%; font-size: 1.1em; text-align: left; line-height: 150%;'>".$_SESSION['introtext']."</div>";
 }
-
+//if (empty($toprint)) {
+	//$toprint = "<br /><br /><br /><br />";
+//}
 echo $toprint;
 }
 
