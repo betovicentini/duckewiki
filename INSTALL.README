@@ -4,19 +4,33 @@ LEIA O ARQUIVO duckewiki/dhtmlxconnecto_README.txt - essa é uma restrição que
 
 1) COPIAR PARA PASTA PÚBLICA DO SEU SERVIDOR (htdocs em XAMPP) AS SEGUINTES PASTAS:
 	duckewiki
-	cgi-coletor (requer imagemagick instalado no seu servidor para que os scripts nesta pasta possam trabalhar imagens)
-
+	cgi-local (requer imagemagick instalado no seu servidor para que os scripts nesta pasta possam trabalhar imagens)
+  Atenção, as pastas:
+	duckewiki/temp
+	duckewiki/uploads
+	uploads/batch_images
+	uploads/bibtex
+	uploads/data_files
+	uploads/gazetteer_files
+	uploads/gps_files
+ devem ter permissão de escrita para o usuário do apache (normalmente usuário www-data), no linux:
+	sudo chwon www-data:www-data  temp
+	sudo chwon -R www-data:www-data  uploads
 2) COPIAR PARA A PASTA NÃO PÚBLICA DO SEU SERVIDOR (../htdocs; ou seja, onde a pasta pública está) A PASTA:
 	includes
 
-3) EXECUTAR O ARQUIVO duckewiki.sql NO SEU MYSQL, o qual irá criar uma base de dados chamada duckewiki. 
+3) CRIAR o banco de dados duckewiki e EXECUTAR O ARQUIVO duckewiki.sql NO SEU MYSQL, o qual irá criar uma base de dados chamada duckewiki. 
+   mysql -u root -p 
+   CREATE DATABASE duckewiki;
+   USE duckewiki;
+   SOURCE duckewiki.sql;
 
 4) EDITAR OS ARQUIVOS NA PASTA includes ALTERANDO A CONFIGURAÇÃO PARA CONEXAO DA BASE COM O MYSQL CONFORME ESPECIFICACOES DE SUA INSTALACAO
 	duckewiki_clean.php
 	duckewiki.php
 
 5) ENTRAR NO SITE:
-localhost/duckewiki/index.php
+localhost
 LOGIN:
 usuario: admin
 senha: @dm!n
