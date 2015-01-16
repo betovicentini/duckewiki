@@ -83,7 +83,7 @@ function formatgaznome($nome) {
 							$vv = ucfirst($vv);
 					}
 					$res[] = $vv;
-				$ii++;
+				$i++;
 				}
 		}
 		$res = implode(" ",$res);
