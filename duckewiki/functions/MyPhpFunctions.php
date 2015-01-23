@@ -79,7 +79,7 @@ function formatgaznome($nome) {
 				$vv = trim($vv);
 				if (!empty($vv)) {
 					$nstr = strlen($vv);
-					if ($nstr>3 || $i==0) {
+					if ($nstr>3 || $i==0 || preg_match('/[0-9]+/', $vv)) {
 							$vv = ucfirst($vv);
 					}
 					$res[] = $vv;
@@ -89,6 +89,7 @@ function formatgaznome($nome) {
 		$res = implode(" ",$res);
 		return($res);
 }
+
 
 function gettaxatxt($nomeid,$conn) {
 	$nn = explode("_",$nomeid);
