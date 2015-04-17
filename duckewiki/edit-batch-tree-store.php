@@ -225,7 +225,7 @@ foreach ($specarr as $i) {   //para cada coleta da lista, fazer o cadastro
 
 	if ($erro==0 && $changedtraits>0) { 
 			$traitarray = $newtraits;
-			$resultado = updatetraits($traitarray,$i,'PlantaID',$conn);
+			$resultado = updatetraits($traitarray,$i,'PlantaID',$bibtex_id,$conn);
 			if (!$resultado) {
 				$erro++;
 			} else {

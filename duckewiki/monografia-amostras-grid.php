@@ -33,13 +33,12 @@ if (count($ppost)==0 && count($gget)==0 && isset($_SESSION['arrtopass'])) {
 	@extract($aarr);
 }
 
+//echopre($aarr);
+//echopre($ppost);
+//echopre($gget);
+
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 
 $title = 'Amostras Monografia';
 $which_css = array(
@@ -65,9 +64,9 @@ $which_java = array(
 "<script type='text/javascript' src='dhtmlxconnector/dhtmlxDataProcessor/codebase/dhtmlxdataprocessor.js'></script>",
 "<script type='text/javascript' src='dhtmlxconnector/dhtmlxCalendar/codebase/dhtmlxcalendar.js'></script>",
 //"<script type='text/javascript' src='dhtmlxconnector/dhtmlxDataProcessor/codebase/dhtmlxdataprocessor_debug.js'></script>",
-"<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/dhtmlxgrid_export.js'></script>",
-"<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js'></script>",
-"<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_clist.js'></script>",
+//"<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/dhtmlxgrid_export.js'></script>",
+//"<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_link.js'></script>",
+//"<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/excells/dhtmlxgrid_excell_clist.js'></script>",
 "<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/ext/dhtmlxgrid_hmenu.js'></script>",
 "<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/ext/dhtmlxgrid_ssc.js'></script>",
 "<script type='text/javascript' src='dhtmlxconnector/dhtmlxGrid/codebase/ext/dhtmlxgrid_mcol.js'></script>",
@@ -80,24 +79,24 @@ $which_java = array(
          var w = window.open('exportGRIDasCSV.php', name='_blank',specs='scrollBars=yes,resizable=yes,toolbar=no,menubar=no,location=no,directories=no,width=600,height=500');
          w.document.write('<pre>'+csv+'</pre>');
          w.focus(); 
-      }
+      };
       function fecharwin() {
             var el = self.opener.window.document.getElementById('especimenestxt');
             var curres = document.getElementById('counter').innerHTML;
             el.innerHTML = curres + ' especimenes selecionados ';
             window.close();
       }
-      function tempAlert(msg,duration)
-{
- var el = document.createElement(\"div\");
- el.setAttribute(\"style\",\"position:absolute;top:50%;left:50%; width: 40%; padding: 10px; background-color:orange; color:  black;\");
- el.innerHTML = msg;
- setTimeout(function(){
-  el.parentNode.removeChild(el);
- },duration);
- document.body.appendChild(el);
-}
-     function marcarfiltrados(excluir) {
+      function tempAlert(msg,duration) {
+        var el = document.createElement(\"div\");
+        el.setAttribute(\"style\",\"position:absolute;top:50%;left:50%; width: 40%; padding: 10px; background-color:orange; color:  black;\");
+        el.innerHTML = msg;
+        setTimeout(function(){
+            el.parentNode.removeChild(el);
+        },duration);
+        document.body.appendChild(el);
+    };
+
+function marcarfiltrados(excluir) {
          var conta = 0;
          var tot = mygrid.getRowsNum();
          var divbar = document.getElementById('pgbar');
@@ -131,11 +130,12 @@ $which_java = array(
         var txt = 'Foram ' + oque + '  ' + conta + ' registros de um total de ' + tot ;
         }
         divbar.innerHTML = txt;
-        var loader = dhtmlxAjax.postSync(\"monografia-amostras-process.php\", encodeURI('especimenes='+tt+'&monografiaid=".$monografiaid."&status='+status+'&temptb=".$temptb."&uuid=".$uuid."') );
+        var loader = dhtmlxAjax.postSync(\"temp/".$processfname."\", encodeURI('especimenes='+tt+'&monografiaid=".$monografiaid."&varincluido='+status) );
         var res = loader.xmlDoc.responseText;
         document.getElementById('counter').innerHTML = res;
-        res = txt + '  '+ res;
-        alert(res);
+        res = txt + '  CONCLUIDO '+ res;
+        //alert(res); 
+        divbar.innerHTML = res;
          }, 0);
     }
 </script>",

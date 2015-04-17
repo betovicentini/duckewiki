@@ -137,9 +137,9 @@ echo "
 					$val = str_replace($symb, "", $val);
 					$val = str_replace(" ", "", $val);
 					if ($j!==($nn-1)) {
-						$tt = $tt.$val." TEXT, ";
+						$tt = $tt."`".$val."` TEXT, ";
 					} else {
-						$tt = $tt.$val." TEXT)";
+						$tt = $tt."`".$val."` TEXT)";
 					}
 					$j++;
 					$hh[] = $val;

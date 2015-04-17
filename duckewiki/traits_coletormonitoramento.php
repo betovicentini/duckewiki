@@ -37,16 +37,14 @@ if ($ispopup==1) {
 //echopre($ppost);
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/Stickman.MultiUpload.css' />",
-"<link rel='stylesheet' href='javascript/magiczoomplus/magiczoomplus/magiczoomplus.css' type='text/css' media='screen' />"
+"<link rel='stylesheet' href='javascript/magiczoomplus/magiczoomplus/magiczoomplus.css' type='text/css' media='screen' />",
+"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' >"
 );
 
 //UPLOAD IMAGENS FIELD - para subir + de uma imagem individualmente em campos
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
+"<script type='text/javascript' src='javascript/ajax_framework.js'></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/common.js\"></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/css.js\"></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/standardista-table-sorting.js\"></script>",

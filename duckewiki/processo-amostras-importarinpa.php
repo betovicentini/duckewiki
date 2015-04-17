@@ -86,8 +86,8 @@ echo "
 } 
 else {
 //echopre($ppost);
-		$fname = $_FILES['uploadfile']['name'];
-		$fileuploaded = $_FILES['uploadfile']['tmp_name'];
+$fname = $_FILES['uploadfile']['name'];
+$fileuploaded = $_FILES['uploadfile']['tmp_name'];
 $erro = 0;
 if (empty($fname ))  {
 echo "
@@ -103,7 +103,6 @@ echo "
 ";
 $erro++;
 } 
-
 if ($erro==0) {
 		//echopre($_FILES);
 		//salva o arquivo importando no permanentemente no servidor
@@ -237,55 +236,13 @@ move_uploaded_file($_FILES["uploadfile"]["tmp_name"],"uploads/data_files/".$newf
 		//echo $allvals."<br />";
 //if ($lixo==234567) {
 		if ($nrr>0 && $allvals==2) {
-				//IMPORTAR PARA A BASE
-				$qq = "SELECT * FROM `".$tbname."`";
-				$rr = mysql_query($qq,$conn);
-				$nrr = mysql_numrows($rr);
-				$specsfilter = array();
-				$up=0;
-				while ($rwr = mysql_fetch_assoc($rr)) {
-						$inpanum = $rwr['INPA']+0;
-						//$brahmsid = $rwr['BRAHMS']+0;
-						$specid = $rwr['WIKIESPECIMENID']+0;
-						if ($inpanum>0 && $specid>0) {
-							$arrayofvalues = array( 'INPA_ID' => $inpanum);
-							//'INPABRAHMS' => $brahmsid);
-							CreateorUpdateTableofChanges($specid,'EspecimenID','Especimenes',$conn);
-							$updatespecid = UpdateTable($specid,$arrayofvalues,'EspecimenID','Especimenes',$conn);
-							$qu = "UPDATE processo_".$processoid."  SET ".$herbariumsigla."=".$inpanum."  WHERE EspecimenID='".$specid."'";
-							$ru = mysql_query($qu,$conn);
-							$qu = "UPDATE ProcessosLIST  SET ".$herbariumsigla."=".$inpanum."  WHERE EspecimenID='".$specid."'";
-							$ruu = mysql_query($qu,$conn);
-							if ($ru && $updatespecid>0 && $ruu) {
-								$up++;
-							}
-						}
-				}
-				if ($up==$nrr) {
-							echo "
-<br />
-<table align='center' class='myformtable' cellpadding=\"7\">
-<thead>
-  <tr><td >Importação concluída</td></tr>
-</thead>
-<tbody>
-<tr><td>".$up." registros foram importados corretamente</td></tr>
-</tbody>
-</table>
-";
-				} 
-				elseif ($up<$nrr) {
-							echo "
-<br />
-<table align='center' class='myformtable' cellpadding=\"7\">
-<thead>
-  <tr><td >Houve um problema!</td></tr>
-</thead>
-<tbody>
-<tr><td>".$up." de ".$nrr." foram importados!</td></tr></tbody>
-</table>
-";
-				}
+		/////////////AQUI NOVO SCRIPT OU REDIRECT
+				echo "
+<form name='iptinpa'  action='processo-amostras-importainpa-form.php'  method='post' >
+<input type='hidden' name='tbname'  value='".$tbname."' >
+<input type='hidden' name='processoid'  value='".$processoid."' >
+<script language=\"JavaScript\">setTimeout('document.iptinpa.submit()',0.00001);</script>
+</form>";
 		} 
 		else {
 echo "

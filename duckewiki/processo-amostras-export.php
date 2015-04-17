@@ -54,6 +54,7 @@ echo "
 <form method='post' name='finalform' action='processo-amostras-export.php'>
   <input type='hidden' name='ispopup' value='".$ispopup."'>
   <input type='hidden' name='processoid' value='".$processoid."' />
+  <input type='hidden' name='forbrahms' value='1'>
 <table class='myformtable' align='center' cellpadding=\"5\">
 <thead>
 <tr >
@@ -236,6 +237,7 @@ else {
   <input type='hidden' name='formhabitatdesc' value='".$formhabitatdesc."' />
   <input type='hidden' name='specbasicvars'  value='".$basicvariables."' />
   <input type='hidden' name='processoid'  value='".$processoid."' />
+  <input type='hidden' name='forbrahms'  value='".$forbrahms."' />
   <input type='hidden' name='quais'  value='".$quais."' />  
   <input type='hidden' name='monidata'  value='".$monidata."' />  
   <script language=\"JavaScript\">setTimeout('document.lastform.submit()',1);</script>

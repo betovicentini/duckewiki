@@ -36,24 +36,92 @@ $title = 'Adiciona Amostra ao Processo';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
-if (!isset($processoid)) {
+if (!isset($processoid) || ($processoid+0)==0) {
+	//checa se já está num processo!
+	$qz = "SELECT Name,Inicio,Status,ProcessosEspecs.ProcessoID,CreatedBy FROM ProcessosLIST LEFT JOIN ProcessosEspecs USING(ProcessoID) WHERE EspecimenID=".$especimenid;
+	//echo $qz."<br >";
+	$rz = mysql_query($qz,$conn);
+	$nrz = mysql_numrows($rz);
+	$txts = "";
+	$concluido=0;
+	$prcid=0;
+	$createdby = 0;
+	if ($nrz>0) {
+		while ($rzw = mysql_fetch_assoc($rz)) {
+			$txt = "<tr><td>".$rzw['Name']."</td><td>".$rzw['Inicio']."</td>";
+			if ($rzw['Status']==0) {
+				$txt .= "<td>EM ANDAMENTO</td>";
+					$prcid = $rzw['ProcessoID'];
+					$createdby = $rzw['CreatedBy'];
+			} else {
+				$txt .= "<td>CONCLUIDO</td></tr>";
+				$concluido=1;
+			}
+			$txts .= "
+".$txt;
+		}
+	}
+	if ($concluido==1) {
+echo "
+<br />
+<table class='myformtable' align='center' cellpadding='7' >
+<thead><tr ><td >Essa amostra já foi processada</td></tr></thead>
+<tbody>".$txts."</tobdy></table><br />";
+	}
+	else {
+		$nooption=0;
+		if ($prcid==0) {
+			$th = "Adiciona Amostra a Processo";
+		} else {
+			if ($createdby==$uuid || $acclevel=='admin') {
+				$th = "Muda a Amostra de Processo";
+			} else {
+				$th = "Você não tem autorização para mudar esta amostra de processo";
+				$nooption=1;
+			}
+		}
+		
 echo "
 <br />
 <form action='adiciona_processo.php' method='post'>
-<table class='myformtable' align='center' cellpadding='7' width='50%'>
-<thead><tr ><td >Adiciona Amostra a Processo</td></tr></thead>
+<table class='myformtable' align='left' cellpadding='7' >
+<thead><tr ><td >".$th."</td></tr></thead>";
+if ($nooption==1) {
+echo "<tbody>".$txts."</tobdy></table><br />";
+} else {
+echo "
 <tbody>
+";
+if ($txts!="") {
+echo ";
+<tr><td><table class='tdformnotes' ><tr><td colspan='4'>A amostra já está nos processos</td></tr>
+".$txts."</table></td></tr>";
+}
+echo "
 <tr>
   <td>
     <input type='hidden' name='especimenid' value='".$especimenid."' >
-    <select name='processoid' onchange='this.form.submit()'>
-      <option value=''>".GetLangVar('nameselect')."</option>
+    <input type='hidden' name='oldprocessoid' value='".$prcid."' >
+    <select name='processoid' onchange='this.form.submit()'>";  
+      if ($prcid==0) {
+echo "
+      <option value=''>".GetLangVar('nameselect')."</option>"; 
+      }
+echo"
       <option value=''>------------</option>";
-      $qq = "SELECT * FROM ProcessosEspecs ORDER BY AddedDate DESC";
+      $qq = "SELECT * FROM ProcessosEspecs ";
+      if ($acclevel!="admin") {
+         $qq .= " WHERE AddedBy=".$uuid;
+      } 
+      $qq .=  " ORDER BY AddedDate DESC";
       $rrr = @mysql_query($qq,$conn);
       while ($row = @mysql_fetch_assoc($rrr)) {
+            $sel = '';
+            if ($prcid==$row['ProcessoID']) {
+            	$sel = "selected";
+            }
 			echo "
-      <option value=".$row['ProcessoID'].">".$row['Name']." </option>";
+      <option ". $sel." value=".$row['ProcessoID'].">".$row['Name']." </option>";
 		}
 	echo "
     </select>
@@ -62,15 +130,21 @@ echo "
 </tbody>
 </table>
 </form>";
+		}
+	}
 } else {
 	//echopre($ppost);
+	if ($oldprocessoid>0 && $processoid!=$oldprocessoid) {
+		$qn = "DELETE * FROM ProcessosLIST WHERE ProcessoID=".$oldprocessoid." AND EspecimenID=".$especimenid;
+		@mysql_query($qn,$conn);
+	}
 	$qn = "SELECT * FROM ProcessosLIST WHERE ProcessoID=".$processoid." AND EspecimenID=".$especimenid;
 	$tem = mysql_query($qn,$conn);
 	$ntem = mysql_numrows($tem);
 	if ($ntem>0) {
 			echo "<b>O registro já estava no processo</b>";
 	} else {
-		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE, Herbaria, ".$herbariumsigla." ) (SELECT ".$processoid.", pltb.EspecimenID,1 as EXISTE, pltb.Herbaria, pltb.INPA_ID FROM Especimenes as pltb LEFT JOIN ProcessosLIST as proc USING(EspecimenID) WHERE pltb.EspecimenID=".$especimenid.")";
+		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE, Herbaria, ".$herbariumsigla." ) (SELECT ".$processoid.", pltb.EspecimenID,1 as EXISTE, pltb.Herbaria, pltb.INPA_ID FROM Especimenes as pltb WHERE pltb.EspecimenID=".$especimenid.")";
 		$inseriu = mysql_query($qz,$conn);
 		if ($inseriu) {
 			echo "<b>Inseriu o registro corretamente no processo!<br >Para visualizar regerar a tabela no Processo!<br >O registro foi marcado como existe</b>";
@@ -81,10 +155,8 @@ echo "
 	}
 	echo "<br ><input type='button' onclick='javascript: window.close();'  value='Fechar' >";
 }
-
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
-//, "<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-//"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>"
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
 );
 FazFooter($which_java,$calendar=TRUE,$footer=$menu);
 ?>

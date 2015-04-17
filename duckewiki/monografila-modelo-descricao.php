@@ -228,14 +228,14 @@ $('#filtralista').keyup(function(){
              var tipo = ui.draggable.attr(\"data-tipo\");
             //VERIFICA SE A VARIAVEL JÁ FOI ARRASTADA ANTERIORMENTE E CRIA UM ID UNICO PARA O OBJETO
              if (onde=='maingp') {
-               var ff = '.variavel '+ tempid;
+               //var ff = '.variavel '+ tempid;
                var tt = $( thisid ).find('div.variavel[data-traitid='+tempid+']').length;
                var temppid = tempid+'_'+tt;
                var gpby = '&nbsp;&nbsp;<input id=\"groupby'+temppid+'\" type=\"checkbox\"  onclick=\"javascript: groupby(\'' + temppid + '\',\''+ traitname + '\');\">AgruparPor';
                var cls = 'variavel '+tempid;
                var clss = 'level1';
              } else {
-               var ff = '.gpvariavel '+ tempid;
+               //var ff = '.gpvariavel '+ tempid;
                var tt = $( thisid ).find('div.gpvariavel[data-traitid='+tempid+']').length;
                var temppid = tempid+'_'+onde+'_'+tt;
                var gpby = '';
@@ -246,37 +246,40 @@ $('#filtralista').keyup(function(){
              if (tipo=='Quantitativo') {
                 var novoval =  '<div data-traitid=\"'+tempid+'\" class=\"'+cls+'\"  style=\"border: solid 1px gray; border-radius: 5px; background-color: '+corquant+'; padding: 3px; margin: 5px 0 5px 0; font-size: 0.8em; cursor: move\" ><span onmouseover=\"Tip(\''+ traitname +'\');\">'+traitname+'</span>&nbsp;<span onmouseover=\"Tip(\'Defina o formato para os valores\');\">[N-formato:<input  type=\"radio\"   value=\"media\"  class=\"'+clss+'numformat\" name=\"nf'+ temppid +'\">média&nbsp;<input  type=\"radio\"   value=\"range\" class=\"'+clss+'numformat\" name=\"nf'+ temppid +'\">range&nbsp;<input  type=\"radio\" value=\"min\" class=\"'+clss+'numformat\" name=\"nf'+ temppid +'\">min&nbsp;<input  type=\"radio\"   value=\"max\" class=\"'+clss+'numformat\" name=\"nf'+ temppid +'\">max]</span>&nbsp;&nbsp;<span onmouseover=\"Tip(\'Defina o formato do texto\');\">[Txt-formato:<input type=\"checkbox\" class=\"'+clss+'negrito\"><b>N</b>&nbsp;<input type=\"checkbox\" class=\"'+clss+'sublinhado\"><u>S</u>&nbsp;<input type=\"checkbox\" class=\"'+clss+'italico\"><i>I</i>]</span>&nbsp;&nbsp;<input type=\"checkbox\" class=\"'+clss+'unidade\">adicionar unidade &nbsp;&nbsp;&nbsp;<img src=\"icons/trashcan.png\" height=16 style=\"cursor: pointer\" onclick=\"javascript:removethisli(\''+temppid+'\');\" onmouseover=\"Tip(\'remove o item\');\"></div>'; 
              } else {
-               var novoval =  '<div data-traitid=\"'+tempid+'\" class=\"'+cls+'\" style=\"border: solid 1px gray; border-radius: 5px; background-color:  '+corcat+'; padding: 3px; margin: 5px 0 5px 0; font-size: 0.8em; cursor: move\" ><span onmouseover=\"Tip(\''+ traitname +'\');\">'+traitname+'</span>&nbsp;<span onmouseover=\"Tip(\'Defina o formato do texto\');\">[Txt-formato:&nbsp;<input type=\"checkbox\" class=\"'+clss+'negrito\"><b>N</b>&nbsp;<input type=\"checkbox\" class=\"'+clss+'sublinhado\"><u>S</u>&nbsp;<input type=\"checkbox\" class=\"'+clss+'italico\"><i>I</i>&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"uppercase\" name=\"cba'+ temppid +'\">CA&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"lowercase\" name=\"cba'+ temppid +'\">cb]</span>&nbsp;'+gpby+'&nbsp;&nbsp;<img src=\"icons/trashcan.png\" height=16 style=\"cursor: pointer\" onclick=\"javascript:removethisli(\''+temppid+'\');\" onmouseover=\"Tip(\'remove o item\');\"> <span class=\"grupo\" id=\"grupo_'+temppid+'\"></span></div>'; 
+               var novoval =  '<div data-traitid=\"'+tempid+'\" class=\"'+cls+'\" style=\"border: solid 1px gray; border-radius: 5px; background-color:  '+corcat+'; padding: 3px; margin: 5px 0 5px 0; font-size: 0.8em; cursor: move\" ><span onmouseover=\"Tip(\''+ traitname +'\');\">'+traitname+'</span>&nbsp;<span onmouseover=\"Tip(\'Defina o formato do texto\');\">[Txt-formato:&nbsp;<input type=\"checkbox\" class=\"'+clss+'negrito\"><b>N</b>&nbsp;<input type=\"checkbox\" class=\"'+clss+'sublinhado\"><u>S</u>&nbsp;<input type=\"checkbox\" class=\"'+clss+'italico\"><i>I</i>&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"uppercase\" name=\"cba'+ temppid +'\">CALTA&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"lowercase\" name=\"cba'+ temppid +'\">cbaixa&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"nochange\" name=\"cba'+ temppid +'\">comoEscrito]</span>&nbsp;'+gpby+'&nbsp;&nbsp;<img src=\"icons/trashcan.png\" height=16 style=\"cursor: pointer\" onclick=\"javascript:removethisli(\''+temppid+'\');\" onmouseover=\"Tip(\'remove o item\');\"> <span class=\"grupo\" id=\"grupo_'+temppid+'\"></span></div>'; 
                }
                var idd = '<li class=\"'+clss+'\" id=\"'+temppid+'\" ></li>';
             } else {
             if (tempid=='textbox' && tempid!='textsymbol') {
               if (onde=='maingp') {
-                  var tt = $( thisid ).find('div.variavel textoli').length;
+                  var tt = $( thisid ).find('div.variavel[data-textid='+tempid+']').length;
                   temppid = 'txt_'+tt;
                   cls = 'variavel textoli';
                   clss = 'level1';
               } else {
-                  var tt = $( thisid ).find('div.gpvariavel subtextoli').length;
+                  var tt = $( thisid ).find('div.gpvariavel[data-textid='+tempid+']').length;
+                  //var tt = $( thisid ).find('div.gpvariavel subtextoli').length;
                   temppid = 'txt_'+'_'+onde+'_'+tt;
                   cls = 'gpvariavel subtextoli';
                   clss = 'level2';
              }
-              var novoval =  '<div class=\"'+cls+'\" style=\"padding: 5px; margin: 5px 0 5px 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; background-color:  '+cortxt+'; border: #cccccc solid thin; cursor: move;\"  onmouseover=\"Tip(\'Caixa para texto livre\');\"><img height=\"16\" src=\"icons/BrasilFlagicon.png\">&nbsp;<input class=\"'+clss+'port\" size=\"60%\" type=\"text\"><br /><img height=\"16\" src=\"icons/usFlagicon.png\">&nbsp;<input class=\"'+clss+'engl\" size=\"60%\" type=\"text\">&nbsp;<span onmouseover=\"Tip(\'Defina o formato do texto\');\">[Txt-formato:&nbsp;<input type=\"checkbox\" class=\"'+clss+'negrito\"><b>N</b>&nbsp;<input type=\"checkbox\" class=\"'+clss+'sublinhado\"><u>S</u>&nbsp;<input type=\"checkbox\" class=\"'+clss+'italico\"><i>I</i>&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"uppercase\" name=\"cba'+ temppid +'\">CA&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"lowercase\" name=\"cba'+ temppid +'\">cb]</span>&nbsp;&nbsp;&nbsp;<img src=\"icons/trashcan.png\" height=16 style=\"cursor: pointer\" onclick=\"javascript:removethisli(\''+temppid+'\');\" onmouseover=\"Tip(\'remove o item\');\"></div>';
+              var novoval =  '<div data-textid=\"'+tempid+'\"  class=\"'+cls+'\" style=\"padding: 5px; margin: 5px 0 5px 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; background-color:  '+cortxt+'; border: #cccccc solid thin; cursor: move;\"  onmouseover=\"Tip(\'Caixa para texto livre\');\"><img height=\"16\" src=\"icons/BrasilFlagicon.png\">&nbsp;<input class=\"'+clss+'port\" size=\"60%\" type=\"text\"><br /><img height=\"16\" src=\"icons/usFlagicon.png\">&nbsp;<input class=\"'+clss+'engl\" size=\"60%\" type=\"text\">&nbsp;<span onmouseover=\"Tip(\'Defina o formato do texto\');\">[Txt-formato:&nbsp;<input type=\"checkbox\" class=\"'+clss+'negrito\"><b>N</b>&nbsp;<input type=\"checkbox\" class=\"'+clss+'sublinhado\"><u>S</u>&nbsp;<input type=\"checkbox\" class=\"'+clss+'italico\"><i>I</i>&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"uppercase\" name=\"cba'+ temppid +'\">CALTA&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"lowercase\" name=\"cba'+ temppid +'\">cbaixa&nbsp;<input type=\"radio\" class=\"'+clss+'lettercase\" value=\"nochange\" name=\"cba'+ temppid +'\">comoEscrito]</span>&nbsp;&nbsp;&nbsp;<img src=\"icons/trashcan.png\" height=16 style=\"cursor: pointer\" onclick=\"javascript:removethisli(\''+temppid+'\');\" onmouseover=\"Tip(\'remove o item\');\"></div>';
                   var idd = '<li class=\"'+clss+'\"  id=\"'+temppid+'\" ></li>';
 } else {
               if (onde=='maingp') {
-                  var tt = $( thisid ).find('div.variavel simbololi').length;
+                  //var tt = $( thisid ).find('div.variavel simbololi').length;
+                  var tt = $( thisid ).find('div.variavel[data-symbolid='+tempid+']').length;
                   temppid = 'symb_'+tt;
                   cls = 'variavel simbololi';
                   clss = 'level1';
               } else {
-                  var tt = $( thisid ).find('div.gpvariavel subsimbololi').length;
+                  var tt = $( thisid ).find('div.variavel[data-symbolid='+tempid+']').length;
+                  //var tt = $( thisid ).find('div.gpvariavel subsimbololi').length;
                   temppid = 'symb_'+'_'+onde+'_'+tt;
                   cls = 'gpvariavel subsimbololi';
                   clss = 'level2';
              }
-             var novoval =  '<div class=\"'+cls+'\" style=\"padding: 5px; margin: 5px 0 5px 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; background-color:  '+corsym+'; border: #cccccc solid thin; cursor: move;\"  onmouseover=\"Tip(\'Defina símbolo\');\"><span>Qual símbolo?&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=1 name=\"symb_'+ temppid +'\">Tipo1&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=2 name=\"symb_'+ temppid +'\">Tipo2&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=3 name=\"symb_'+ temppid +'\">Tipo3&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=4 name=\"symb_'+ temppid +'\">Tipo4&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=5 name=\"symb_'+ temppid +'\">Tipo5</span>&nbsp;&nbsp;&nbsp;&nbsp;<img src=\"icons/trashcan.png\" height=16 style=\"cursor: pointer\" onclick=\"javascript:removethisli(\''+temppid+'\');\" onmouseover=\"Tip(\'remove o item\');\"></div>';
+             var novoval =  '<div data-symbolid=\"'+tempid+'\" class=\"'+cls+'\" style=\"padding: 5px; margin: 5px 0 5px 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; background-color:  '+corsym+'; border: #cccccc solid thin; cursor: move;\"  onmouseover=\"Tip(\'Defina símbolo\');\"><span>Qual símbolo?&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=1 name=\"symb_'+ temppid +'\">Tipo1&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=2 name=\"symb_'+ temppid +'\">Tipo2&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=3 name=\"symb_'+ temppid +'\">Tipo3&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=4 name=\"symb_'+ temppid +'\">Tipo4&nbsp;<input type=\"radio\" class=\"'+clss+'simbolo\" value=5 name=\"symb_'+ temppid +'\">Tipo5</span>&nbsp;&nbsp;&nbsp;&nbsp;<img src=\"icons/trashcan.png\" height=16 style=\"cursor: pointer\" onclick=\"javascript:removethisli(\''+temppid+'\');\" onmouseover=\"Tip(\'remove o item\');\"></div>';
             var idd = '<li class=\"'+clss+'\"  id=\"'+temppid+'\" ></li>';
             }
         }
@@ -573,11 +576,17 @@ echo "
 </ul>
 <span class='subs'>Definição de simbolos</span><br />
 <span style='font-size: 0.8em;'>
-<input type='text' size=5 value='".$simbpadrao1."' id='simbolo1' value=''>&nbsp;Tipo1&nbsp;
-<input type='text' size=5 value='".$simbpadrao2."' id='simbolo2' value=''>&nbsp;Tipo2&nbsp;
-<input type='text' size=5 value='".$simbpadrao3."' id='simbolo3' value=''>&nbsp;Tipo3&nbsp;
-<input type='text' size=5 value='".$simbpadrao4."' id='simbolo4' value=''>&nbsp;Tipo4&nbsp;
-<input type='text' size=5 value='".$simbpadrao5."' id='simbolo5' value=''>&nbsp;Tipo5&nbsp;
+<table>
+<tr>
+  <td>Tipo1&nbsp;<input type='text' size=8 value='".$simbpadrao1."' id='simbolo1' value=''></td>
+  <td>Tipo2&nbsp;<input type='text' size=8 value='".$simbpadrao2."' id='simbolo2' value=''></td>
+  <td>Tipo3&nbsp;<input type='text' size=8 value='".$simbpadrao3."' id='simbolo3' value=''></td>
+</tr>
+<tr>
+  <td>Tipo4&nbsp;<input type='text' size=8 value='".$simbpadrao4."' id='simbolo4' value=''></td>
+  <td colspan='2'>Tipo5&nbsp;<input type='text' size=8 value='".$simbpadrao5."' id='simbolo5' value=''></td>
+</tr>
+</table>
 </span>
 </div>
 </div>

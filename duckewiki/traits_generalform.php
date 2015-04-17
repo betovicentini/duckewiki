@@ -333,6 +333,121 @@ if ($row['TraitTipo']=='Variavel|Texto') {
       </td>
     </tr>";
 }
+
+//se taxonomia
+if ($row['TraitTipo']=='Variavel|Taxonomy') {
+	echo "
+    ";
+	$string = 'traitvar_'.$row['TraitID'];
+	if (!isset($_POST[$string])) {
+		$val = eval('return $'. $string . ';');
+	} else {
+		$val= $_POST[$string];
+	}
+	if (!empty($val)) {
+		$specieslist = strip_tags(describetaxacomposition($val,$conn,$includeheadings=TRUE));
+	}
+	//tem um problema aqui quando apaga os dados
+	echo "
+    <tr class='cl'>
+      <td class='cl'>
+        <table>
+        <tr>
+        <td>
+        <input type='hidden' name='traitvar_".$row['TraitID']."' value='".$val."' />
+          <textarea cols='60' rows='2' name='specieslist' readonly='readonly'>".$specieslist."</textarea>
+          </td>
+         <td align='left'>
+          <input type='button' value='".GetLangVar('nameselect')."' class='bsubmit' ";
+          $myurl ="selectspeciespopup.php?formname=varform2&amp;elementname=traitvar_".$row['TraitID']."&amp;destlistlist=".$val;
+          echo " onclick = \"javascript:small_window('$myurl',500,400,'Seleciona Taxa');\" />
+        </td>
+        </tr>
+        </table>
+      </td>
+    </tr>";
+}
+
+//se taxonomia
+if ($row['TraitTipo']=='Variavel|LinkEspecimenes') {
+	echo "
+    ";
+	$string = 'traitvar_'.$row['TraitID'];
+	if (!isset($_POST[$string])) {
+		$val = eval('return $'. $string . ';');
+	} else {
+		$val= $_POST[$string];
+	}
+	$specvar2 = "specrestxt".$row['TraitID'];
+	if (!empty($val)) {
+		$qsp = "SELECT CONCAT(pess.Abreviacao,' ',spec.Number,'    -  ', if (gettaxonname(spec.DetID,1,0) IS NULL,'',gettaxonname(spec.DetID,1,0))) as nome, spec.EspecimenID, CONCAT(spec.Ano,'-',spec.Mes,'-',spec.Day) as datacol  FROM Especimenes as spec JOIN Pessoas as pess ON spec.ColetorID=pess.PessoaID WHERE spec.EspecimenID=".$val;
+		$rsp = mysql_query($qsp,$conn);
+		$rwsp = mysql_fetch_assoc($rsp);
+		$$specvar2  = $rwsp['nome'];
+	}
+	//tem um problema aqui quando apaga os dados
+	echo "
+    <tr class='cl'>
+      <td class='cl'>
+        <table>
+        <tr>
+        <td>";
+        $idres = "specres".$row['TraitID'];
+        $var2 = $$specvar2;
+        autosuggestfieldval5('search-specimen.php',$specvar2,$var2,$idres,$string,$val,true,60,'Selecione por COLETOR e/ou NUMERO');
+echo "
+          </td>
+        </tr>
+        </table>
+      </td>
+    </tr>";
+
+}
+//SE PESSOAS
+if ($row['TraitTipo']=='Variavel|Pessoa') {
+	echo "
+    ";
+	$string = 'traitvar_'.$row['TraitID'];
+	if (!isset($_POST[$string])) {
+		$val = eval('return $'. $string . ';');
+	} else {
+		$val= $_POST[$string];
+	}
+	//echo $string."  ".$val;
+	if (!empty($val)) {
+		$addcolarr = explode(";",$val);
+		$addcoltxt = '';
+		$j=1;
+		foreach ($addcolarr as $kk => $vl) {
+			$qq = "SELECT * FROM Pessoas WHERE PessoaID='".$vl."'";
+			$res = mysql_query($qq,$conn);
+			$rrw = mysql_fetch_assoc($res);
+			if ($j==1) {
+				$addcoltxt = $rrw['Abreviacao'];
+			} else {
+				$addcoltxt = $addcoltxt."; ".$rrw['Abreviacao'];
+			}
+			$j++;
+		}
+	}
+	//tem um problema aqui quando apaga os dados
+	echo "
+    <tr class='cl'>
+      <td class='cl'>
+        <table>
+        <tr>
+        <td>
+        <input type='hidden' id='traitvar_".$row['TraitID']."'  name='traitvar_".$row['TraitID']."' value='".$val."' />
+          <textarea cols='60' rows='2' name='addcoltxt".$row['TraitID']."' readonly='readonly'>".$addcoltxt."  </textarea>
+          </td>
+             <td><input type=button value=\"Selecione\" class='bsubmit'  ";
+		$myurl ="addcollpopup.php?valuevar=traitvar_".$row['TraitID']."&valuetxt=addcoltxt".$row['TraitID']."&getaddcollids=$val&formname=varform2"; 
+		echo " onclick = \"javascript:small_window('$myurl',800,500,'Seleciona Pessoas');\" /></td>
+        </tr>
+        </table>
+      </td>
+    </tr>";
+}
 echo "
   </table>
  </td>

@@ -137,9 +137,9 @@ echo "
 					$val = str_replace($symb, "", $val);
 					$val = str_replace(" ", "", $val);
 					if ($j!==($nn-1)) {
-						$tt = $tt.$val." TEXT, ";
+						$tt = $tt."`".$val."` TEXT, ";
 					} else {
-						$tt = $tt.$val." TEXT)";
+						$tt = $tt."`".$val."` TEXT)";
 					}
 					$j++;
 					$hh[] = $val;
@@ -156,27 +156,30 @@ echo "
 				foreach ($hh as $kk => $val) {
 					$val = trim($val);
 					if ($j!==($nn-1)) {
-						$spinsert = $spinsert.$val.", ";
+						$spinsert = $spinsert."`".$val."`, ";
 					} else {
-						$spinsert = $spinsert.$val.")";
+						$spinsert = $spinsert."`".$val."`)";
 					}
 					$j++;
 				}
 				
 				$j=0;
+				$nt = count($data);
 				$spinsert = $spinsert." VALUES (";
 				foreach ($data as $key => $val) {
 					$val = trim($val);
 					if ($val=='NA') { $val =''; }
 					if ($j!==($nn-1)) {
-						$spinsert = $spinsert."'".$val."', ";
+						$spinsert = $spinsert."\"".$val."\", ";
 					} else {
-						$spinsert = $spinsert."'".$val."')";
+						$spinsert = $spinsert."\"".$val."\")";
 					}
-					$j++;			
+					$j++;
 				}
-				mysql_query($spinsert,$conn);
-				//echo $spinsert."<br />";
+				$rii = mysql_query($spinsert,$conn);
+				if (!$rii) {
+					echo $spinsert."<br />";
+				}
 			}
 			$i++;
 			echo '&nbsp;';

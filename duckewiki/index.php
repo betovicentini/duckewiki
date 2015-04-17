@@ -42,6 +42,7 @@ $which_java = array(
 //FAZ CABECALHO
 FazHeader($title,$body,$which_css,$which_java,$menu);
 echo "<script type='text/javascript' src='javascript/wz_tooltip.js'></script>";
+$_SESSION['introtext'] = $introtext;
 omenudeicons($quais, $vertical=FALSE, $position='right' , $iconwidth='30', $iconheight='30' );
 
 //SE ESTIVE BLOQUEADO MOSTRA MENSAGEM
@@ -57,18 +58,15 @@ if ($blockacess>0) {
 <p align='center' style='margin-left: 50px; color: red; font-size: 1.5em; width: 50%;' >EM MANUTENÇÃO DE ATUALIZAÇÃO! POR FAVOR, VOLTE MAIS TARDE!</p>
 <br>
 ";
-} else {
+} 
+else {
 	echo "
-<div style='padding: 100px; font-family:\"Verdana\", Arial, sans-serif;  font-size: 1.2em; font-color: #800000;'>
-".$introtext."
-<br />
-<br />
-<div style='cursor: pointer; margin-left: 35%; width: 80%' onclick = \"javascript: window.open('".$location."','_self' );\" onmouseover = \"javascript: Tip('Entrar na base de plantas') ;\" >
+<div style=\"cursor: pointer;  align: right; vertical-align:top; background-color: white; position: absolute; top: 200px; right:5px;\"   onclick = \"javascript: window.open('".$location."','_self' );\" onmouseover = \"javascript: Tip('Entrar na base de plantas') ;\" >
 <img src='icons/database.png' height='60px' />
-<span style='font-family:\"Verdana\", Arial, sans-serif;  font-size: 1em; font-color: #800000;'>
+<br  />
+<span style='font-family:\"Verdana\", Arial, sans-serif;  font-size: 0.8em; font-color: #800000;'>
 ENTRAR NA BASE
 </span>
-</div>
 </div>";
 }
 $stilo =" cursor: pointer;";

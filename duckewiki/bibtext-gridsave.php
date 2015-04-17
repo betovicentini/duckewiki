@@ -225,7 +225,9 @@ function custom_filter(\$filter_by){
 \$grid ->event->attach(\"beforeFilter\",\"custom_filter\");
 \$grid ->dynamic_loading(100);
 \$grid->event->attach(\"beforeUpdate\",\"myUpdate\");
-\$grid ->render_sql(\"SELECT  0,'' as Edit,prf.* FROM BiblioRefs AS prf\",\"BibID\",\"".$hdd."\");
+\$grid ->render_sql(\"SELECT checkbib(
+'".$bibids."', ';', BibID
+) as Tag,'' as Edit,prf.* FROM BiblioRefs AS prf\",\"BibID\",\"".$hdd."\");
 ?>";
 //\$grid ->render_table(\"".$tbname."\",\"BiblioRefs\",\"".$hdd."\");
 //\$grid->set_options(\"Fert\",".$options.");

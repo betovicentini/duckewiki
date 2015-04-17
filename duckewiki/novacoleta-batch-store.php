@@ -142,7 +142,7 @@ for ($i=$colnumde;$i<=$colnumate;$i++) {   //para cada coleta da lista, fazer o 
 	if (!empty($_SESSION[$elementid]) && $erro==0) {
 			$traitarray = unserialize($_SESSION[$elementid]);
 			if (count($traitarray)>0) {
-				$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$conn);
+				$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$bibtex_id,$conn);
 				if (!$resultado) {
 					$er++;
 				} else {

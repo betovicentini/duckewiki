@@ -39,7 +39,10 @@ $which_css = array(
 $which_java = array();
 $title = 'Formulários de variáveis';
 $body = '';
-if (!isset($final)) {
+if ($final>0 && $final!=2 && (!isset($formid) || ($formid+0)==0)) {
+echo "<br /><span width='80%' style='font-size: 1em; color: red; font-weight: bold; border: thin gray; background-color: yellow; padding: 10px;' >Você precisa selecionar um formulário para duplicar</span><br /><br />";
+}
+if (!isset($final) || ((!isset($formid) || ($formid+0)==0) && $final!=2)) {
 FazHeader($title,$body,$which_css,$which_java,$menu);
 echo "
 <br />
@@ -84,13 +87,14 @@ echo "
   </td>
   <td>
   <input type='hidden' value='' name='final' /> 
-  <input style='cursor: pointer'  type='submit' value='".GetLangVar('nameeditar')."' class='bsubmit' onclick=\"javascript:document.formform.final.value=1\" /> </td>
-  <td><input style='cursor: pointer' type=submit value='".GetLangVar('namenovo')."' class='bblue' onclick=\"javascript:document.formform.final.value=2\" /> </td>
-  <td><input  style='cursor: pointer' type=submit value='Organizar variáveis' class='borange' onclick=\"javascript:document.formform.final.value=3\" /> </td>
+  <input type='submit' value='".GetLangVar('nameeditar')."' style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   onclick=\"javascript:document.formform.final.value=1\" /> </td>
+  <td><input  type=submit value='".GetLangVar('namenovo')."' style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  onclick=\"javascript:document.formform.final.value=2\" /> </td>
+  <td><input  type=submit value='Organizar variáveis' style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  onclick=\"javascript:document.formform.final.value=3\" /> </td>
 </tr>
 <tr>
 <td colspan='2' align='center'><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Apagar formulários'  onclick = \"javascript:small_window('formularios-delete.php?&ispopup=1',800,400,'Apagar formulários');\" ></td>
-<td colspan='2' align='center'><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Unir formulários'  onclick = \"javascript:small_window('formularios-merge.php',800,600,'Unir formulários');\" ></td>
+<td><input  type='submit'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Duplicar formulário'  onclick=\"javascript:document.formform.final.value=4\"></td>
+<td colspan='1' align='center'><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Unir formulários'  onclick = \"javascript:small_window('formularios-merge.php',800,600,'Unir formulários');\" ></td>
 
 </tr>
 </tbody>
@@ -107,7 +111,11 @@ echo "
  if ($final==3) {
  	header("location: formularios-batchedit.php?ispopup=$ispopup&formid=".$formid);
  }
+ if ($final==4) {
+ 	header("location: formularios-duplicate.php?formid=".$formid);
+ }
 }
+
 $which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 

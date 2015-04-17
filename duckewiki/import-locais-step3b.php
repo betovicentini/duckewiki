@@ -54,10 +54,10 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 $clnl = $tbprefix."CountryID";
 $clnl2 = $tbprefix."ProvinceID";
 $clnl3 = $tbprefix."MunicipioID";
-
+//echopre($ppost);
 if (!empty($municipio) && !empty($provincia) && !isset($municipiosdone)) 
 {
-		$colcol = $municipio;
+			$colcol = $municipio;
 			$clnl3 = $tbprefix."MunicipioID";
 			if (!isset($municipiodone)) {
 				$qq = "ALTER TABLE ".$tbname." ADD COLUMN ".$clnl3." INT(10) 	DEFAULT 0";

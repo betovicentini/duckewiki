@@ -26,7 +26,11 @@ $gget = cleangetpost($_GET,$conn);
 if ($monografiaid>0) {
     $nn = json_decode($_GET['modelo']);
     $nvars = count($nn-> items);
-	$arrayofvalues = array('ModeloDescricoes' => $_GET['modelo'], 'ModeloSimbolos' => $_GET['simbolos']);
+    if ($listaespecs>0) {
+      $arrayofvalues = array('ModeloListaEspecimenes' => $_GET['modelo'], 'ModeloSimbolosEspecimenes' => $_GET['simbolos']);
+    } else {
+		$arrayofvalues = array('ModeloDescricoes' => $_GET['modelo'], 'ModeloSimbolos' => $_GET['simbolos']);
+	}
 	$upp = CompareOldWithNewValues('Monografias','MonografiaID',$monografiaid,$arrayofvalues,$conn);
 	if (!empty($upp) && $upp>0) { 
 		$updated = UpdateTable($monografiaid,$arrayofvalues,'MonografiaID','Monografias',$conn);

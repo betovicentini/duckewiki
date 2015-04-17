@@ -29,13 +29,9 @@ $gget = cleangetpost($_GET,$conn);
 $menu=FALSE;
 $which_css = array(
 "<link rel='stylesheet' type='text/css' href='css/geral.css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
 "<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
 );
 $title = 'InfraEspecie';
@@ -210,7 +206,7 @@ if ($final==1) {
 				}
 			}
 		} 
-		else { //insert new family
+		else {
 			$qq = "SELECT * FROM Tax_InfraEspecies WHERE LOWER(InfraEspecie) LIKE '".strtolower($spnome)."' AND EspecieID='".$speciesid."'";
 			$qu = mysql_query($qq,$conn);
 			$nold = mysql_numrows($qu);
@@ -249,6 +245,7 @@ echo "
 			$infraspid = $newrec;
 		}
 		if ($infraspid>0) {
+			TaxonomySimpleInsert($infraspid,"infspid",$conn);
 			$qq = "SELECT Genero,Especie,InfraEspecie,InfraEspecieNivel FROM Tax_InfraEspecies JOIN Tax_Especies USING(EspecieID) JOIN Tax_Generos USING(GeneroID) WHERE InfraEspecieID='".$infraspid."'";
 			$qu = mysql_query($qq,$conn);
 			$rr = mysql_fetch_assoc($qu);
@@ -664,7 +661,7 @@ echo "
       <tr>
         <td ><span id='bibtex_txt'>".$bibtex_txt."</span><input type='hidden' id='bibtex_id' name='bibtex_id'  value='".$bibtex_id."'></td>
         <td><input type=button style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  value='Bibliografia'  onmouseover=\"Tip('Escolha a referência de publicação do nome');\" ";
-		$myurl = "bibtext-gridsave.php?bibtex_txt=bibtex_txt&bibtex_id=bibtex_id";
+		$myurl = "bibtext-gridsave.php?bibtex_txt=bibtex_txt&bibtex_id=bibtex_id&bibids=".$bibtex_id;
 		echo " onclick = \"javascript:small_window('".$myurl."',800,600,'Referências Bibliográficas');\" /></td>
       </tr>
     </table>

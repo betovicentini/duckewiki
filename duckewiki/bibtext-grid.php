@@ -27,6 +27,7 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+//echopre($ppost);
 //PEGA OS VALORES PARA MOSTRAR O GRID
 if (count($ppost)==0 && count($gget)==0 && isset($_SESSION['arrtopass'])) {
 	$aarr = unserialize($_SESSION['arrtopass']);
@@ -118,7 +119,7 @@ echo"<table cellpadding='7'>";
 if (!empty($bibtex_txt)) {
 echo "<tr>
   <td>
-    <span style='font-size: 1em; color: red;'>Selecionando referências</span><input type='button' style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\" 
+    <span style='font-size: 1em; color: red;'>Selecionando referências</span>&nbsp;&nbsp;<input type='button' style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\" 
  onmouseover=\"Tip('Enviar referencias selecionadas');\" onclick = \"javascript:sendbibtextref('".$bibtex_txt."','".$bibtex_id."');\"  value='Enviar selecionados' />
   </td>
 </tr>";

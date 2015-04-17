@@ -92,7 +92,7 @@ if ($ispopup==1) {
 	
 
 
-$title = 'Botanica Amazônica - Inicio';
+$title = $sitetitle;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' >",
 "<link rel=\"stylesheet\" type=\"text/css\" href=\"dhtmlxconnector/dhtmlxTabbar/dhtmlxtabbar.css\">",

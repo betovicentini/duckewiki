@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*******************************************************************************
 * FPDF                                                                         *
 *                                                                              *
@@ -992,6 +992,8 @@ function SetXY($x, $y)
 
 function Output($name='', $dest='')
 {
+	ob_get_clean(); 
+	//ob_clean(); 
 	//Output PDF to some destination
 	if($this->state<3)
 		$this->Close();
@@ -1011,13 +1013,15 @@ function Output($name='', $dest='')
 		case 'I':
 			//Send to standard output
 			if(ob_get_length())
-				$this->Error('AQUI0 Some data has already been output, can\'t send PDF file');
+				$this->Error('AQUI 01 - Some data has already been output, can\'t send PDF file');
 			if(php_sapi_name()!='cli')
 			{
 				//We send to a browser
 				//var_dump(headers_list());
+				//var_dump(headers_list());
+				//header_remove(); 
 				if(headers_sent())
-					$this->Error(' AQUI1 Some data has already been output, can\'t send PDF file');
+					$this->Error(' AQUI 02 - Some data has already been output, can\'t send PDF file');
 				header('Content-Type: application/pdf');
 				header('Content-Length: '.strlen($this->buffer));
 				header('Content-Disposition: inline; filename="'.$name.'"');
@@ -1030,10 +1034,10 @@ function Output($name='', $dest='')
 		case 'D':
 			//Download file
 			if(ob_get_length())
-				$this->Error('AQUI2  Some data has already been output, can\'t send PDF file');
+				$this->Error('AQUI3  Some data has already been output, can\'t send PDF file');
 			header('Content-Type: application/x-download');
 			if(headers_sent())
-				$this->Error('AQUI3 Some data has already been output, can\'t send PDF file');
+				$this->Error('AQUI4 Some data has already been output, can\'t send PDF file');
 			header('Content-Length: '.strlen($this->buffer));
 			header('Content-Disposition: attachment; filename="'.$name.'"');
 			header('Cache-Control: private, max-age=0, must-revalidate');

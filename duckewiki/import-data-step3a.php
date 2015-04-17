@@ -50,7 +50,7 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 $fields = unserialize($_SESSION['fieldsign']);
 if (!isset($$newnumericfields)) {
 	$datafields = array('ANGULO','LATITUDE','LONGITUDE','X','Y','DIST','LADO','INPA_NUM','REFCOLNUM','REFHERBNUM'); 
-	$newwikifields = array('Angulo','Latitude','Longitude','X','Y','Distancia','LADO','INPA_ID','	RefColnum','RefHerbNum'); 
+	$newwikifields = array('Angulo','Latitude','Longitude','X','Y','Distancia','LADO','INPA_ID','RefColnum','RefHerbNum'); 
 	$fields = unserialize($_SESSION['fieldsign']);
 	$newdatafields = array();
 	foreach ($datafields as $kk => $vv) {

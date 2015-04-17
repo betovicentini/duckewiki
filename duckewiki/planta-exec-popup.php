@@ -430,7 +430,7 @@ echo "
    		(empty($_SESSION['editando']) && !empty($_SESSION['variation']))) && $erro==0) {
    		$traitarray = unserialize($_SESSION['variation']);
    		if (count($traitarray)>0) {
-			$resultado = updatetraits($traitarray,$plantaid,'PlantaID',$conn);
+			$resultado = updatetraits($traitarray,$plantaid,'PlantaID',$bibtex_id,$conn);
 			if (!$resultado) {
 				$erro++;
 				echo "

@@ -34,27 +34,28 @@ if (!empty($_GET['detset'])) {
 }
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
+
 //echopre($ppost);
+
+
 //CABECALHO
 if ($ispopup==1) {
 	$menu = FALSE;
 } else {
 	$menu = TRUE;
 }
+$menu = FALSE;
+
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' >"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
 "<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
 );
 //PARA IMAGE BYSPECIES
 if (isset($getplspid) && !empty($getplspid)) {
-	//echopre($_GET);
+	echopre($_GET);
 	//GET PLANT AND SPECIES ID
 	if ($getplspid!='again') {
 echo 
@@ -100,7 +101,6 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 
 //SE SALVANDO
 if ($final=='1') {
-
 	//incomple sem os seguintes campos
 	if (empty($nomesciid) || ($determinadorid+0)==0 || empty($datadet) ) {
 		echo "
@@ -145,6 +145,7 @@ if ($final=='1') {
 
 		$arvals = array_values($detarray);
 		if ($saveit && ($especimenid>0 || $plantaid>0)) {
+				//echo "ESTOU ENTRANDO AQUI 1";
 				if (count($arvals)>0) {
 					$arrayofvalues = $detarray;
 					$detchanged =0;
@@ -160,45 +161,212 @@ if ($final=='1') {
 						$detchanged++;
 					}
 					if ($detchanged>0) { //then arrays are not identical
+						//echo "ESTOU ENTRANDO AQUI 2";
 						$newdetid = InsertIntoTable($arrayofvalues,'DetID','Identidade',$conn);
 						if (!$newdetid) {
 							$er++;
 						} else {
+						//echo "ESTOU ENTRANDO AQUI 2A";
 							$arrayofvv = array('DetID' => $newdetid);
+							//SE FOR UMA AMOSTRA PEGA PLANTA PARA ATUALIZAR SE HOUVER
+							if ($especimenid>0 && ($plantaid+0)==0) {
+									$qs1 = "SELECT PlantaID FROM Especimenes WHERE EspecimenID=".$especimenid;
+									$rs1 = mysql_query($qs1,$conn);
+									$nrs1 = mysql_numrows($rs1);
+									if ($nrs1>0) {
+										$rsw = mysql_fetch_assoc($rs1);
+										$plantaid = $rsw['PlantaID'];
+									}
+							}		
+							//PEGA OUTRAS AMOSTRAS TAMBÉM SE HOUVER (TODAS ASSOCIADAS À PLANTA)
 							if ($plantaid>0) {
+									$qs2 = "SELECT GROUP_CONCAT(EspecimenID SEPARATOR ';') AS amostras FROM Especimenes WHERE PlantaID=".$plantaid;
+									//echo $qs2."<br />";
+									$rs2 = mysql_query($qs2,$conn);
+									$nrs2 = mysql_numrows($rs2);
+									if ($nrs2>0) {
+										$rsw = mysql_fetch_assoc($rs2);
+										if (!empty($rsw['amostras'])) {
+											$especimenesids = explode(";",$rsw['amostras']);
+										} else {
+											$especimenesids = array();
+										}
+									} else {
+										$especimenesids = array();
+									}
+
+								//ATUALIZA IDENTIFICACAO DA PLANTA
 								CreateorUpdateTableofChanges($plantaid,'PlantaID','Plantas',$conn);
 								$newupdate = UpdateTable($plantaid,$arrayofvv,'PlantaID','Plantas',$conn);
-								if ($updatechecklist==1) {
+									if ($updatechecklist==1) {
 									$qq = " DELETE FROM checklist_pllist WHERE PlantaID='".$plantaid."'";
 									mysql_query($qq,$conn);
-									//$sql = "INSERT INTO checklist_pllist (SELECT  pltb.PlantaID,  pltb.DetID, 'edit-icon.png' AS EDIT, plantatag(pltb.PlantaID) as TAGtxt, STRIP_NON_DIGIT(pltb.PlantaTag) as TAG, famtb.Familia as FAMILIA, IF(iddet.InfraEspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie,' ',infsptb.InfraEspecie),IF(iddet.EspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie),IF(iddet.GeneroID>0,gentb.Genero,famtb.Familia))) as NOME, acentosPorHTML(IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS,  acentosPorHTML(IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO,  acentosPorHTML(IF(pltb.GPSPointID>0,munigps.Municipio,IF(pltb.GazetteerID>0,muni.Municipio,' '))) as MUNICIPIO,  acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.PathName,IF(pltb.GazetteerID>0,gaz.PathName,' '))) as LOCAL, acentosPorHTML(IF(pltb.GPSPointID>0,CONCAT(gazgps.GazetteerTIPOtxt,' ',gazgps.Gazetteer),IF(pltb.GazetteerID>0,CONCAT(gaz.GazetteerTIPOtxt,' ',gaz.Gazetteer),' '))) as LOCALSIMPLES, ";
-									$sql = "INSERT INTO checklist_pllist (SELECT  pltb.PlantaID,  pltb.DetID, 'edit-icon.png' AS EDIT, plantatag(pltb.PlantaID) as TAGtxt, STRIP_NON_DIGIT(pltb.PlantaTag) as TAG, famtb.Familia as FAMILIA, IF(iddet.InfraEspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie,' ',infsptb.InfraEspecie),IF(iddet.EspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie),IF(iddet.GeneroID>0,gentb.Genero,famtb.Familia))) as NOME, acentosPorHTML(IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS,  acentosPorHTML(IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO,  acentosPorHTML(IF(pltb.GPSPointID>0,munigps.Municipio,IF(pltb.GazetteerID>0,muni.Municipio,' '))) as MUNICIPIO,  acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.PathName,IF(pltb.GazetteerID>0,gaz.PathName,' '))) as LOCAL, acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.Gazetteer,IF(pltb.GazetteerID>0,gaz.Gazetteer,' '))) as LOCALSIMPLES, ";
-									if ($daptraitid>0) { $sql .= " (traitvalueplantas(".$daptraitid.", pltb.PlantaID, 'mm', 0, 1)+0) AS DAPmm,"; }
-									if ($alturatraitid>0) { $sql .= " (traitvalueplantas(".$alturatraitid.", pltb.PlantaID, 'm', 0, 1))+0 AS ALTURA,"; }
-									if ($habitotraitid>0) { $sql .= " acentosPorHTML(traitvalueplantas(".$habitotraitid.", pltb.PlantaID, '', 0, 0)) AS HABITO,";}
-									$sql .= " 'mapping.png' AS MAP, IF((gaz.DimX+gaz.DimY)>0,pltb.GazetteerID,'') AS PLOT, checkplantaspecimens(pltb.PlantaID) AS ESPECIMENES, '' as OBS, IF(pltb.HabitatID>0,'environment_icon.png','') as HABT, IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ, acentosPorHTML(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) AS PROJETOstr, if (checkimgs(0, pltb.PlantaID)>0,'camera.png','') as IMG, traitvalueplantas(".$duplicatesTraitID.", pltb.PlantaID, '', 0, 0) as DUPS FROM Plantas as pltb LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID  LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID  LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID  LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID   LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID  LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID   LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID   LEFT JOIN Province as provgaz ON muni.ProvinceID=provgaz.ProvinceID   LEFT JOIN Country  as countrygaz ON provgaz.CountryID=countrygaz.CountryID   LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID   LEFT JOIN Gazetteer as gazgps ON gpspt.GazetteerID=gazgps.GazetteerID   LEFT JOIN Municipio as munigps ON gazgps.MunicipioID=munigps.MunicipioID  LEFT JOIN Province as provigps ON munigps.ProvinceID=provigps.ProvinceID   LEFT JOIN Country  as countrygps ON provigps.CountryID=countrygps.CountryID WHERE pltb.PlantaID='".$plantaid."')";
+									$sql = "
+INSERT INTO checklist_pllist (
+SELECT  
+pltb.PlantaID,  
+pltb.DetID, 
+'edit-icon.png' AS EDIT, 
+plantatag(pltb.PlantaID) as TAGtxt, 
+STRIP_NON_DIGIT(pltb.PlantaTag) as TAG, 
+famtb.Familia as FAMILIA, 
+acentosPorHTML(gettaxonname(pltb.DetID,1,0)) as NOME,
+acentosPorHTML(gettaxonname(pltb.DetID,1,1)) as NOME_AUTOR,
+emorfotipo(pltb.DetID,0,0) as MORFOTIPO,
+(IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS, 
+(IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO, 
+(IF(pltb.GPSPointID>0,munigps.Municipio,IF(pltb.GazetteerID>0,muni.Municipio,' '))) as MUNICIPIO, 
+(IF(pltb.GPSPointID>0,gazgps.PathName,IF(pltb.GazetteerID>0,gaz.PathName,' '))) as LOCAL,
+(IF(pltb.GPSPointID>0,gazgps.Gazetteer,IF(pltb.GazetteerID>0,gaz.Gazetteer,' '))) as LOCALSIMPLES,
+getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, muni.MunicipioID, 0, 0, 0) as LONGITUDE,
+getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, muni.MunicipioID, 0, 0, 1) as LATITUDE,
+IF(ABS(pltb.Longitude)>0,pltb.Altitude+0,IF(pltb.GPSPointID>0,gpspt.Altitude+0,IF(ABS(gaz.Longitude)>0,gaz.Altitude+0,NULL))) as ALTITUDE,
+";
+if ($daptraitid>0) {
+	$sql .= "
+(traitvalueplantas(".$daptraitid.", pltb.PlantaID, 'mm', 0, 1)+0) AS DAPmm,";
+}
+if ($alturatraitid>0) {
+	$sql .= "
+(traitvalueplantas(".$alturatraitid.", pltb.PlantaID, 'm', 0, 1))+0 AS ALTURA,";
+
+}
+if ($habitotraitid>0) {
+	$sql .= "
+(traitvalueplantas(".$habitotraitid.", pltb.PlantaID, '', 0, 0)) AS HABITO,";
+}
+if ($statustraitid>0) {
+	$sql .= "
+traitvalueplantas(".$statustraitid.",pltb.PlantaID, '', 0,0 ) AS STATUS,";
+}
+$sql .= " 'mapping.png' AS MAP, 
+IF((gaz.DimX+gaz.DimY)>0,pltb.GazetteerID,'') AS PLOT, checkplantaspecimens(pltb.PlantaID) AS ESPECIMENES, 
+'' as OBS, 
+IF(pltb.HabitatID>0,'environment_icon.png','') as HABT,
+IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ,
+acentosPorHTML(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) AS PROJETOstr, 
+IF (checkimgs(0, pltb.PlantaID)>0,'camera.png','') as IMG, 
+traitvalueplantas(".$duplicatesTraitID.", pltb.PlantaID, '', 0, 0) as DUPS,
+checknir(0,pltb.PlantaID) as NIRSpectra,
+pltb.GazetteerID,
+pltb.GPSPointID
+FROM Plantas as pltb 
+LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID  
+LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID  
+LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID  
+LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID   
+LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID  
+LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID   
+LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID   
+LEFT JOIN Province as provgaz ON muni.ProvinceID=provgaz.ProvinceID   
+LEFT JOIN Country  as countrygaz ON provgaz.CountryID=countrygaz.CountryID
+LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID   
+LEFT JOIN Gazetteer as gazgps ON gpspt.GazetteerID=gazgps.GazetteerID   
+LEFT JOIN Municipio as munigps ON gazgps.MunicipioID=munigps.MunicipioID  
+LEFT JOIN Province as provigps ON munigps.ProvinceID=provigps.ProvinceID   
+LEFT JOIN Country  as countrygps ON provigps.CountryID=countrygps.CountryID WHERE pltb.PlantaID='".$plantaid."')";
 									mysql_query($sql,$conn);
+									//echo $sql."<br />";
+								}
+							} 
+							else {
+								if (($especimenid+0)>0) {
+									$especimenesids = array($especimenid);
+								} else {
+									$especimenesids = array();
 								}
 							}
-							if ($especimenid>0) {
+							$nspecs = count($especimenesids);
+							if ($nspecs>0) {
+								//echo "ESTOU ENTRANDO AQUI 2B";
+								foreach($especimenesids as $especimenid) {
+								//echo "<br />EspecimenID = ".$especimenid;
 								CreateorUpdateTableofChanges($especimenid,'EspecimenID','Especimenes',$conn);
 								$newupdate = UpdateTable($especimenid,$arrayofvv,'EspecimenID','Especimenes',$conn);
 								if ($updatechecklist==1) {
 									$qq = " DELETE FROM checklist_speclist WHERE EspecimenID='".$especimenid."'";
 									mysql_query($qq,$conn);
-									$sql = "INSERT INTO checklist_speclist (SELECT  pltb.GazetteerID, pltb.GPSPointID, pltb.EspecimenID,  pltb.PlantaID,  pltb.DetID, acentosPorHTML(colpessoa.Abreviacao) as COLETOR,  pltb.Number as NUMERO, if(CONCAT(pltb.Ano,'-',pltb.Mes,'-',pltb.Day)<>'0000-00-00',CONCAT(pltb.Ano,'-',pltb.Mes,'-',pltb.Day),'FALTA') as DATA, if(pltb.INPA_ID>0,pltb.INPA_ID+0,NULL) as ".$herbariumsigla.", famtb.Familia as FAMILIA, IF(iddet.InfraEspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie,' ',infsptb.InfraEspecie),IF(iddet.EspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie),IF(iddet.GeneroID>0,gentb.Genero,famtb.Familia))) as NOME, acentosPorHTML(IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS,  acentosPorHTML(IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO,  acentosPorHTML(IF(pltb.GPSPointID>0,munigps.Municipio,IF(pltb.GazetteerID>0,muni.Municipio,' '))) as MUNICIPIO,  acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.PathName,IF(pltb.GazetteerID>0,gaz.PathName,' '))) as LOCAL, acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.Gazetteer,IF(pltb.GazetteerID>0,gaz.Gazetteer,' '))) as LOCALSIMPLES, IF(ABS(pltb.Longitude)>0,pltb.Longitude+0,IF(pltb.GPSPointID>0,gpspt.Longitude+0,IF(ABS(gaz.Longitude)>0,gaz.Longitude+0,NULL))) as LONGITUDE,  IF(ABS(pltb.Longitude)>0,pltb.Latitude+0,IF(pltb.GPSPointID>0,gpspt.Latitude+0,IF(ABS(gaz.Longitude)>0,gaz.Latitude+0,NULL))) as LATITUDE,  IF(ABS(pltb.Longitude)>0,pltb.Altitude+0,IF(pltb.GPSPointID>0,gpspt.Altitude+0,IF(ABS(gaz.Longitude)>0,gaz.Altitude+0,NULL))) as ALTITUDE, 'edit-icon.png' AS EDIT, 'mapping.png' AS MAP, '' as OBS, IF(pltb.HabitatID>0,'environment_icon.png','') as HABT, if (checkimgs(pltb.EspecimenID, pltb.PlantaID)>0,'camera.png','') as IMG,"; 
-									if ($duplicatesTraitID>0) {$sql .= " traitvaluespecs(".$duplicatesTraitID.", pltb.PlantaID, pltb.EspecimenID,'', 0, 0)+0 as DUPS,";}
-									if ($daptraitid>0) { $sql .= " traitvaluespecs(".$daptraitid.", pltb.PlantaID, pltb.EspecimenID,'mm', 0, 1)+0 as DAPmm,";}
-									if ($alturatraitid>0) { $sql .= " traitvaluespecs(".$alturatraitid.", pltb.PlantaID, pltb.EspecimenID,'mm', 0, 1)+0 as ALTURA,"; }
-									if ($habitotraitid>0) { $sql .= " acentosPorHTML(traitvaluespecs(".$habitotraitid.", pltb.PlantaID, pltb.EspecimenID,'', 0, 1)) as HABITO,"; }
-									$sql .= " IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ, acentosPorHTML(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) as PROJETOstr";
-									$sql .= " FROM Especimenes as pltb LEFT JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID  LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID  LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID  LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID   LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID  LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID   LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID   LEFT JOIN Province as provgaz ON muni.ProvinceID=provgaz.ProvinceID   LEFT JOIN Country  as countrygaz ON provgaz.CountryID=countrygaz.CountryID   LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID   LEFT JOIN Gazetteer as gazgps ON gpspt.GazetteerID=gazgps.GazetteerID   LEFT JOIN Municipio as munigps ON gazgps.MunicipioID=munigps.MunicipioID  LEFT JOIN Province as provigps ON munigps.ProvinceID=provigps.ProvinceID   LEFT JOIN Country  as countrygps ON provigps.CountryID=countrygps.CountryID";
-									$sql .= " WHERE pltb.EspecimenID='".$especimenid."')";
+									$sql = "INSERT INTO checklist_speclist (SELECT  
+pltb.GazetteerID,
+pltb.GPSPointID,
+pltb.EspecimenID, 
+pltb.PlantaID, 
+thepl.PlantaTag,
+pltb.DetID,
+(colpessoa.Abreviacao) as COLETOR, 
+pltb.Number as NUMERO,
+if(CONCAT(pltb.Ano,'-',pltb.Mes,'-',pltb.Day)<>'0000-00-00',CONCAT(pltb.Ano,'-',pltb.Mes,'-',pltb.Day),'FALTA') as DATA,
+if(pltb.INPA_ID>0,pltb.INPA_ID+0,NULL) as ".$herbariumsigla.",
+famtb.Familia as FAMILIA,
+acentosPorHTML(gettaxonname(pltb.DetID,1,0)) as NOME,
+acentosPorHTML(gettaxonname(pltb.DetID,1,1)) as NOME_AUTOR,
+emorfotipo(pltb.DetID,0,0) as MORFOTIPO,
+localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'COUNTRY') as PAIS,  
+localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'MAJORAREA') as ESTADO,
+localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'MINORAREA') as MUNICIPIO,
+localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'GAZETTEER') as LOCAL,
+localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'GAZETTEER_SPEC') as LOCALSIMPLES, 
+getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 0) as LONGITUDE,
+getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 1) as LATITUDE,
+IF(ABS(pltb.Longitude)>0,pltb.Altitude+0,IF(pltb.GPSPointID>0,gpspt.Altitude+0,IF(ABS(gaz.Longitude)>0,gaz.Altitude+0,NULL))) as ALTITUDE,
+'edit-icon.png' AS EDIT,
+'mapping.png' AS MAP,
+'' as OBS,
+IF(pltb.HabitatID>0,'environment_icon.png','') as HABT,
+if (checkimgs(pltb.EspecimenID, pltb.PlantaID)>0,'camera.png','') as IMG,
+checknir(pltb.EspecimenID,pltb.PlantaID) as NIRSpectra";
+if ($duplicatesTraitID>0) {
+	$sql  .= "
+, traitvaluespecs(".$duplicatesTraitID.", pltb.PlantaID, pltb.EspecimenID,'', 0, 0)+0 as DUPS";
+}
+if ($daptraitid>0) {
+	$sql  .= "
+, traitvaluespecs(".$daptraitid.", pltb.PlantaID, pltb.EspecimenID,'mm', 0, 1) as DAPmm";
+}
+if ($alturatraitid>0) {
+	$sql  .= "
+, traitvaluespecs(".$alturatraitid.", pltb.PlantaID, pltb.EspecimenID,'mm', 0, 1) as ALTURA";
+}
+if ($habitotraitid>0) {
+	$sql  .= "
+, traitvaluespecs(".$habitotraitid.", pltb.PlantaID, pltb.EspecimenID,'', 0, 1) as HABITO";
+}
+if ($traitfertid>0) {
+	$sql  .= "
+, traitvaluespecs(".$traitfertid.", 0, pltb.EspecimenID,'', 0, 1) as FERTILIDADE";
+}
+$sql  .= "
+, IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ,
+(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) as PROJETOstr";
+$sql .= " FROM Especimenes as pltb 
+LEFT JOIN Plantas as thepl ON thepl.PlantaID=pltb.PlantaID
+LEFT JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID
+LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
+LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID 
+LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID 
+LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID  
+LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID 
+LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID  
+LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID  
+LEFT JOIN Province as provgaz ON muni.ProvinceID=provgaz.ProvinceID  
+LEFT JOIN Country  as countrygaz ON provgaz.CountryID=countrygaz.CountryID  
+LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID  
+LEFT JOIN Gazetteer as gazgps ON gpspt.GazetteerID=gazgps.GazetteerID  
+LEFT JOIN Municipio as munigps ON gazgps.MunicipioID=munigps.MunicipioID 
+LEFT JOIN Province as provigps ON munigps.ProvinceID=provigps.ProvinceID  
+LEFT JOIN Country  as countrygps ON provigps.CountryID=countrygps.CountryID";
+$sql .= " WHERE pltb.EspecimenID='".$especimenid."')";
+			$upr = mysql_query($sql,$conn);
+			//echo "<br />".$sql."<br />";
+								}
+								
 								}
 							}
+
 							if (!$newupdate) {
 								$er++;
-							} else {
+							} 
+							else {
 								if ($updatechecklist!=1) {
 								$detset =serialize($detarray);
 								$nn = describetaxa($detset,$conn);
@@ -213,19 +381,22 @@ if ($final=='1') {
       element.innerHTML = valor;
       var destination = window.opener.document.getElementById('detid');
       destination.value = '".$newdetid."';
-      window.close();
+      //window.close();
     }
     ,0.0001);
   </script>
 </form>";
-								} else {
+								} 
+								else {
+									//echo "<br />ESTOU ENTRANDO AQUI 3A";
+
 if (empty($reloadwin)) {
 								echo "
 <form name='myform' >
   <script language=\"JavaScript\">
   setTimeout(
     function() {
-      window.opener.location.reload(true);
+      //window.opener.location.reload(true);
       window.close();
     }
     ,0.0001);
@@ -233,6 +404,7 @@ if (empty($reloadwin)) {
 </form>";
 } 
 else {
+	//echo "ESTOU ENTRANDO AQUI 3";
 								echo "
 <form name='myform' >
   <script language=\"JavaScript\">
@@ -253,10 +425,12 @@ else {
 		else {
 $detset =serialize($detarray);
 $nn = describetaxa($detset,$conn);
+//echo $detset;
 echo "
 <form name='myform' >
 <input type='hidden' id='sendid' value='".$nn."' />
 <input type='hidden' id='codigoid' value='".$detset."' />
+<!---
   <script language=\"JavaScript\">
   setTimeout(
     function() {
@@ -266,15 +440,15 @@ element.innerHTML = valor;
 var vvv = document.getElementById('codigoid').value;
 var destination = window.opener.document.getElementById('".$detsetid."');
 destination.value = vvv;
-window.close();
+//window.close();
     }
     ,0.0001);
   </script>
-<!--- 
+--->   
 <p align='center' class='success'>Terminado<br />
 <input type='button' value='Fechar' 
 onclick=\"javascript:sendval_innerHTML('sendid','".$dettextid."');
-sendval_closewin('codigoid','".$detsetid."');\" /></p> --->
+sendval_closewin('codigoid','".$detsetid."');\" /></p> 
 </form>";
 		}
 	}
@@ -558,8 +732,6 @@ echo "
 ";
 
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=TRUE,$footer=$menu);
 ?>

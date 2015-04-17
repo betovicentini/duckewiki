@@ -244,31 +244,40 @@ $stringData = "<?php
 session_start();
 require_once(\"../".$relativepathtoroot.$databaseconnection_clean."\");
 include \"../functions/MyPhpFunctions.php\";
-\$especimenid = \$_GET['especimenid'];
-\$varincluido = \$_GET['varincluido'];
+\$especimenes = \$_POST['especimenes'];
+\$varincluido = \$_POST['varincluido'];
+\$specarr = explode(\",\",\$especimenes);
+\$nt = count(\$specarr);
+if (\$nt>0) {
+foreach (\$specarr as \$especimenid) {
 \$rr =  mysql_query(\"SELECT * FROM `".$tbname."` WHERE EspecimenID=\$especimenid  AND MonografiaID=".$monografiaid." \");
 \$nrr = mysql_numrows(\$rr);
 if (\$nrr>0) {
   \$rrw = mysql_fetch_assoc(\$rr);
   \$oldIncluido = \$rrw['Incluido'];
   if (\$oldIncluido!=\$varincluido) {
-                     CreateorUpdateTableofChanges(\$especimenid,'EspecimenID','".$tbname."',\$res);
-                     mysql_query(\"UPDATE  `".$tbname."` SET `Incluido`=\$varincluido  WHERE `EspecimenID`=\$especimenid  AND `MonografiaID`=".$monografiaid." \");
+CreateorUpdateTableofChanges(\$especimenid,'EspecimenID','".$tbname."',\$res);
+mysql_query(\"UPDATE  `".$tbname."` SET `Incluido`=\$varincluido  WHERE `EspecimenID`=\$especimenid  AND `MonografiaID`=".$monografiaid." \");
               }
 } else {
   if (\$varincluido==1) {
-            mysql_query(\"INSERT INTO  `".$tbname."` (`Incluido`,`EspecimenID`,`MonografiaID`,`AddedBy`,`AddedDate`) VALUES ('1' ,\".\$especimenid.\",'".$monografiaid."', '".$uuid."', '".$curdate."')\");
+            \$sql = \"INSERT INTO  `".$tbname."` (`Incluido`,`EspecimenID`,`MonografiaID`,`AddedBy`,`AddedDate`) VALUES ('1' ,\".\$especimenid.\",'".$monografiaid."', '".$uuid."', '".$curdate."')\";
+            //echo \$sql;
+            mysql_query(\$sql);
   }
 }
 mysql_query(\"UPDATE  `".$temptb."` SET `Incluido`=\$varincluido  WHERE `EspecimenID`=\$especimenid\");
-echo \"done\";
+}
+}
+echo 'done';
+//
 ?>";
 fwrite($fh2, $stringData);
 fclose($fh2);
 
 	
-	$fh = fopen("temp/".$fnn, 'w');
-	$stringData = "<?php
+$fh = fopen("temp/".$fnn, 'w');
+$stringData = "<?php
 session_start();
 require_once(\"../dhtmlxconnector/dhtmlxConnector_php/codebase/grid_connector.php\");
 require_once(\"../".$relativepathtoroot.$databaseconnection_clean."\");
@@ -403,6 +412,7 @@ $arrofpass = array(
 'nrecs' => $nrecs,
 'tbname' => $tbname,
 'fname' => $fnn,
+'processfname' => $fnn2,
 'colidx' => $colidx,
 'colalign' => $colalign,
 'hidemenu' => $hidemenu,

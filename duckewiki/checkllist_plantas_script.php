@@ -210,7 +210,7 @@ while ( $step<=$nsteps ) {
 		$qbase = "INSERT INTO ".$tbname;
 	}
 	$qqq = $qbase." ".$qq." LIMIT $st1,$stepsize)";
-	//echo $qqq."<br />";
+	echo $qqq."<br />";
 	$check = mysql_query($qqq,$conn);
 	if ($check) {
 		$perc = ceil(($step/$nsteps)*100);

@@ -47,16 +47,34 @@ $title = 'Processamento de amostras físicas';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 echo "<script type='text/javascript' src='javascript/wz_tooltip.js'></script>";
-//echopre($ppost);
 //SE PEDIU PARA SALVAR UM PROCESSO
+ if (empty($herbariumsigla)) {
+	$herbariumsigla = 'HERB_NO';
+}
 $erro=0;
-if ($final==1) {
+if ($final>0) {
 //CHECA
 //&& ($filtroid+0)==0 
 //if ($processoid=='criar') {
 	//$erro++;
 	//echo "<br /><table cellpadding=\"7\" width='50%' align='center' class='erro'>  <tr><td class='tdsmallbold' align='center'>Para iniciar um processo precisa indicar um filtro!</td></tr></table><br />";
 //}
+if ($concluir==1) {
+	$tbname2 = 'ProcessosLIST';
+	$sql = "SELECT COUNT(*) AS specs  FROM ".$tbname2." WHERE ProcessoID=".$processoid."  AND EXISTE>0";
+	$sqlres = @mysql_query($sql,$conn);
+	$sqlrow = @mysql_fetch_assoc($sqlres);
+	$nspecs = $sqlrow['specs']+0;
+
+	$sql = "SELECT COUNT(*) AS specs  FROM ".$tbname2." WHERE ProcessoID=".$processoid."  AND EXISTE>0 AND ".$herbariumsigla.">0";
+	$sqlres = @mysql_query($sql,$conn);
+	$sqlrow = @mysql_fetch_assoc($sqlres);
+	$nspecids = $sqlrow['specs']+0;
+	if ($nspecids!=$nspecs) {
+		$erro++;
+		echo "<br /><table cellpadding=\"7\" width='50%' align='center' class='erro'>  <tr><td class='tdsmallbold' align='center'>NÃO PODE CONCLUIR O PROCESSO PORQUE TEM AMOSTRAS MARCADAS COMO EXISTE QUE NÃO TEM NÚMERO  ".$herbariumsigla."</td></tr></table><br />";
+	}
+}
 if ($erro==0) {
 //Create table if not exists
 $qq = "CREATE TABLE IF NOT EXISTS ProcessosEspecs (
@@ -71,13 +89,24 @@ $qq = "CREATE TABLE IF NOT EXISTS ProcessosEspecs (
  PRIMARY KEY (ProcessoID)) CHARACTER SET utf8";
  @mysql_query($qq,$conn);
  
+$qup = "ALTER TABLE ProcessosEspecs ADD COLUMN Finalizado DATE AFTER Inicio";
+@mysql_query($qup,$conn);
+ 
 if (empty($tbname)) {
 	 if (empty($nome)) {
  		$nome = "Processo ".$quem." ".$datainicio;
 	 }
+	if ($concluir==1) {
+		$status = 1;
+		$dataultimo = date("Y-m-d");
+	} else {
+		$status=0;
+		unset($dataultimo);
+	}
  	$arrayofvalues = array(
 'Name' => $nome,
 'Inicio' => $datainicio,
+'Finalizado' => $dataultimo,
 'Herbaria' => $herbaria,
 'Status' => $status,
 'CreatedBy' => $createdby);
@@ -85,19 +114,18 @@ if (empty($tbname)) {
 	$datainicio = date("Y-m-d");
 	$dataultimo = date("Y-m-d");
 	$createdby = $uuid;
-	$herbaria = "PDBFF; INPA; COAH; MO;  NY; IAN; CAY; ECUAMZ; VEN;  MG";
+	$herbaria = "INPA; ESPECIALISTA; PDBFF; COAH; CAY; ECUAMZ; VEN;  MG; IAN;  RB; NY; MO";
 	$qq = "SELECT LastName,FirstName FROM Users WHERE UserID=".$createdby;
 	$re = mysql_query($qq,$conn);
 	$rwe = mysql_fetch_assoc($re);
 	$quem = $rwe['FirstName']."  ".$rwe['LastName'];
-	
  	$arrayofvalues = array(
 'Name' => "Processo ".$quem." ".$datainicio,
 'Inicio' => $datainicio,
 'Herbaria' => $herbaria,
 'CreatedBy' => $createdby);
 }
-if (!empty($tbname)) {
+if (!empty($tbname) && ($processoid+0)==0) {
 	$qu = "SELECT * FROM ProcessosEspecs WHERE Name='Processo ".$quem." ".$datainicio."'";
 	$ru = mysql_query($qu,$conn);
 	$nru = mysql_numrows($ru);
@@ -120,10 +148,9 @@ else {
 	}
 }
 
- if (empty($herbariumsigla)) {
-	$herbariumsigla = 'HERB_NO';
-}
+
 $qq = "CREATE TABLE IF NOT EXISTS ProcessosLIST (
+ ProcessosListID INT(10) unsigned NOT NULL auto_increment,
  ProcessoID INT(10),
  EspecimenID INT(10),
  EXISTE INT(10),
@@ -133,18 +160,20 @@ CHARACTER SET utf8";
  @mysql_query($qq,$conn);
 }
 }
+
+$qup = "ALTER TABLE `ProcessosLIST`  ADD `ProcessosListID` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST";
+@mysql_query($qup,$conn);
+
+
 //INSERE OU ATUALIZA REGISTROS AO PROCESSO QUANDO FOR O CASO
 if ($erro==0 && $processoid>0) {
 	if ($filtroid>0) {
-		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE, Herbaria, ".$herbariumsigla." ) (SELECT ".$processoid.", pltb.EspecimenID,0 as EXISTE, pltb.Herbaria, pltb.INPA_ID FROM Especimenes as pltb LEFT JOIN ProcessosLIST as proc USING(EspecimenID) WHERE (pltb.FiltrosIDS LIKE '%filtroid_".$filtroid.";%' OR pltb.FiltrosIDS LIKE '%filtroid_".$filtroid."') AND  CONCAT(proc.ProcessoID,'_',proc.EspecimenID)<>CONCAT(".$processoid.",'_',pltb.EspecimenID))";
-		
-		
-		
-		
+		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE, Herbaria, ".$herbariumsigla." ) (SELECT ".$processoid.", pltb.EspecimenID,0 as EXISTE, pltb.Herbaria, pltb.INPA_ID FROM Especimenes as pltb LEFT JOIN ProcessosLIST as proc USING(EspecimenID) WHERE (pltb.FiltrosIDS LIKE '%filtroid_".$filtroid.";%' OR pltb.FiltrosIDS LIKE '%filtroid_".$filtroid."') AND  proc.EspecimenID<>pltb.EspecimenID)";
+		//CONCAT(proc.ProcessoID,'_',proc.EspecimenID)<>CONCAT(".$processoid.",'_',pltb.EspecimenID))";
 		//echo $qz."<br /><br />";
 		@mysql_query($qz,$conn);
 	} elseif (!empty($tbname)) {
-		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE ) (SELECT ".$processoid.", pltb.EspecimenID,tb.EXISTE FROM Especimenes as pltb JOIN ".$tbname." as tb ON tb.PlantaID=pltb.PlantaID WHERE tb.EXISTE=1)";
+		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE ) (SELECT ".$processoid.", pltb.EspecimenID,tb.EXISTE FROM Especimenes as pltb JOIN ".$tbname." as tb ON tb.PlantaID=pltb.PlantaID LEFT JOIN ProcessosLIST AS lista ON lista.EspecimenID=pltb.EspecimenID WHERE tb.EXISTE=1 AND lista.EspecimenID<>pltb.EspecimenID)";
 		@mysql_query($qz,$conn);
 	}
 }
@@ -172,8 +201,11 @@ echo "
       <option value=''>------------</option>
       <option value='criar'>Criar novo processo!</option>
       <option value=''>------------</option>";
-      $qq = "SELECT * FROM ProcessosEspecs ORDER BY AddedDate DESC";
-      //WHERE CreatedBy='".$uuid."'  OR '".$acclevel ."' LIKE 'admin'  
+      $qq = "SELECT * FROM ProcessosEspecs ";
+      if ($acclevel!='admin') {
+          $qq .= " WHERE CreatedBy='".$uuid."'";
+      }
+      $qq .= " ORDER BY Name ASC ";
       $rrr = @mysql_query($qq,$conn);
       while ($row = @mysql_fetch_assoc($rrr)) {
 			echo "
@@ -182,12 +214,21 @@ echo "
 	echo "
     </select>
     </td>
-</tr>
+</tr>";
+if ($acclevel=='admin') {
+echo "<tr>
+ <td align='center' >
+ <input  type='button'  style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Exportar dados INPA'  onmouseover=\"Tip('Exporta dados para INPA de vários processos');\"    onclick = \"javascript:small_window('processo-amostras-exportavarios.php',600,500,'Exporta dados para INPA de vários processos');\" >
+ </td>
+ </tr>";
+}
+echo "
 </tbody>
 </table>
 </form>";
 } 
 else {
+$herbaria = "INPA; ESPECIALISTA; PDBFF; COAH; CAY; ECUAMZ; VEN;  MG; IAN;  RB; NY; MO";
 if ($processoid=='criar') {
 	$tt = 'Novo processo';
 	$datainicio = date("Y-m-d");
@@ -198,28 +239,32 @@ if ($processoid=='criar') {
 	$rwe = mysql_fetch_assoc($re);
 	$quem = $rwe['FirstName']."  ".$rwe['LastName'];
 	$editando=0;
+	$status =0;
+	$redon = '';
 } 
 else {
 	$editando=1;
+	$redon = '';
 	$tt = "Editando o processo ";
-		$qq = "SELECT pcs.*,us.LastName,us.FirstName FROM ProcessosEspecs as pcs JOIN Users as us ON us.UserID=pcs.CreatedBy WHERE pcs.ProcessoID=".$processoid;
+		$qq = "SELECT pcs.*,us.LastName,us.FirstName,CONCAT(us2.FirstName,' ',us2.LastName) AS ModificadoPor FROM ProcessosEspecs as pcs JOIN Users as us ON us.UserID=pcs.CreatedBy JOIN Users as us2 ON us2.UserID=pcs.AddedBy WHERE pcs.ProcessoID=".$processoid;
 		$re = mysql_query($qq,$conn);
 		if ($re) {
 			$rwe = mysql_fetch_assoc($re);
 			$nome = $rwe['Name'];
 			$datainicio = $rwe['Inicio'];
-			$status = $rwe['Status'];
+			$status = $rwe['Status']+0;
 			if ($status==1) {
 				$txcon = ' [ CONCLUIDO ] ';
+				$redon = 'readonly';
 			}
 			$quem = $rwe['FirstName']."  ".$rwe['LastName'];
+			$modiporquem = $rwe['ModificadoPor'];
 			$createdby = $rwe['CreatedBy'];
 			$dataultimo = $rwe['AddedDate'];
-			//$herbaria = $rwe['Herbaria'];
+			$herbaria = $rwe['Herbaria'];
 		}
 	$tt .= $nome."  ".$txcon;
 }
-$herbaria = "INPA; ESPECIALISTA; PDBFF; COAH; CAY; ECUAMZ; VEN;  MG; IAN;  RB; NY; MO";
 $bgi=1;
 echo "
 <br />
@@ -229,7 +274,6 @@ echo "
 </thead>
 <tbody>
   <form name='coletaform' action='processo-amostras-form.php' method='post'>
-  <input type='hidden' name='ispopup' value='$ispopup' >
   <input type='hidden' name='editando' value='".$editando."' />
   <input type='hidden' name='processoid' value='".$processoid."' />
   <input type='hidden' name='createdby' value='".$createdby."' />
@@ -246,18 +290,28 @@ echo "
 	$help = "Um nome qualquer para o processo. Assim, você pode interromper e continuar depois um processo até concluílo!";
 	echo "onclick=\"javascript:alert('$help');\" /></td>
           <td>
-            <input style='height: 2em'  type='text' name=\"nome\" value=\"$nome\" size='50'  />
+            <input style='height: 2em'  type='text' name=\"nome\" value=\"$nome\" size='50'  ".$redon." />
           </td>
           <td >
             <table class='tdformnotes'>
               <tr>
                 <td class='tdformright'>Criado em</td>
                 <td>".$datainicio." [por ".$quem."]</td>
-              </tr>
-              <tr>
+              </tr>";
+              if ($status==1) {
+              echo "
+            <tr>
+                <td class='tdformright'>Finalizado em</td>
+                <td>".$datafim." [por ".$modiporquem."]</td>
+            </tr>";
+            } else {
+              echo "
+            <tr>
                 <td class='tdformright'>Modificado em</td>
-                <td>".$dataultimo."</td>
-            </tr>
+                <td>".$dataultimo." [por ".$modiporquem."]</td>
+            </tr>";
+            }
+echo "
           </table>
           </td>
         </tr>
@@ -294,7 +348,7 @@ if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi
       <tr>
         <td class='tdsmallbold'>$txt</td>
         <td>
-          <select name='filtroid'>
+          <select name='filtroid' ".$redon.">
             <option selected value=''>".GetLangVar('nameselect')."</option>";
 			$qq = "SELECT * FROM Filtros WHERE AddedBy=".$_SESSION['userid']." OR Shared=1 ORDER BY FiltroName";
 			$res = @mysql_query($qq,$conn);
@@ -317,7 +371,8 @@ if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi
   <tr bgcolor = '".$bgcolor."'>
     <td class='tdsmallbold'  align='center'>ESTE PROCESSO CONTÉM ".$nspecs." REGISTROS, SENDO ".$nspecexiste." MARCADOS COMO EXISTE!</td>
     </td>
-  </tr>"; 
+  </tr>";
+if ($status==0 || $acclevel=='admin') { 
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi++;
   echo "
   <tr bgcolor = '".$bgcolor."'>
@@ -333,6 +388,7 @@ if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi
       </table>
     </td>
   </tr>"; 
+}
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi++;
 	$sql = "SELECT COUNT(DISTINCT prc.EspecimenID) AS nir  FROM processo_".$processoid." as prc JOIN NirSpectra as nn ON nn.EspecimenID=prc.EspecimenID WHERE prc.EXISTE=1";
 	$sqres = @mysql_query($sql,$conn);
@@ -407,15 +463,22 @@ echo "
         <tr>
         <td align='left'>Lista de herbários</td>
         <td align='left'>
-        <input type='text' style='height: 2.5em;' size='80'  id='herbariumlista'  name=\"herbaria\"  value='".$herbaria."'  /></td>
+        <input type='text' style='height: 2.5em;' size='80'  id='herbariumlista'  name=\"herbaria\"  value='".$herbaria."'  ".$readon." /></td>";
+        if ($status==0 || $acclevel=='admin') { 
+echo "
         <td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Distribuir amostras'  onmouseover=\"Tip('Distribuir as duplicatas para herbários indicados');\"  ";
        if ($perdups<100) {
 echo " onclick = \"javascript:alert('Precisa primeiro anotar as duplicatas das amostras marcadas como EXISTE no processo. Importante marcar APENAS as amostras que de fato serão distribuidas');\" ";
        } else {
 echo " onclick = \"javascript:small_window('processo-amostras-distribute.php?processoid=".$processoid."&ispopup=1',800,400,'Distribui amostras');\" ";
-}        
+		}        
 echo "
-        ></td>
+        ></td>";
+	}  else {
+echo "
+          <td align='left'>&nbsp;</td>";
+	}      
+echo "
         </tr>
       </table>
     </td>
@@ -454,14 +517,31 @@ if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi
         <td class='tdsmallbold'   align='center' >PASSO 05 &nbsp;<img height=15 src=\"icons/icon_question.gif\" ";
 $help = "Exportar os dados para a base de dados do herbário ".$herbariumsigla.", entregar a planilha no herbário e trazer de volta com o Número INPA e BRAHMS. Checar que a planilha contém TODAS e APENAS as amostras para o herbário";
 echo " onclick=\"javascript:alert('$help');\" /></td>
-        <td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Exportar dados para ".$herbariumsigla."'  ".$txt1."  /></td>
-        <td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Importar No. ".$herbariumsigla."'  ".$txt2." /></td>
+        <td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Exportar dados para ".$herbariumsigla."'  ".$txt1."  /></td>";
+if ($status==0 || $acclevel=='admin') {        
+echo "<td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Importar No. ".$herbariumsigla."'  ".$txt2." /></td>";
+}
+echo "
       </tr>
       </table>
     </td>
   </tr>";    
-  //<td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Registrar ".$herbariumsigla."'  onclick = \"javascript:small_window('processo-amostras-ninpa.php?processoid=".$processoid."&ispopup=1',800,400,'Registrar No. Herbario');\" ></td>
-
+    //<td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Registrar ".$herbariumsigla."'  onclick = \"javascript:small_window('processo-amostras-ninpa.php?processoid=".$processoid."&ispopup=1',800,400,'Registrar No. Herbario');\" ></td>
+if ($status==0 || $acclevel=='admin') {     
+  echo "
+  <tr bgcolor = '".$bgcolor."'>
+    <td >
+      <table>
+      <tr>
+        <td class='tdsmallbold'   align='center' >PASSO 06 &nbsp;<img height=15 src=\"icons/icon_question.gif\" ";
+$help = "Ao selecionar esta opção você indica que o processo foi concluido e que as amostras foram encaminhadas ao herbário. Assim, esse processo não poderá mais ser modificado";
+echo " onclick=\"javascript:alert('$help');\" /></td>
+        <td align='center' ><input  type='checkbox'  name='concluir' value='1' />Concluir este processo - amostras depositadas no herbário</td>
+      </tr>
+      </table>
+    </td>
+  </tr>"; 
+}  
 } 
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
 echo "
@@ -469,16 +549,14 @@ echo "
   <td >
     <table align='center' >
       <tr>
-        <input type='hidden' name='final' value='' />";
-if ($nspecs>0) {
-echo "        
-        <td align='center' ><input style='cursor: pointer'  type='submit' value='Atualizar' class='bblue' onclick=\"javascript:document.coletaform.final.value=2\" /> </td>";
-} 
-else {
+        <td align='center' ><input type='hidden' name='final' value='' />";
+if ($status==0 || $acclevel=='admin') {     
+//echo "        <td align='center' ><input style='cursor: pointer'  type='submit' value='Atualizar' class='bblue' onclick=\"javascript:document.coletaform.final.value=2\" /> </td>";
 echo "    
-        <td align='center' ><input style='cursor: pointer'  type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' onclick=\"javascript:document.coletaform.final.value=1\" /> </td>";
+        <input style='cursor: pointer'  type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' onclick=\"javascript:document.coletaform.final.value=1\" /> ";
+
 }
-echo "
+echo "</td>
       </tr>
     </table>
   </td>

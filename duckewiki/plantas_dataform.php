@@ -312,7 +312,7 @@ echo "
    		(empty($_SESSION['editando']) && !empty($_SESSION['variation']))) && $erro==0) {
    		$traitarray = unserialize($_SESSION['variation']);
    		if (count($traitarray)>0) {
-			$resultado = updatetraits($traitarray,$plantaid,'PlantaID',$conn);
+			$resultado = updatetraits($traitarray,$plantaid,'PlantaID',$bibtex_id,$conn);
 			if (!$resultado) {
 				$erro++;
 				echo "
@@ -391,16 +391,24 @@ pltb.DetID,
 plantatag(pltb.PlantaID) as TAGtxt, 
 STRIP_NON_DIGIT(pltb.PlantaTag) as TAG, 
 famtb.Familia as FAMILIA, 
-IF(iddet.InfraEspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie,' ',infsptb.InfraEspecie),IF(iddet.EspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie),IF(iddet.GeneroID>0,gentb.Genero,famtb.Familia))) as NOME, 
+acentosPorHTML(gettaxonname(pltb.DetID,1,0)) as NOME,
+acentosPorHTML(gettaxonname(pltb.DetID,1,1)) as NOME_AUTOR,
+emorfotipo(pltb.DetID,0,0) as MORFOTIPO,
 acentosPorHTML(IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS,  
 acentosPorHTML(IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO,  
 acentosPorHTML(IF(pltb.GPSPointID>0,munigps.Municipio,IF(pltb.GazetteerID>0,muni.Municipio,' '))) as MUNICIPIO,  
 acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.PathName,IF(pltb.GazetteerID>0,gaz.PathName,' '))) as LOCAL, 
-acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.Gazetteer,IF(pltb.GazetteerID>0,gaz.Gazetteer,' '))) as LOCALSIMPLES, ";
-//$sql = "INSERT INTO checklist_pllist (SELECT  pltb.PlantaID,  pltb.DetID, 'edit-icon.png' AS EDIT, plantatag(pltb.PlantaID) as TAGtxt, STRIP_NON_DIGIT(pltb.PlantaTag) as TAG, famtb.Familia as FAMILIA, IF(iddet.InfraEspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie,' ',infsptb.InfraEspecie),IF(iddet.EspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie),IF(iddet.GeneroID>0,gentb.Genero,famtb.Familia))) as NOME, acentosPorHTML(IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS,  acentosPorHTML(IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO,  acentosPorHTML(IF(pltb.GPSPointID>0,munigps.Municipio,IF(pltb.GazetteerID>0,muni.Municipio,' '))) as MUNICIPIO,  acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.PathName,IF(pltb.GazetteerID>0,gaz.PathName,' '))) as LOCAL, acentosPorHTML(IF(pltb.GPSPointID>0,CONCAT(gazgps.GazetteerTIPOtxt,' ',gazgps.Gazetteer),IF(pltb.GazetteerID>0,CONCAT(gaz.GazetteerTIPOtxt,' ',gaz.Gazetteer),' '))) as LOCALSIMPLES, ";
+acentosPorHTML(IF(pltb.GPSPointID>0,gazgps.Gazetteer,IF(pltb.GazetteerID>0,gaz.Gazetteer,' '))) as LOCALSIMPLES, 
+getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, muni.MunicipioID, 0, 0, 0) as LONGITUDE,
+getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, muni.MunicipioID, 0, 0, 1) as LATITUDE,
+IF(ABS(pltb.Longitude)>0,pltb.Altitude+0,IF(pltb.GPSPointID>0,gpspt.Altitude+0,IF(ABS(gaz.Longitude)>0,gaz.Altitude+0,NULL))) as ALTITUDE,";
 if ($daptraitid>0) { $sql .= " (traitvalueplantas(".$daptraitid.", pltb.PlantaID, 'mm', 0, 1)+0) AS DAPmm,"; }
 if ($alturatraitid>0) { $sql .= " (traitvalueplantas(".$alturatraitid.", pltb.PlantaID, 'm', 0, 1))+0 AS ALTURA,"; }
 if ($habitotraitid>0) { $sql .= " acentosPorHTML(traitvalueplantas(".$habitotraitid.", pltb.PlantaID, '', 0, 0)) AS HABITO,";}
+if ($statustraitid>0) {
+	$sql .= "
+traitvalueplantas(".$statustraitid.",pltb.PlantaID, '', 0,0 ) AS STATUS,";
+}
 $sql .= "
 'mapping.png' AS MAP, 
 IF((gaz.DimX+gaz.DimY)>0,pltb.GazetteerID,'') AS PLOT, 
@@ -409,9 +417,12 @@ IF(pltb.HabitatID>0,'environment_icon.png','') as HABT,
 IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ, 
 acentosPorHTML(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) AS PROJETOstr, 
 if (checkimgs(0, pltb.PlantaID)>0,'camera.png','') as IMG, traitvalueplantas(".$duplicatesTraitID.", pltb.PlantaID, '', 0, 0) as DUPS,
+checknir(0,pltb.PlantaID) as NIRSpectra,
 pltb.GazetteerID,
 pltb.GPSPointID 
 FROM Plantas as pltb LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID  LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID  LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID  LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID   LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID  LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID   LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID   LEFT JOIN Province as provgaz ON muni.ProvinceID=provgaz.ProvinceID   LEFT JOIN Country  as countrygaz ON provgaz.CountryID=countrygaz.CountryID   LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID   LEFT JOIN Gazetteer as gazgps ON gpspt.GazetteerID=gazgps.GazetteerID   LEFT JOIN Municipio as munigps ON gazgps.MunicipioID=munigps.MunicipioID  LEFT JOIN Province as provigps ON munigps.ProvinceID=provigps.ProvinceID   LEFT JOIN Country  as countrygps ON provigps.CountryID=countrygps.CountryID WHERE pltb.PlantaID='".$plantaid."')";
+
+//echo $sql."<br />";
 mysql_query($sql,$conn);
 	echo "
 <br />
@@ -561,6 +572,7 @@ if ($submeteu=='editando' && $erro==0) {
 	$addcolvalue = $row['TaggedBy'];
 
 	$qu = "SELECT monitoramentostring(".$plantaid.",0,1,1) as monidesc";
+	//echo $qu."<br />";
 	$rs = @mysql_query($qu,$conn);
 	if ($rs) {
 		$rw = @mysql_fetch_assoc($rs);
@@ -1217,7 +1229,7 @@ echo "
   <td >
     <table  align='left' border=0 cellpadding=\"3\" cellspacing=\"0\">
       <tr>
-        <td id='traitids_moni' class='tdformnotes'>$monidesc</td>
+        <td id='traitids_moni' class='tdformnotes'>".$monidesc."</td>
         <td align='left'><input  style='cursor:pointer'  type=button value=\"".GetLangVar('nameselect')."\" class='bsubmit' onclick = \"javascript:small_window('traits_coletormonitoramento.php?ispopup=1&elementid=traitids_moni&plantatag=".$plantnum."&plantaid=".$plantaid."&submeteu=1',1000,500,'Dados de Monitoramento');\" /></td>
       </tr>
     </table>

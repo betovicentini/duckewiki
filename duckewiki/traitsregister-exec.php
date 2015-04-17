@@ -28,6 +28,7 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+//echopre($ppost);
 //CABECALHO
 $ispopup=1;
 if ($ispopup==1) {
@@ -36,13 +37,9 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
 $title = 'Variável Salvando';
 $body = '';
@@ -63,10 +60,10 @@ if (!empty($_POST['newimage'])) {
 	}
 }
 //process results
-	if (empty($traittipo)) {$traittipo=$traitkind;}
-	$erro=0;
+if (empty($traittipo)) {$traittipo=$traitkind;}
+$erro=0;
 	//mensagens de erro por dados incompletos
-	if ($traitkind=='Classe') { //se classe
+if ($traitkind=='Classe') { //se classe
 		//required
 		if (empty($traitname) || empty($traitdefinicao)) {
 			echo "
@@ -210,7 +207,7 @@ if (!isset($namechecked) && $traitname!=$rr['TraitName']) {
   </tr>
 </thead>
 <tbody>";
-	foreach ($wordsinname as $key => $value) {
+foreach ($wordsinname as $key => $value) {
 		$value = trim($value);
 		if (strlen($value)>3) {
 			//echo $traitid;
@@ -334,6 +331,7 @@ if ($erro==0) {
 	}
 	//se editando
 	if (!empty($traitid) && $traitid!=GetLangVar('nameselect')) {
+			//echopre($fieldsaskeyofvaluearray);
 			CreateorUpdateTableofChanges($traitid,'TraitID','Traits',$conn);
 			$newtrait = UpdateTable($traitid,$fieldsaskeyofvaluearray,'TraitID','Traits',$conn);
 			if (!$newtrait) {
@@ -550,9 +548,7 @@ echo "
 ";
   }
 } //end if erro=0
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

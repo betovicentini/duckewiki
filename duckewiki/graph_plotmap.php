@@ -53,16 +53,16 @@ pltb.PlantaID,
 pltb.PlantaTag,
 getplantcoord(pltb.GazetteerID, pltb.X,pltb.Y, pltb.LADO, 'X',".$gazetteerid.") as posX, 
 getplantcoord(pltb.GazetteerID, pltb.X,pltb.Y, pltb.LADO, 'Y',".$gazetteerid.") as posY,
-mediadaps(moni.TraitVariation) as DAP 
+mediadapsbyplant(pltb.PlantaID,".$daptraitid.") AS DAP
 FROM Plantas as pltb 
-LEFT JOIN Monitoramento as moni ON moni.PlantaID=pltb.PlantaID 
 LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
 LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID
 LEFT JOIN Tax_Especies as spectb ON iddet.EspecieID=spectb.EspecieID 
 LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID
 LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID 
-WHERE pltb.X>0 AND pltb.Y>0 AND (pltb.GazetteerID=".$gazetteerid;
-
+WHERE  (pltb.GazetteerID=".$gazetteerid;
+//pltb.X>0 AND pltb.Y>0 AND
+//LEFT JOIN Monitoramento as moni ON moni.PlantaID=pltb.PlantaID 
 
 $qu = "SELECT * FROM Gazetteer WHERE ParentID='".$gazetteerid."'";
 $rzz = mysql_query($qu,$conn);
@@ -104,10 +104,13 @@ if (count($idds)>0) {
 		    $ii++;
 		}
 	}
-	$filtro .= ")";
+	if($ii>0) {
+		$filtro .= ")";
+	}
 }
-$qq .= $filtro." AND moni.TraitID=".$daptraitid." ORDER BY famtb.Familia,gentb.Genero,spectb.Especie,infsptb.InfraEspecie";
-//$qq."<br>";
+//AND moni.TraitID=".$daptraitid." 
+$qq .= $filtro." ORDER BY famtb.Familia,gentb.Genero,spectb.Especie,infsptb.InfraEspecie";
+//echo $qq."<br>";
 $res = @mysql_query($qq,$conn);
 $nn = @mysql_numrows($res);
 //$nn = 0;
@@ -130,7 +133,7 @@ while ($row = mysql_fetch_assoc($res)) {
 	$nome = trim($row['Genero']." ".$row['Especie']." ".$row['InfraEspecie']);
 	$detids[] = $row['DetID'];
 	$nomes[] = $nome;
-	$za = $nome." Planta No. ".$row['PlantaTag']." com DAP ".$row['DAP']." mm";
+	$za = $nome." Planta No. ".$row['PlantaTag']." com DAP médio ".round($row['DAP'],1)." mm";
 	$alts[] = $za;
 	//$targ[] = ";
 	$targ[] = "javascript:small_window('showplantdescription.php?plantaid=".$row['PlantaID']."',350,350,'EntrarVariacao');";
@@ -157,7 +160,7 @@ if ($dimx<$dimy) {
 	}
 }
 
-	$plotmapvars = array('grx'=> $grx, 'gry'=> $gry, 'mm' => $mm, 'dimx' => $dimx, 'dimy' => $dimy, 'dataz' => $dataz, 'nomes' => $nomes, 'datax' => $datax, 'datay' => $datay, 'targ' => $targ, 'alts' => $alts, 'detids'=> $detids);
+$plotmapvars = array('grx'=> $grx, 'gry'=> $gry, 'mm' => $mm, 'dimx' => $dimx, 'dimy' => $dimy, 'dataz' => $dataz, 'nomes' => $nomes, 'datax' => $datax, 'datay' => $datay, 'targ' => $targ, 'alts' => $alts, 'detids'=> $detids);
 	$_SESSION['plotmapvars'] = serialize($plotmapvars);
 	}
 
@@ -225,10 +228,6 @@ if (!empty($imgfile)) {
 	$graph->xgrid->Show(1,0);
 }
 //
-
-
-
-
 $mm = max($dataz);
 $mi = min($dataz);
 
@@ -294,7 +293,8 @@ function FCallback($aYVal,$aXVal) {
     global $mymarcadores;
     return    array($format[strval($aXVal)][strval($aYVal)],'',$lascores[strval($aXVal)][strval($aYVal)]);
 }
-
+//echo "<pre>".print_r($targ)."</pre>";
+//echo "<pre>".print_r($datay)."</pre>";
 $sp1 = new ScatterPlot($datay,$datax);
 $sp1->mark->SetType(MARK_FILLEDCIRCLE);
 $sp1->mark->SetCallbackYX("FCallback"); 
@@ -308,7 +308,6 @@ $graph->StrokeCSIM();
 }
  
 else {
-	//echo $qq."<br>";
-echo "<font size=3><br>     Não foram encontradas plantas para mapear! Você selecionou uma ou mais espécies?</font>";
+echo "<div align='center' style='font-size: 2em; text-color: red; color: red;'>Não foram encontradas plantas com possibilidade de mapear numa parcela! Você selecionou uma ou mais espécies?</div>";
 }
 ?>

@@ -131,17 +131,21 @@ if ($spec_label==1) {
 		if ($descricao==".") {
 			$descricao='';
 		}
-		if ($altmet>0) {
-			$descricao =  $altmet." metros de altura. ".$descricao;
-		}
-		if ($dapmm>0) {
-			$descricao = "DAP de ".$dapmm." mm. ".$descricao;
-		}
+		//if ($altmet>0) {
+		//	$descricao =  $altmet." metros de altura. ".$descricao;
+		//}
+		//if ($dapmm>0) {
+		//	$descricao = "DAP de ".$dapmm." mm. ".$descricao;
+		//}
 		if (!empty($vernacular)) {
 			$descricao = $descricao." <i>Vernacular</i>: ".$vernacular.".";
 		}
 		if (!empty($herbarios)) {
-			//$descricao = $descricao." <i>Depositado em</i>: ".$herbarios.".";
+			$herbarios = str_replace(";",",",$herbarios);
+			$herbarios = str_replace(" ","",$herbarios);
+			$herb = explode(",",$herbarios);
+			$herbarios = implode(", ",$herb);
+			$descricao = $descricao." <i>Depositado em</i>: ".$herbarios.".";
 		}
 		if (!empty($tagnum)) {
 			$descricao = $descricao." <b>Planta marcada no. ".$tagnum."</b>.";

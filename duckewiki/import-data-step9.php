@@ -35,14 +35,9 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />"
 );
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+$which_java = array();
 $title = 'Importar Dados Passo 09';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -73,7 +68,7 @@ if (count($taxafields)>0) {
 	//$taxafields = array_values($taxafields);
 	$fiel = trim($taxafields[0]);
 	if ($fiel=='GENUS' && !in_array('FAMILY',$fields)) {
-		echo $fiel." aqui 2<br >";
+		//echo $fiel." aqui 2<br >";
 		$colcol = array_search('GENUS',$fields);
 		if (count($colcol)>1) {
 			$erro = '<br />Tem mais de uma coluna que define generos??';
@@ -617,7 +612,7 @@ Se algum registro não tiver identificação no nível de gênero digite \"Indet
 				$qq .= ", ".$colautor." as spautor";
 			}
 			$qq .=" FROM ".$tbname." as tb JOIN Tax_Generos as gg ON tb.".$collgen."=gg.GeneroID JOIN Tax_Familias AS ff ON gg.FamiliaID=ff.FamiliaID WHERE tb.".$collspp."=0  AND tb.".$colcol." IS NOT NULL AND tb.".$colcol."<>'' ORDER BY tb.".$colcol."  LIMIT 0,20";
-			echo $qq."<br />";
+			//echo $qq."<br />";
 			$rr = mysql_query($qq,$conn);
 			$nr = mysql_numrows($rr);
 			unset($_POST['especieids']);
@@ -746,8 +741,8 @@ echo "
 			unset($taxafields[0]);
 			$taxafields = array_values($taxafields);
 			$fiel = $taxafields[0];
-			echo "----------";
-			echopre($taxafields);
+			//echo "----------";
+			//echopre($taxafields);
 			
 		}
 		}

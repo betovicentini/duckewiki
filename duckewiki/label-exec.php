@@ -140,7 +140,7 @@ localidadestring(maintb.GazetteerID,maintb.GPSPointID,maintb.MunicipioID,maintb.
 		}
 	}
 	$qq .=", famtb.Familia as familia";
-	$qq .=", IF(iddet.InfraEspecieID>0,CONCAT('<i>',gentb.Genero,' ',sptb.Especie,' </i> ',sptb.EspecieAutor,' <i>',infsptb.InfraEspecieNivel,' ',infsptb.InfraEspecie,'</i> ',infsptb.InfraEspecieAutor),IF(iddet.EspecieID>0,CONCAT('<i>',gentb.Genero,' ',sptb.Especie,'</i> ',sptb.EspecieAutor), IF(iddet.GeneroID>0,CONCAT('<i>',gentb.Genero,'<i>'),''))) as detnome";
+	$qq .=", IF(iddet.InfraEspecieID>0 AND infsptb.Morfotipo=0,CONCAT('<i>',gentb.Genero,' ',sptb.Especie,' </i> ',sptb.EspecieAutor,' <i>',infsptb.InfraEspecieNivel,' ',infsptb.InfraEspecie,'</i> ',infsptb.InfraEspecieAutor),IF(iddet.EspecieID>0  AND sptb.Morfotipo=0,CONCAT('<i>',gentb.Genero,' ',sptb.Especie,'</i> ',sptb.EspecieAutor), IF(iddet.GeneroID>0 AND gentb.Genero<>'Indet',CONCAT('<i>',gentb.Genero,'<i>'),''))) as detnome";
 	$qq .= ", CONCAT(detpessoa.Abreviacao,' [', getdetdate(iddet.DetDate,iddet.DetDateYY, iddet.DetDateMM, iddet.DetDateDD),']') as detdetby";
 	if ($formidhabitat>0) {
 		//$qq .= ", IF (maintb.HabitatID>0,habitatstring(maintb.HabitatID, ".$formidhabitat.", TRUE,FALSE),habitatstring(secondtb.HabitatID, ".$formidhabitat.", TRUE,FALSE))  as habitat";

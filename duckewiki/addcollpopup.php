@@ -36,13 +36,9 @@ if ($ispopup==1) {
 }
 $title = '';
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' >",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' >"
+"<link href='css/geral.css' rel='stylesheet' type='text/css' >"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
 "<script type='text/javascript' src='javascript/filterlist.js'></script>"
 );
 $body='';
