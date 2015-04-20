@@ -44,7 +44,7 @@ $conn_latin1 = ConectaDB($dbname);
 	$qq = "SELECT * FROM ".$temptable;
 	$res = mysql_query($qq,$conn_latin1);
 	$l=0;
-
+	$ll=0;
 	while ($rw = mysql_fetch_assoc($res)) {
 		$numcol = $rw['numcol'];
 		$datacol = $rw['datacol'];
@@ -112,8 +112,8 @@ $conn_latin1 = ConectaDB($dbname);
 				$fname = $logofile;
 				$url = $prjurl;
 			} else {
-				$fname = 'icons/inpa_principal.jpg';
-				$url = 'http://www.inpa.gov.br';
+					$fname = 'icons/'.$herbariumlogo;
+					$url = 'http://www.inpa.gov.br';
 			}
 			$pdf->Image($fname,$leftmar,$y+8,0,15,'',$url);
 			$pdf->SetY($y+14);
@@ -266,7 +266,7 @@ $which_java = array(
 );
 $title = 'Listar espécies';
 $body = '';
-FazHeader($title,$body,$which_css,$which_java,$menu);
+//FazHeader($title,$body,$which_css,$which_java,$menu);
 
 ////echo memory_get_usage()."memory inicio";
 $qq = "DROP TABLE $temptable";
@@ -274,17 +274,16 @@ $qq = "DROP TABLE $temptable";
 
 $zz = explode("/",$_SERVER['SCRIPT_NAME']);
 $href = curPageURL()."/".$zz[1]."/temp/".$filename;
-echo "
-<table align='center'>
-<tr>
-<td><a  href='".$href."'><img src='icons/pdf_icon.jpg' height='30' onclick='javascript:this.window.close()'></a></td>
-<td valign='middle'><a  href='".$href."'>Etiquetas da amostra</a></td>
-</tr>
-</table>";
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
-FazFooter($which_java,$calendar=FALSE,$footer=$menu);
+//echo "
+//<table align='left'  cellpadding='7'>
+//<tr>
+//<td><a  href='".$href."'><img src='icons/pdf_icon.jpg' height='30' onclick='javascript:this.window.close()'></a></td>
+//<td valign='middle'><a  href='".$href."'>Etiquetas da amostra</a></td>
+//</tr>
+//</table>";
+header("location: ".$href);
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
+//FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ini_set("allow_url_fopen", 0);
 

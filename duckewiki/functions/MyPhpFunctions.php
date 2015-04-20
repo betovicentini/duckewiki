@@ -14,11 +14,11 @@ if ($position=='right') {
 }
 $stilo =" border:1px solid #cccccc;  -webkit-box-shadow:inset 0 0 6px #cccccc; -moz-box-shadow: inset 0 0 6px #cccccc; cursor: pointer;";
 if ($_SESSION['userid']>0) {
-$toprint = "<div style=' vertical-align: top; position:absolute; top:10px; right:10px; font-size: 0.8em;'>Usuário:&nbsp;".$_SESSION['userfirstname']."&nbsp;".$_SESSION['userlastname']."&nbsp;".$_SESSION['sessiondate']."&nbsp;&nbsp;<img src=\"icons/logout.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Sai do sistema');\" onclick = \"javascript: self.location='logout.php';\" />&nbsp;&nbsp;<a href='index.php'><img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a></div>
-";
+$toprint = "";
 $linkss = array(
 'inicio' => "<a href='index.php'><img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>",
-'especimen' => "<img src=\"icons/specimen-icon.png\" ".$hgt." style=\"".$stilo."\" onclick = \"javascript:small_window('especimenes_dataform.php?ispopup=1&submeteu=nova',1000,600,'Editando/Criando um Especímene');\" onmouseover=\"Tip('Adicionar novo especímene');\" />",
+'especimen' => "<img src=\"icons/specimen-icon.png\" ".$hgt." style=\"".$stilo."\" onclick = \"javascript:small_window('especimenes_dataform.php?ispopup=1&submeteu=nova',1000,600,'Editando/Criando um Especímene');\" onmouseover=\"Tip('Adicionar novo especímene um por um');\" />",
+'especimenbatch' => "<img src=\"icons/specimensbatch-icon.png\" ".$hgt." style=\"".$stilo."\" onclick = \"javascript:small_window('batchenter_especimenes_form.php',1000,600,'Adicionar especimenes');\" onmouseover=\"Tip('Adicionar vários especímenes de uma vez');\" />",
 'planta' => "<img src=\"icons/tree-icon.png\" ".$hgt." style=\"".$stilo."\" onclick = \"javascript:small_window('plantas_dataform.php?ispopup=1&submeteu=nova',1000,600,'Editando/Criando uma Planta Marcada');\" onmouseover=\"Tip('Adicionar nova planta marcada');\" />",
 'taxonomia' => "<img src=\"icons/diversity.png\" ".$hgt." style=\"".$stilo."\" title=\"\"  
 onmouseover=\"Tip('Editar ou cadastrar Taxonomia');\" onclick = \"javascript:small_window('taxa-form.php?ispopup=1',800,500,'Taxonomia');\" />",
@@ -51,7 +51,7 @@ if ((empty($quais) || count($quais)==0) && $_SESSION['accesslevel']!='visitor') 
 	$quais = array_keys($linkss);
 }
 if (count($quais)>0) {
-$toprint .= "<br /><br /><br /><br /><div style=\"".$poss."\">";
+$toprint .= "<div style=\"".$poss."\">";
 foreach ($quais as $vv) {
 	$tp = $linkss[$vv];
 	$toprint .= $separador.$tp;
@@ -59,11 +59,15 @@ foreach ($quais as $vv) {
 $toprint .= "</div><br /><br />";
 }
 
-} else {
+} 
+else {
 $toprint = "
-<div style=' vertical-align:top; position:absolute;  top:10px; right:10px;  font-size: 0.8em;'>&nbsp;<img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\" onclick = \"javascript: self.location='login-form.php';\" />&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
-</div><br /><br /><br /><br /><br /><div width='100%'  style='padding-left: 5%; padding-top: 5%; font-size: 1.1em; text-align: left; line-height: 150%;'>".$_SESSION['introtext']."</div>";
+<div style=\"vertical-align:top; position: absolute;  top:0px; right: 0px;  font-size: 0.8em;\">&nbsp;<img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\" onclick = \"javascript: self.location='login-form.php';\" />&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
+</div><div 
+style='padding: 100px; font-family:\"Verdana\", Arial, sans-serif;  font-size: 1.2em; font-color: #800000;'>".$_SESSION['introtext']."</div>";
 }
+//style='padding-left: 5%; padding-top: 5%; font-size: 1.1em; text-align: left; line-height: 150%;
+
 //if (empty($toprint)) {
 	//$toprint = "<br /><br /><br /><br />";
 //}
@@ -1990,6 +1994,33 @@ function describetraits($traitsarray,$img=FALSE,$conn) {
 		if ($row['TraitTipo']=='Variavel|Texto') {
 			$varname = $varname.trim($variation);
 		}
+		if ($row['TraitTipo']=='Variavel|Taxonomy') {
+			$specieslist = strip_tags(describetaxacomposition($variation,$conn,$includeheadings=TRUE));
+			$varname = $varname.trim($specieslist);
+		}
+		if ($row['TraitTipo']=='Variavel|LinkEspecimenes') {
+			$qsp = "SELECT CONCAT(pess.Abreviacao,' ',spec.Number,'    -  ', if (gettaxonname(spec.DetID,1,0) IS NULL,'',gettaxonname(spec.DetID,1,0))) as nome, spec.EspecimenID, CONCAT(spec.Ano,'-',spec.Mes,'-',spec.Day) as datacol  FROM Especimenes as spec JOIN Pessoas as pess ON spec.ColetorID=pess.PessoaID WHERE spec.EspecimenID=".$variation;
+			$rsp = mysql_query($qsp,$conn);
+			$rwsp = mysql_fetch_assoc($rsp);
+			$varname  = $varname.$rwsp['nome'];
+		}
+		if ($row['TraitTipo']=='Variavel|Pessoa') {
+			$addcolarr = explode(";",$variation);
+			$addcoltxt = '';
+			$j=1;
+			foreach ($addcolarr as $kk => $vl) {
+				$qq = "SELECT * FROM Pessoas WHERE PessoaID='".$vl."'";
+				$res = mysql_query($qq,$conn);
+				$rrw = mysql_fetch_assoc($res);
+				if ($j==1) {
+					$addcoltxt = $rrw['Abreviacao'];
+				} else {
+					$addcoltxt = $addcoltxt."; ".$rrw['Abreviacao'];
+				}
+				$j++;
+			}
+			$varname = $varname.trim($addcoltxt);
+		}
 
 		if ($row['TraitTipo']=='Variavel|Imagem') {
 			$string = 'trait_'.$row['TraitID'];
@@ -2115,10 +2146,8 @@ foreach ($arraryofvalue as $key => $value) {
 	if ($erro==0) {return TRUE;} else {return FALSE;}
 } //end of function
 
-
-function updatetraits($arraryofvalue,$linkid,$linktype,$conn) {
+function updatetraits($arraryofvalue,$linkid,$linktype,$bibtexids,$conn) {
 $erro =0;
-//echopre($arraryofvalue);
 foreach ($arraryofvalue as $key => $value) {
 		$arraykey = explode("_",$key);
 		$charid = $arraykey[1];
@@ -2143,7 +2172,8 @@ foreach ($arraryofvalue as $key => $value) {
 		//echo $traittipo."<br>";
 		if ($traittipo=='Variavel|Quantitativo'  && $varorunit!='traitunit' ) {
 			$ttunidade = $arraryofvalue['traitunit_'.$charid];
-		} else {
+		} 
+		else {
 			$ttunidade = ' ';
 		}
 		if ($varorunit=='tratunit' && !empty($value)) {
@@ -2156,7 +2186,8 @@ foreach ($arraryofvalue as $key => $value) {
 				} else {
 					$value = ' ';
 				}
-		} elseif ($value=='none') {$value=' ';}
+		} 
+		elseif ($value=='none') {$value=' ';}
 		if (!empty($value) && $varorunit!='traitmulti' && $varorunit!='traitunit') {
 			if ($linktype=='HabitatID') {
 				$tablename = "Habitat_Variation";
@@ -2172,17 +2203,24 @@ foreach ($arraryofvalue as $key => $value) {
 			$update = @mysql_numrows($teste);
 		}
 		$fieldsaskeyofvaluearray = array($linktype => $linkid);
-		$zz = array('TraitID' => $charid, $fieldname => $value, 'TraitUnit' => $ttunidade);
+		if (!empty($bibtexids)) {
+			$zz = array('TraitID' => $charid, $fieldname => $value, 'TraitUnit' => $ttunidade, 'BibtexIDS' => $bibtexids);
+			$qtemp = "ALTER TABLE `Traits_variation`  ADD `BibtexIDS` CHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Bibliografia' AFTER `GrupoSppID`";
+			@mysql_query($qtemp,$conn);
+		} else {
+			$zz = array('TraitID' => $charid, $fieldname => $value, 'TraitUnit' => $ttunidade);
+		}
 		$fieldsaskeyofvaluearray = array_merge((array)$fieldsaskeyofvaluearray,(array)$zz);
+		//echopre($fieldsaskeyofvaluearray);
 		//faz o cadastro ou atualiza variacao
-		if (!empty($value) && $value!=' ' && $update==0 && $varorunit!='traitmulti' && $varorunit!='traitimg' && $varorunit!='traitunit') {
+		if (!empty($value) && $value!=' ' && $update==0 && $varorunit!='traitmulti' && $varorunit!='traitimg' && $varorunit!='traitunit' & $charid>0) {
 			$newtrait = InsertIntoTable($fieldsaskeyofvaluearray,
 			$tbidfie,$tablename,$conn);
 			if (!$newtrait) {
 				$erro++;
 			}
 		}
-		if ($update>0 && $varorunit!='traitmulti' && $varorunit!='traitimg' && $varorunit!='traitunit') {
+		if ($update>0 && $varorunit!='traitmulti' && $varorunit!='traitimg' && $varorunit!='traitunit' && $charid>0) {
 			$rrr = @mysql_fetch_assoc($teste);
 			$oldval = trim($rrr[$fieldname]);
 			$tvv = $value;
@@ -2504,14 +2542,14 @@ foreach ($arraryofvalue as $key => $value) {
 		//faz o cadastro ou atualiza variacao
 		//echopre($fieldsaskeyofvaluearray);
 		//echo "value:  ".$value."  varorunit:".$varorunit."  update:".$update;
-		if (!empty($value) && $value!=' ' && $update==0 && $varorunit!='traitmulti' && $varorunit!='traitimg' && $varorunit!='traitunit') {
+		if (!empty($value) && $value!=' ' && $update==0 && $varorunit!='traitmulti' && $varorunit!='traitimg' && $varorunit!='traitunit' && $charid>0) {
 			$newtrait = InsertIntoTable($fieldsaskeyofvaluearray,
 			$tbidfie,$tablename,$conn);
 			if (!$newtrait) {
 				$err++;
 			}
 		}
-		if ($update>0 && $varorunit!='traitmulti' && $varorunit!='traitimg' && $varorunit!='traitunit') {
+		if ($update>0 && $varorunit!='traitmulti' && $varorunit!='traitimg' && $varorunit!='traitunit' && $charid>0) {
 			$rrr = @mysql_fetch_assoc($teste);
 			$oldval = trim($rrr[$fieldname]);
 			$tvv = $value;
@@ -3842,6 +3880,24 @@ function gettaxaids($nomeid,$conn) {
 	return $results;
 }
 
+function reversetaxaid($famid,$genid,$specid,$infraspecid) {
+	$res = '';
+	if ($infraspecid>0) {
+		$res = 'infspid_'.$infraspecid;
+	} else {
+		if ($specid>0) {
+			$res = 'speciesid_'.$specid;
+		} else {
+			if ($genid>0) {
+				$res = 'genusid_'.$genid;
+			} else {
+				if ($famid>0) { $res = 'famid_'.$famid; }
+			}
+		}
+	}
+	return $res;
+}
+
 function TaxonomySimple($all=true,$conn) {
 	$qqarr = array();
 	if ($all) { $tablename = 'TaxonomySimple'; } else { $tablename = 'TaxonomySimpleSearch';}
@@ -3956,6 +4012,30 @@ function TaxonomySimple($all=true,$conn) {
 	@mysql_query($forkeyoff,$conn);
 }
 
+function TaxonomySimpleInsert($idd,$tableref,$conn) {
+	$tablename = 'TaxonomySimple'; 
+	if ($tableref=='infspid') {
+		$qqarr = "SELECT Familia,CONCAT(Genero,' ',Especie,' ',InfraEspecieNivel,' ',InfraEspecie) as nome, CONCAT('infspid_',InfraEspecieID) as nomeid, InfraEspecieID as id, Tax_Generos.FamiliaID, Tax_Generos.GeneroID, Tax_Especies.EspecieID, InfraEspecieID   FROM Tax_InfraEspecies JOIN Tax_Especies USING(EspecieID) JOIN Tax_Generos USING(GeneroID) JOIN Tax_Familias USING(FamiliaID) WHERE Tax_InfraEspecies.InfraEspecieID=".$idd;
+	} 
+	if ($tableref=='speciesid') {
+		$qqarr = "SELECT Familia,CONCAT(Genero,' ',Especie) as nome, CONCAT('speciesid_',EspecieID) as nomeid, EspecieID as id, Tax_Generos.FamiliaID, Tax_Generos.GeneroID, EspecieID, NULL as InfraEspecieID    FROM Tax_Especies JOIN Tax_Generos USING(GeneroID) JOIN Tax_Familias USING(FamiliaID)  WHERE Tax_Especies.EspecieID=".$idd;
+	} 
+	if ($tableref=='genusid') {
+		$qqarr = "SELECT  Familia, Genero as nome, CONCAT('genusid_',GeneroID) as nomeid, GeneroID as id, Tax_Familias.FamiliaID, GeneroID, NULL as EspecieID, NULL as InfraEspecieID  FROM Tax_Generos JOIN Tax_Familias USING(FamiliaID)  WHERE Tax_Generos.GeneroID=".$idd;
+	} 
+	if ($tableref=='famid') {
+		$qqarr = "SELECT Familia, Familia as nome, CONCAT('famid_',FamiliaID) as nomeid, FamiliaID as id, FamiliaID, NULL as GeneroID, NULL as EspecieID, NULL as InfraEspecieID FROM Tax_Familias WHERE Tax_Familias.FamiliaID=".$idd;
+	} 
+	
+	$qbse = "INSERT INTO ".$tablename." (Familia, nome,nomeid,id,FamiliaID,GeneroID, EspecieID,InfraEspecieID) (".$qqarr.")";
+	
+	$forkeyoff = "SET FOREIGN_KEY_CHECKS=0";
+	mysql_query($forkeyoff,$conn);
+	$rup = mysql_query($qbse,$conn);
+	//echo $qbse."<br />";
+	$forkeyoff = "SET FOREIGN_KEY_CHECKS=1";
+	mysql_query($forkeyoff,$conn);
+}
 
 function TaxonomySimpleNew($all=true,$conn) {
 	if ($all) { $tablename = 'TaxonomySimple'; } else { $tablename = 'TaxonomySimpleSearch';}
@@ -5218,16 +5298,16 @@ return preg_replace(array_keys($a), array_values($a), $Msg);
 
 function strtloweracentos($Msg) {
 $Msg = strtolower($Msg);
-$arupper = array('/Â/', '/À/', '/Á/', '/Ä/', '/Ã/', '/Ê/', '/È/', '/É/', '/Ë/', '/Î/', '/I/', '/I/', '/I/', '/Ô/', '/Õ/', '/Ò/', '/Ó/', '/Ö/', '/Û/', '/Ù/', '/Ú/', '/Ü/', '/Ç/');
-$arlower = array('â', 'à', 'á', 'ä','ã', 'ê', 'è', 'é', 'ë', 'î', 'í', 'ì', 'ï', 'ô', 'õ', 'ò', 'ó', 'ö', 'û',  'ù', 'ú','ü', 'ç');
+$arupper = array('/Â/', '/À/', '/Á/', '/Ä/', '/Ã/', '/Ê/', '/È/', '/É/', '/Ë/', '/Î/', '/I/', '/I/', '/I/', '/Ô/', '/Õ/', '/Ò/', '/Ó/', '/Ö/', '/Û/', '/Ù/', '/Ú/', '/Ü/', '/Ç/','Ñ');
+$arlower = array('â', 'à', 'á', 'ä','ã', 'ê', 'è', 'é', 'ë', 'î', 'í', 'ì', 'ï', 'ô', 'õ', 'ò', 'ó', 'ö', 'û',  'ù', 'ú','ü', 'ç','/ñ/');
 $a = array_combine($arupper,$arlower);
 return preg_replace(array_keys($a), array_values($a), $Msg);
 }
 
 function strtupperacentos($Msg) {
 $Msg = strtoupper($Msg);
-$arupper = array('Â', 'À', 'Á', 'Ä', 'Ã', 'Ê', 'È', 'É', 'Ë', 'Î', 'I', 'I', 'I', 'Ô', 'Õ', 'Ò', 'Ó', 'Ö', 'Û', 'Ù', 'Ú', 'Ü', 'Ç');
-$arlower = array('/â/', '/à/', '/á/', '/ä/','/ã/', '/ê/', '/è/', '/é/', '/ë/', '/î/', '/í/', '/ì/', '/ï/', '/ô/', '/õ/', '/ò/', '/ó/', '/ö/', '/û/',  '/ù/', '/ú/','/ü/', '/ç/');
+$arupper = array('Â', 'À', 'Á', 'Ä', 'Ã', 'Ê', 'È', 'É', 'Ë', 'Î', 'I', 'I', 'I', 'Ô', 'Õ', 'Ò', 'Ó', 'Ö', 'Û', 'Ù', 'Ú', 'Ü', 'Ç','Ñ');
+$arlower = array('/â/', '/à/', '/á/', '/ä/','/ã/', '/ê/', '/è/', '/é/', '/ë/', '/î/', '/í/', '/ì/', '/ï/', '/ô/', '/õ/', '/ò/', '/ó/', '/ö/', '/û/',  '/ù/', '/ú/','/ü/', '/ç/','/ñ/');
 $a = array_combine($arlower,$arupper);
 return preg_replace(array_keys($a), array_values($a), $Msg);
 }

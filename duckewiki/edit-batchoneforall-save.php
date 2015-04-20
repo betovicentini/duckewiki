@@ -93,7 +93,7 @@ if ($final==1) {
 				if ($changedtraits>0) {
 					$traitarray = unserialize($_SESSION['variation']);
 					if (count($traitarray)>0) {
-						$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$conn);
+						$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$bibtex_id,$conn);
 					}
 				}
 		}

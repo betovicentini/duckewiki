@@ -381,7 +381,7 @@ $erro++;
 		) {
 		$traitarray = unserialize($_SESSION['variation']);
 		if (count($traitarray)>0) {
-			$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$conn);
+			$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$bibtex_id,$conn);
 			if (!$resultado) {
 				$erro++;
 				echo "

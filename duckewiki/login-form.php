@@ -15,12 +15,10 @@ $title = 'Login';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 echo "<script type='text/javascript' src='javascript/wz_tooltip.js'></script>";
-omenudeicons($quais, $vertical=FALSE, $position='right' , $iconwidth='30', $iconheight='30' );
+//omenudeicons($quais, $vertical=FALSE, $position='right' , $iconwidth='30', $iconheight='30' );
 
 if ($blockacess>0) {
 echo "
-<br>
-<br>
 <br>
 <br>
 <p align='center' style='margin-left: 50px; color: red; font-size: 1.5em; width: 50%;' >EM MANUTENÇÃO DE ATUALIZAÇÃO! POR FAVOR, VOLTE MAIS TARDE!</p>
@@ -29,11 +27,6 @@ echo "
 }
 echo "
 <br>
-<br>
-<br />
-<br />
-<br />
-<br />
 <form id='loginForm' name='loginForm' method='post' action='login-exec.php'>
   <table class='myformtable' align='center' cellpadding='5'>
   <thead><tr><td colspan='2'>Login</td></tr>

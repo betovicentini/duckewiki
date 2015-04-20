@@ -267,6 +267,7 @@ if ($final==1) {
 			$speciesid = $newrec;
 		}
 		if ($speciesid>0) {
+			TaxonomySimpleInsert($speciesid,"speciesid",$conn);
 			$qq = "SELECT * FROM Tax_Especies JOIN Tax_Generos USING(GeneroID) WHERE EspecieID='".$speciesid."'";
 			$qu = mysql_query($qq,$conn);
 			$rr = mysql_fetch_assoc($qu);
@@ -285,7 +286,8 @@ setTimeout(
   ,0.0001);
 </script>
 </form>";
-		} else {
+		} 
+		else {
 			echo "
 <br />
 <table cellpadding=\"1\" width='50%' align='center' class='success'>
@@ -640,7 +642,7 @@ echo "
       <tr>
         <td ><span id='bibtex_txt'>".$bibtex_txt."</span><input type='hidden' id='bibtex_id' name='bibtex_id'  value='".$bibtex_id."'></td>
         <td><input type=button style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  value='Bibliografia'  onmouseover=\"Tip('Escolha a referência de publicação do nome');\" ";
-		$myurl = "bibtext-gridsave.php?bibtex_txt=bibtex_txt&bibtex_id=bibtex_id";
+		$myurl = "bibtext-gridsave.php?bibtex_txt=bibtex_txt&bibtex_id=bibtex_id&bibids=".$bibtex_id;
 		echo " onclick = \"javascript:small_window('".$myurl."',800,600,'Referências Bibliográficas');\" /></td>
       </tr>
     </table>

@@ -48,42 +48,113 @@ $body='';
 $title = 'Script Teste Executa';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
-$fhh =  "dadosMorfologicos_9.csv";
-
-fclose($fhh);
-
-
-//$qq = "SELECT *  FROM `Imagens` WHERE `AddedDate` = '2014-07-02' AND `TraitID` = 351";
-//$res = mysql_query($qq,$conn);
-//while ($row = mysql_fetch_assoc($res)) {
-//	$trid = 351;
-//	$imgid = $row['ImageID'];
-//	$qq = "SELECT * FROM Traits_variation WHERE `AddedDate`='2014-07-02' AND TraitID=351";
-//	$rr = mysql_query($qq,$conn);
-//	$encontrei=0;
-//	while ($rw = mysql_fetch_assoc($rr)) {
-//		$vv = $rw['TraitVariation'];
-//		$rn = explode(";",$vv);
-//		//echopre($rn);
-//		if (in_array($imgid,$rn)) {
-//			$qq = "UPDATE Traits_variation SET TraitID=350 WHERE TraitVariationID='".$rw['TraitVariationID']."'";
-//			$r1 = mysql_query($qq,$conn);			
-//			$qq = "UPDATE Imagens SET TraitID=350 WHERE ImageID='".$imgid."'";
-//			$r2 = mysql_query($qq,$conn);
-//			if ($r1 && $r2) {
-//				$atualizado='ok';
-//			} else {
-//				$atualizado ='FALHOU';
-//			}
-//			$encontrei++;
-//		}		
+//$qn = "SELECT * FROM (SELECT list.ProcessoID,list.EspecimenID,list.Herbaria,list.INPA, COUNT(*) as nn FROM `ProcessosLIST` AS list LEFT JOIN ProcessosEspecs as prc USING(ProcessoID) WHERE prc.ProcessoID=18 AND (list.INPA IS NOT NULL) GROUP BY CONCAT(ProcessoID,EspecimenID, INPA)) AS zz WHERE zz.nn>1";
+////echo $qn."<br />";
+//$rn = mysql_query($qn,$conn);
+//while($rw = mysql_fetch_assoc($rn)) {
+//$herb = $rw['Herbaria'];
+//if ($herb=='' OR empty($herb)) {
+//	$herb = " ((Herbaria IS NULL) OR TRIM(Herbaria)='') ";
+//} else {
+//	$herb = " Herbaria='".$herb."'";
+//}
+//$inpa = $rw['INPA'];
+//if ($inpa=='' OR empty($inpa)) {
+//	$inpa = " ((INPA IS NULL) OR TRIM(INPA)='' OR INPA=0) ";
+//} else {
+//	$inpa = " INPA=".$inpa;
+//}
+//	$qz = "SELECT ProcessosListID FROM `ProcessosLIST` WHERE ProcessoID='".$rw['ProcessoID']."' AND EspecimenID='".$rw['EspecimenID']."' AND ".$inpa."  AND EXISTE=1 ORDER BY ProcessosListID LIMIT 0,1";
+//	//echo $qz."<br />";
+//	$rz = mysql_query($qz);
+//	$nrr = mysql_numrows($rz);
+//	if ($nrr==0) {
+//		$qz = "SELECT ProcessosListID FROM `ProcessosLIST` WHERE ProcessoID='".$rw['ProcessoID']."' AND EspecimenID='".$rw['EspecimenID']."' AND ".$inpa."  ORDER BY ProcessosListID LIMIT 0,1";
+//		//echo $qz."<br />";
+//		$rz = mysql_query($qz);
 //	}
-//	echo 'Encontrei '.$encontrei."  E ".$atualizado."<br>";
-//	session_write_close();
+//	$rww = mysql_fetch_assoc($rz);
+//	$keep = $rww['ProcessosListID'];
+//	if ($keep>0) {
+//		$qzz = "DELETE  FROM `ProcessosLIST` WHERE ProcessoID='".$rw['ProcessoID']."' AND EspecimenID='".$rw['EspecimenID']."' AND ".$inpa." AND ProcessosListID<>".$keep;
+//		//echo $qzz."<br />";
+//		$del = mysql_query($qzz);
+//		if ($del) {
+//			echo "=<br />";
+//			session_write_close();
+//		}
+//		
+//	
+//	} 
+//
 //}
 //
 //
 //
+//
+IF ($final==1) {
+	$dataar = unserialize($data);
+	echopre($dataar);
+	if ($escolha==1) {
+		$arrayofvv = array('DetID' => $dataar['plDetID']);
+		//ATUALIZA IDENTIFICACAO DA AMOSTRA
+		$especimenid = $dataar['EspecimenID'];
+		CreateorUpdateTableofChanges($especimenid,'EspecimenID','Especimenes',$conn);
+		$newupdate = UpdateTable($especimenid,$arrayofvv,'EspecimenID','Especimenes',$conn);
+	}
+	if ($escolha==2) {
+		$arrayofvv = array('DetID' => $dataar['specDetID']);
+		//ATUALIZA IDENTIFICACAO DA PLANTA
+		$plantaid = $dataar['PlantaID'];
+		CreateorUpdateTableofChanges($plantaid,'PlantaID','Plantas',$conn);
+		$newupdate = UpdateTable($plantaid,$arrayofvv,'PlantaID','Plantas',$conn);
+	}
+}
+$qq = "SELECT pl.DetID as plDetID, pl.PlantaID, gettaxonname(pl.DetID,1,0) AS plNOME, plpes.Abreviacao as plDetBy, iddpl.DetDate as plDATA, spec.DetID as specDetID, spec.EspecimenID,spec.PlantaID AS SPEC_PlantaID,   gettaxonname(spec.DetID,1,0) AS specNOME, specpes.Abreviacao as specDetBy,  iddspec.DetDate as specDATA FROM Especimenes as spec JOIN Plantas as pl USING(PlantaID) LEFT JOIN Identidade as iddpl ON iddpl.DetID=pl.DetID  LEFT JOIN Identidade as iddspec ON iddspec.DetID=spec.DetID LEFT JOIN Pessoas as plpes ON plpes.PessoaID=iddpl.DetByID LEFT JOIN Pessoas as specpes ON specpes.PessoaID=iddspec.DetByID  WHERE (iddspec.FamiliaID<>iddpl.FamiliaID OR iddspec.GeneroID<>iddpl.GeneroID OR iddspec.EspecieID<>iddpl.EspecieID OR iddspec.InfraEspecieID<>iddpl.InfraEspecieID) LIMIT 0,1";
+$res = mysql_query($qq,$conn);
+$nres = mysql_numrows($res);
+if ($nres>0) {
+$row = mysql_fetch_assoc($res);
+//echopre($row);
+echo "
+<form action='ScriptTeste.php' method='post'>
+<input type='hidden' name='data' value='".serialize($row)."' >
+<input type='hidden' name='final' value='1' >
+ESCOLHA O REGISTRO VALIDO
+<table padding=7>
+<tr>
+<td><input type='radio' name='escolha'  value=1 onclick='javascript: this.form.submit();' ></td>
+<td>".$row['plDetID']."</td>
+<td>".$row['PlantaID']."</td>
+<td>".$row['plNOME']."</td>
+<td>".$row['plDetBy']."</td>
+<td>".$row['plDATA']."</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td><input type='radio' name='escolha'  value=2 onclick='javascript: this.form.submit();'></td>
+<td>".$row['specDetID']."</td>
+    <td>".$row['EspecimenID']."</td>
+    <td>".$row['SPEC_PlantaID']."</td>
+    <td>".$row['specNOME']."</td>
+    <td>".$row['specDetBy']."</td>
+    <td>".$row['specDATA']."</td>
+</tr>
+<tr><td colspan=5><input type='submit'  value='atualizar' /></td></tr>
+</table>
+</form>";
+
+} else {
+	echo "Não encontrei mais nenhuma amostra com nome diferente de planta";
+}
+
+
+
+
+
+
+
+
 $which_java = array(
 "<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
 );

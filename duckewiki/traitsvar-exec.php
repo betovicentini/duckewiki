@@ -79,7 +79,7 @@ echo "
 <br>
 <table class='myformtable' cellpadding=\"7\" align='center'>
 <thead>
-  <tr><td colspan='100%'>".$titulo."</td></tr>
+  <tr><td >".$titulo."</td></tr>
 </thead>
 <tbody>";
 if (empty($traitid) || $traitid==GetLangVar('nameselect')) { //start if editing tipo change option not allowed
@@ -128,7 +128,7 @@ echo "
               <td><input type='radio' name='traittipo'";
 				if ($traittipo=='Variavel|Imagem') {echo " checked ";}
 				echo " value='Variavel|Imagem' onchange='this.form.submit();' /></td><td>".GetLangVar('traittipo4')."</td>
-              <td align='left'<img src=\"icons/icon_question.gif\" ";
+              <td align='left' ><img src=\"icons/icon_question.gif\" ";
 				$help = strip_tags(GetLangVar('traittipo4_desc'));
 				echo " onclick=\"javascript:alert('$help');\" /></td>
             </tr>
@@ -140,7 +140,7 @@ echo "
               <td><input type='radio' name='traittipo'";
 				if ($traittipo=='Variavel|Texto') {echo " checked ";}
 				echo " value='Variavel|Texto' onchange='this.form.submit();' /></td><td>".GetLangVar('traittipo5')."</td>
-              <td align='left'<img src=\"icons/icon_question.gif\" ";
+              <td align='left' ><img src=\"icons/icon_question.gif\" ";
 				$help = strip_tags(GetLangVar('traittipo5_desc'));
 				echo " onclick=\"javascript:alert('$help');\" /></td>
             </tr>
@@ -152,12 +152,15 @@ echo "
               <td><input type='radio' name='traittipo'";
 				if ($traittipo=='Variavel|Cores') {echo " checked ";}
 				echo " value='Variavel|Cores' onchange='this.form.submit();' /></td><td>".GetLangVar('traittipo3')."</td>
-              <td align='left'<img src=\"icons/icon_question.gif\" ";
+              <td align='left' ><img src=\"icons/icon_question.gif\" ";
 				$help = strip_tags(GetLangVar('traittipo3_desc'));
 				echo " onclick=\"javascript:alert('$help');\" /></td>
             </tr>
           </table>
         </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
           <td class='tdformnotes'>
             <table>
               <tr>
@@ -165,8 +168,50 @@ echo "
 				if ($traittipo=='Variavel|Pelos') {echo " checked ";}
 				echo " value='Variavel|Pelos' onchange='this.form.submit();' /></td>
                 <td>".GetLangVar('traittipo6')."</td>
-                <td align='left'<img src=\"icons/icon_question.gif\" ";
+                <td align='left' ><img src=\"icons/icon_question.gif\" ";
 				$help = strip_tags(GetLangVar('traittipo6_desc'));
+				echo  " onclick=\"javascript:alert('$help');\" />
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class='tdformnotes'>
+            <table>
+              <tr>
+                <td><input type='radio' name='traittipo'";
+				if ($traittipo=='Variavel|Taxonomy') {echo " checked ";}
+				echo " value='Variavel|Taxonomy' onchange='this.form.submit();' /></td>
+                <td>LinkTaxonomico</td>
+                <td align='left' ><img src=\"icons/icon_question.gif\" ";
+				$help = "Este tipo de variável permite a seleção de nomes taxonômicos como variação. Útil para fazer links taxonômicos entre organismos";
+				echo  " onclick=\"javascript:alert('$help');\" />
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class='tdformnotes'>
+            <table>
+              <tr>
+                <td><input type='radio' name='traittipo'";
+				if ($traittipo=='Variavel|Pessoa') {echo " checked ";}
+				echo " value='Variavel|Pessoa' onchange='this.form.submit();' /></td>
+                <td>Pessoas</td>
+                <td align='left' ><img src=\"icons/icon_question.gif\" ";
+				$help = "Este tipo de variável permite a seleção de nomes de pessoas como variação. ";
+				echo  " onclick=\"javascript:alert('$help');\" />
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class='tdformnotes'>
+            <table>
+              <tr>
+                <td><input type='radio' name='traittipo'";
+				if ($traittipo=='Variavel|LinkEspecimenes') {echo " checked ";}
+				echo " value='Variavel|LinkEspecimenes' onchange='this.form.submit();' /></td>
+                <td>Link Especimenes</td>
+                <td align='left' ><img src=\"icons/icon_question.gif\" ";
+				$help = "Este tipo de variável permite selecionar o identificador de especímenes, permitindo a criação de vínculos entre especímenes diferentes";
 				echo  " onclick=\"javascript:alert('$help');\" />
                 </td>
               </tr>
@@ -363,12 +408,13 @@ if ($traittipo=='Variavel|Categoria' || $traittipo=='Variavel|Cores') { //se for
   </td>
 </tr>
 ";
+if ($traitid>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
 	echo "
 <tr bgcolor = $bgcolor>
   <td class='tdformnotes'>CATEGORIAS CADASTRADAS: ".$categoriasvariacao."</td>
 </tr>";
-
+}
 } 
 
 //trait definicao
@@ -448,9 +494,9 @@ echo "
 </tbody>
 </table>";
 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
+);
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

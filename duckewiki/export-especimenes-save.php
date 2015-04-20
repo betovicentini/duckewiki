@@ -36,20 +36,23 @@ if ($ispopup==1) {
 }
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
+//"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
+//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
+//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
+//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
 $title = 'Export especímenes';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
-
-$export_filename_metadados = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate']."_definicoesDAScolunas.csv";
-$export_filename = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate'].".csv";
+if (!isset($export_filename_metadados)) {
+	$export_filename_metadados = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate']."_definicoesDAScolunas.csv";
+}
+if (!isset($export_filename)) {
+	$export_filename = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate'].".csv";
+}
 $nrecs = $_SESSION['exportnresult']+0;
 $nfields = $_SESSION['exportnfields']+0;
 echo "
@@ -67,25 +70,35 @@ echo "
 <tr>
   <td><b>$nrecs</b> registros foram preparados</td>
     <td><a href=\"download.php?file=temp/".$export_filename."\">Baixar dados</a></td>
-</tr>
- <tr>
+</tr>";
+if ($forbrahms!=1) {
+echo "<tr>
    <td>A tabela gerada contém <b>$nfields</b> colunas</td>
    <td><a href=\"download.php?file=temp/".$export_filename_metadados."\">Baixar definição colunas dados</a></td>
 </tr>
+";
+echo "
 <tr>
-  <td colspan='100%'><hr></td>
+  <td colspan='2'><hr></td>
 </tr>
 <tr>
-  <td colspan='100%' class='tdformnotes'>*Os arquivos são separados por TABULAÇÃO, tem quebras de linha em formato Unix, e o encoding de caracteres é UTF-8. O planilha do openoffice é melhor que o Excel para abrir o arquivo porque reconhece automaticamente o encoding dos caracteres (UTF-8). No Excel pode ter erros de grafia.</td>
+  <td colspan='2' class='tdformnotes'>*Os arquivos são separados por TABULAÇÃO, tem quebras de linha em formato Unix, e o encoding de caracteres é UTF-8. O planilha do openoffice é melhor que o Excel para abrir o arquivo porque reconhece automaticamente o encoding dos caracteres (UTF-8). No Excel pode ter erros de grafia.</td>
 </tr>";
+} else {
+echo "
+<tr>
+  <td colspan='2'><hr></td>
+</tr>
+<tr>
+  <td colspan='2' style='font-size: 1.2em; color: red;' ><b>ATENÇÃO</b>: Este arquivo está formatado para o BRAHMS e portanto o tem encoding de caracteres <b>latin1 (= ISO-8859-1)</b> e quebra de linha no formato Windows. Utilizar sempre o Open(Libre, BR) Office para abrir isso em outra plataforma que não seja windows para poder controlar essa opções.</td>
+</tr>";
+}
 }
 echo "
 </tbody>
 </table>";
 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 

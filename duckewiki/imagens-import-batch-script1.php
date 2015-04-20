@@ -102,9 +102,9 @@ while ($kw = mysql_fetch_assoc($rn)) {
 				}
 		}
 	}
-	//NAO IMPORTA PORTANTO SE NAO ENCONTROU, MAS NAO APAGA
+	//NAO IMPORTA SE NAO ENCONTROU E APAGA
 	if ($importa==0) {
-		//@unlink($inputfile);
+		@unlink($inputfile);
 		$nao_importou = $nao_importou+1;
 		$perc = round(($ii/$nii)*100);
 	} 

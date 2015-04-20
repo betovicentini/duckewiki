@@ -181,9 +181,9 @@ $colw = array_merge((array)$colw,(array)array("LONGITUDE" => 40,
 	$imgfields = array("OBS", "IMG", "PRJ", "EDIT", "HABT","MAP","NIRSpectra");
 	//$numericfilter = array("DAPmm","ALTURA");
 	if(!isset($uuid) || (trim($uuid)=='') || $acceslevel=='visitor' || $uuid==0) {
-		$hidefields = array("EspecimenID","PROJETOstr", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","EDIT","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","MORFOTIPO",'FERTILIDADE');
+		$hidefields = array("EspecimenID","PRJ", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","EDIT","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","MORFOTIPO",'FERTILIDADE',"NIRSpectra");
 	} else {
-		$hidefields = array("EspecimenID", "PROJETOstr", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","MORFOTIPO", "FERTILIDADE");
+		$hidefields = array("EspecimenID", "PRJ", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","MORFOTIPO", "FERTILIDADE","NIRSpectra");
 	}
 	$i=1;
 	$ncl = count($headd)-count($imgfields)-count($hidefields);
@@ -396,7 +396,6 @@ $stringData .= "
       \$imagen=\"<img style='cursor:pointer;' src='\".\$data->get_value(\"PRJ\").\"' height='20' onclick=\\\"javascript:alert('\".\$data->get_value(\"PROJETOstr\").\"');\\\" onmouseover=\\\"Tip('\".\$data->get_value(\"PROJETOstr\").\"');\\\" >\";
       \$data->set_value(\"PRJ\",\$imagen);
     }
-    
     \$nir = \$data->get_value(\"NIRSpectra\");
     if (\$nir>0) {
           \$imagen=  \"<sup>  \".\$nir.\"</sup>&nbsp;<img style='  -webkit-box-shadow:inset 0 0 6px #cccccc; -moz-box-shadow: inset 0 0 6px #cccccc; cursor: pointer;' src='icons/nirspectra.png' height='16' onmouseover=\\\"Tip('Existem \$nir espectros associados esse ESPECIMENE');\\\" title=''>\";

@@ -957,7 +957,7 @@ elseif ($habitattipo=='Local') {
 			$hbid = $newhabitatid;
 		}
 		if (count($variaveis)>0) {
-			$resultado = updatetraits($variaveis,$hbid,'HabitatID',$conn);
+			$resultado = updatetraits($variaveis,$hbid,'HabitatID',$bibtex_id,$conn);
 			if (!$resultado) {
 				$erro++;
 			} 

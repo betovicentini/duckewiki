@@ -28,12 +28,11 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+//echopre($ppost);
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
+
+$export_filename = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate'].".csv";
 
 if (empty($herbariumsigla)) {
 	$herbariumsigla = 'HERB_NO';
@@ -41,12 +40,8 @@ if (empty($herbariumsigla)) {
 	
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />"
-//,"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
 );
 $which_java = array(
-//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
 $title = 'Export especimenes';
 $body = '';
@@ -61,7 +56,7 @@ if (!isset($prepared)) {
 	unset($metadados);
 	unset($_SESSION['qq']);
 	unset($qq);
-	if (empty($filtro) && !isset($especimenesids) && ($processoid+0)==0) { 
+	if (empty($filtro) && !isset($especimenesids) && empty($processoid)) { 
 		header("location: export-especimenes-form.php?ispopup=1");
 	} 
 	if (!empty($specbasicvars)) {
@@ -80,7 +75,55 @@ if (!isset($prepared)) {
 	if (!isset($habmean)) {
 		$habmean=0;
 	}
-	$qq .= " SELECT pltb.EspecimenID AS WikiEspecimenID, CONCAT(
+	if (empty($herbariumsigla)) {
+		$herbariumsigla = 'HERB_NO';
+	}
+	
+	$qqbrahms = " SELECT DISTINCT pltb.EspecimenID AS WikiEspecimenID, prcc.".$herbariumsigla." AS accession, colpessoa.Abreviacao as collector, '' as prefix, pltb.Number as number, '' as suffix, addcolldescr(AddColIDS) as addcoll";
+	$qqbrahms .= ", IF (pltb.Day>0,pltb.Day,'')  as colldd, IF (pltb.Mes>0,pltb.Mes,'')  as collmm, IF (pltb.Ano>0,pltb.Ano,'')  as collyy";
+	if ($duplicatesTraitID>0) {
+	$qqbrahms .=", traitvaluespecs(".$duplicatesTraitID.",0,pltb.EspecimenID,'',0,0) as inicial";
+	}
+	$qqbrahms .=", 
+famtb.Familia as family, 
+gentb.Genero as genus, 
+iddet.DetModifier as detstatus, 
+IF(sptb.Morfotipo=1,'',sptb.Especie) as sp1, 
+IF(infsptb.Morfotipo=1,'',infsptb.InfraEspecieNivel) as rank1, 
+IF(infsptb.Morfotipo=1,'',infsptb.InfraEspecie) as sp2, 
+detpessoa.Abreviacao as detby, 
+IF(DAY(iddet.DetDate)>0,DAY(iddet.DetDate),IF(iddet.DetDateDD>0,iddet.DetDateDD,'')) as detdd, 
+IF(MONTH(iddet.DetDate)>0,MONTH(iddet.DetDate),IF(iddet.DetDateMM>0,iddet.DetDateMM,'')) as detmm,
+IF(YEAR(iddet.DetDate)>0,YEAR(iddet.DetDate),IF(iddet.DetDateYY>0,iddet.DetDateYY,'')) as detyy";
+	$qqbrahms .= ",  
+localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID,'COUNTRY')  as country,
+localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'MAJORAREA')  as majorarea,
+localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'MINORAREA')  as minorarea, 
+localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZETTEER')  as gazetteer_completo,
+localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZfirstPARENT')  as gazetteer_parent";
+	if ($localidadetraitid>0) {
+	$qqbrahms .=", traitvaluespecs(".$localidadetraitid.",0,pltb.EspecimenID,'',0,0) as locnotes";
+	} else {
+	$qqbrahms .=", '' as locnotes";
+	}
+	$qqbrahms .= ", 
+abs(getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID, CountryID, 1,5))  as `lat`,
+getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 1,4) as NS,
+abs(getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 0,5))  as `long`,
+'DD' as llunit,
+getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 0,4)  as EW,
+getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as alt";
+	if ($monidata==1) {
+		$qqbrahms .= ", labeldescricao(pltb.EspecimenID,pltb.PlantaID,".($formnotas+0).",1,0) as plantdesc";
+	} else {
+		$qqbrahms .= ", labelnotes_nomoni(pltb.EspecimenID,0,".($formnotas+0).",1,0) as plantdesc";
+	}
+	$qqbrahms .= ", vernaculars(pltb.VernacularIDS) as vernacular";
+	$qqbrahms .=", pltb.Herbaria as dups";
+	$qqbrahms .= ", projetostringbrahms(pltb.ProjetoID) as project";
+	
+////////////////////	
+	$qq = " SELECT pltb.EspecimenID AS WikiEspecimenID, CONCAT(
 colpessoa.SobreNome,'_',IF(pltb.Prefixo IS NULL OR pltb.Prefixo='','',CONCAT(pltb.Prefixo,'-')),pltb.Number,IF(pltb.Sufix IS NULL OR pltb.Sufix='','',CONCAT('-',pltb.Sufix))) as IDENTIFICADOR, colpessoa.Abreviacao as COLLECTOR, pltb.Number as NUMBER
 	"; 
 	$idx=0;
@@ -120,11 +163,9 @@ colpessoa.SobreNome,'_',IF(pltb.Prefixo IS NULL OR pltb.Prefixo='','',CONCAT(plt
 		$idx++;
 	}
 
-	if (empty($herbariumsigla)) {
-		$herbariumsigla = 'HERB_NO';
-	}
+	
 	if (!empty($basvar['registroINPA'])) {
-		if ($processoid>0) {
+		if (!empty($processoid)) {
 			$qq .=", prcc.".$herbariumsigla;
 		} else {
 			$qq .=", pltb.INPA_ID as ".$herbariumsigla;
@@ -201,10 +242,10 @@ getidentidade(pltb.DetID, 0, 1, 0,0, 1) as NOMEeAUTOR";
 			$qq .=", 
 famtb.Familia as FAMILY, 
 gentb.Genero as GENUS, 
-IF(sptb.Morfotipo=1,'',sptb.Especie) as SP1, 
+sptb.Especie as SP1, 
 IF(sptb.Morfotipo=1,'',sptb.EspecieAutor) as AUTHOR1, 
-IF(infsptb.Morfotipo=1,'',infsptb.InfraEspecieNivel) as RANK1, 
-IF(infsptb.Morfotipo=1,'',infsptb.InfraEspecie) as SP2, 
+infsptb.InfraEspecieNivel as RANK1, 
+infsptb.InfraEspecie as SP2, 
 IF(infsptb.Morfotipo=1,'',infsptb.InfraEspecieAutor) as AUTHOR2, 
 iddet.DetModifier as CF, 
 detpessoa.Abreviacao as DETBY, 
@@ -435,13 +476,23 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 		$idx++;
 	}
 	$qq .= " FROM Especimenes as pltb ";
-	if ($processoid>0) {
+	$qqbrahms .= " FROM Especimenes as pltb ";
+	if (!empty($processoid)) {
 		$qq .= " LEFT JOIN ProcessosLIST as prcc ON pltb.EspecimenID=prcc.EspecimenID";
+		$qqbrahms .= " LEFT JOIN ProcessosLIST as prcc ON pltb.EspecimenID=prcc.EspecimenID";
 	}
 	$qq .= " LEFT JOIN Plantas as plspectb ON pltb.PlantaID=plspectb.PlantaID LEFT JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID";
+	$qqbrahms .= " LEFT JOIN Plantas as plspectb ON pltb.PlantaID=plspectb.PlantaID LEFT JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID";
 
 	if (!empty($basvar['nomenoautor']) || !empty($basvar['nomeautor']) || !empty($basvar['taxacompleto'])) {
 		$qq .= "
+LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
+LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID 
+LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID 
+LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID  
+LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID 
+LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
+		$qqbrahms .= "
 LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
 LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID 
 LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID 
@@ -463,11 +514,13 @@ LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 //	}
 	if (!empty($basvar['projeto'])) {
 		$qq .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
+		$qqbrahms .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
 	}
 	$qqff0 = '';
 	if ($filtro>0) {
 		$qqff = " WHERE pltb.FiltrosIDS LIKE '%filtroid_".$filtro.";%' OR pltb.FiltrosIDS LIKE '%filtroid_".$filtro."'";
-	} else {
+	} 
+	else {
 		if (!empty($especimenesids)) {
 			$specarr = explode(";",$especimenesids);
 			$n = 0;
@@ -479,9 +532,15 @@ LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 				}
 				$n++;
 			}
-		} elseif ($processoid>0) {
+		} 
+		elseif (!empty($processoid)) {
 				$qqff0 = ' LEFT JOIN ProcessosLIST as prcc ON pltb.EspecimenID=prcc.EspecimenID ';
-				$qqff = " WHERE prcc.EXISTE=1 AND prcc.ProcessoID=".$processoid;
+				$prarr = explode(";",$processoid);
+				if (count($prarr)==1) {
+					$qqff = " WHERE prcc.EXISTE=1 AND prcc.ProcessoID=".$processoid;
+				} else {
+					$qqff = " WHERE prcc.EXISTE=1 AND isvalidprocesso(prcc.ProcessoID,'".$processoid."')>0";
+				}
 				if ($quais==2) {
 					$qqff .= " AND prcc.".$herbariumsigla.">0 ";
 				}
@@ -493,7 +552,7 @@ LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 				} 
 		}
 	}
-
+	$qqbrahms .= $qqff;
 	$qq .= $qqff;
 
 	$prepared = 1;
@@ -505,13 +564,18 @@ LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 	$stepsize = 1000;
 	$nsteps = ceil($nrz/$stepsize);
 	$_SESSION['metadados'] = serialize($metadados);
+	if ($forbrahms==1) {
+		$qq = $qqbrahms;
+		//echo $qq."<br />";
+	}
 	$_SESSION['qq'] = $qq;
 	//echo $qq."<br />";
 	$step=0;
+	unlink("temp/".$export_filename);
 } //if is not set prepared
 
+	//echo $_SESSION['qq']."<br />";
 
-$export_filename = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate'].".csv";
 
 //$prepared=0;
 //$step =0;
@@ -527,6 +591,12 @@ if ($prepared==1 && $step<=$nsteps) {
 	$qqq = $qq." LIMIT $st1,$stepsize";
 	$_SESSION['qz'] = $_SESSION['qz']."<br /><br />".$qqq;
 	//echo $qqq."<br />";
+	if ($forbrahms==1) {
+		mysql_set_charset('latin1', $conn);
+		$qblin = "\r\n";
+	} else {
+		$qblin = "\n";
+	}
 	$res = mysql_query($qqq,$conn);
 	$starttime = microtime(true);
 	$sttime = microtime();
@@ -542,7 +612,8 @@ if ($prepared==1 && $step<=$nsteps) {
 						$header .=  '"'. mysql_field_name($res, $i).'"';
 					}
 			}
-			$header .= "\n";
+			$header .= $qblin;
+			//$tmp = chr(255).chr(254).mb_convert_encoding( $header, 'UTF-16LE', 'UTF-8'); 
 			fwrite($fh, $header);
 			$_SESSION['exportnfields'] = $count;
 		} else {
@@ -569,7 +640,7 @@ if ($prepared==1 && $step<=$nsteps) {
 				$nii++;
 				$line .= $value;
 			}
-			$lin = trim($line)."\n";
+			$lin = trim($line).$qblin;
 			fwrite($fh, $lin);
 		}
 		fclose($fh);
@@ -584,6 +655,7 @@ if ($prepared==1 && $step<=$nsteps) {
 		//$tfalta = round(($tfalta/60),2);
 
 FazHeader($title,$body,$which_css,$which_java,$menu);
+//echo "O charset é ".mysql_client_encoding($conn);
 echo "
 <form action='export-especimenes-exec.php' name='myform' method='post'>
   <input type='hidden' name='prepared' value='".$prepared."'>
@@ -595,6 +667,8 @@ echo "
   <input type='hidden' name='ispopup' value='".$ispopup."'>
   <input type='hidden' name='tfalta' value='".$tfalta."'>
   <input type='hidden' name='processoid'  value='".$processoid."' />
+  <input type='hidden' name='forbrahms'  value='".$forbrahms."' />
+
 <br />
 <table align='center' cellpadding='5' width='50%' class='erro'>
   <tr><td>Processando passo ".($step+1)." de ".($nsteps+1)."  AGUARDE!</td></tr>
@@ -603,6 +677,9 @@ echo "
 </form>
 <script language=\"JavaScript\">setTimeout('document.myform.submit()',0.00001);</script>
 ";
+//
+
+
 //
 $which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
 //,
@@ -617,13 +694,17 @@ elseif ($step>$nsteps) {
 	$export_filename_metadados = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate']."_definicoesDAScolunas.csv";
 	$fh = fopen("temp/".$export_filename_metadados, 'w') or die("nao foi possivel gerar o arquivo");
 	$stringData = "COLUNA\tDEFINICAO"; 
+	if (!$forbrahms==1) {
 	foreach ($metadados as $kk => $vv) {
 		$stringData = $stringData."\n".$vv[0]."\t".$vv[1];
 	}
+	} else {
+		$stringData .= "\n\nPlanilha para o Brahms, não tem metadados ainda"; 
+	}	
 	fwrite($fh, $stringData);
 	fclose($fh);
 	if (file_exists("temp/".$export_filename) && file_exists("temp/".$export_filename_metadados)) {
-		header("location: export-especimenes-save.php");
+		header("location: export-especimenes-save.php?forbrahms=".$forbrahms."&export_filename=".$export_filename."&export_filename_metadados=".$export_filename_metadados);
 	} else {
 		header("location: export-especimenes-form.php");
 	}

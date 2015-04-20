@@ -37,21 +37,17 @@ if ($ispopup==1) {
 $title = '';
 $which_css = array(
 "<link rel='stylesheet' type='text/css' href='css/geral.css' />",
-"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
+"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>",
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
+"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
 );
 $title = 'Taxonomia';
 $body= '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
 //FAZ O CADASTRO QUANDO O USUARIO SUBMETEU
-if ($final>0) {
+if (($final>0 && !empty($nomesciid)) || ($final==2))  {
 	if (!empty($nomesciid) && $nomesciid!='nomesciid') {
 		list($famid,$genusid,$speciesid,$infraspid) = gettaxaids($nomesciid,$conn);
 	}
@@ -74,6 +70,7 @@ if ($final>0) {
 	} else {
 		if ($final==2) { $filename = 'taxanew-form.php';}
 		if ($final==3) { $filename = 'taxa-delete.php';}
+		if ($final==4) { $filename = 'traits_coletorvariacao.php';}
 	}
 	if (!empty($filename)) {
 	echo "
@@ -86,6 +83,9 @@ if ($final>0) {
   <input type='hidden' name='infraspid' value='".$infraspid."' />
   <input type='hidden' name='naoeimportacao' value='1' />
   <input type='hidden' name='ispopup' value='".$ispopup."' />
+  <input type='hidden' name='taxavariacao' value='1' />
+   <input type='hidden' name='nomesciid' value='".$nomesciid."' />
+   <input type='hidden' name='apagavarsess' value='1' />
   <script language=\"JavaScript\">
     setTimeout(document.myform.submit(),0.0001);
   </script>
@@ -93,7 +93,7 @@ if ($final>0) {
 	//
 	}
 } 
-if (!isset($final) || ($final+0)==0) {
+if (!isset($final) || ($final+0)==0 || ($final!=2 && empty($nomesciid))) {
 //taxonomia
 echo "
 <br />
@@ -132,7 +132,8 @@ echo "
           <input type='hidden' name='final' value='' />
           <input type = 'submit' class='bsubmit' value='".GetLangVar('nameeditar')." ".GetLangVar('nametaxa')."' onclick=\"javascript:document.finalform.final.value=1\" />
         </td>
-        <td align='center'><input type = 'submit' class='bblue' value='".GetLangVar('namenovo')." ".GetLangVar('nametaxa')."' onclick=\"javascript:document.finalform.final.value=2\" /></td>
+        <td align='center'>&nbsp;&nbsp;&nbsp;<input type = 'submit' class='bblue' value='".GetLangVar('namenovo')." ".GetLangVar('nametaxa')."' onclick=\"javascript:document.finalform.final.value=2\" /></td>
+        <td align='center'>&nbsp;&nbsp;<input type = 'submit' class='borange' value='Variação' onclick=\"javascript:document.finalform.final.value=4\" /></td>
         <!---
         <td align='center'><input type = 'submit' class='borange' value='".GetLangVar('nameexcluir')." ".GetLangVar('nametaxa')."' onclick=\"javascript:document.finalform.final.value=3\" /></td>
         --->
@@ -146,9 +147,8 @@ echo "
 ";
 }
 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

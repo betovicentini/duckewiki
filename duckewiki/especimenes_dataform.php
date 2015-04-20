@@ -36,7 +36,11 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+//echopre($_SESSION);
 //CABECALHO
+
+$qup = "ALTER TABLE `Gazetteer`  ADD `Datum` CHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL AFTER `Longitude`";
+@mysql_query($qup,$conn);
 
 $menu = FALSE;
 $which_css = array(
@@ -58,7 +62,6 @@ if ($especimenid>0) {
   </script>
 </form>";
 }
-//echopre($gget);
 $lixo=1;
 if ($lixo>0) {
 //coordenadas
@@ -299,7 +302,8 @@ $erro++;
 			'Ano' => $detyear,
 			'Latitude' => $latdec,
 			'Longitude' => $longdec,
-			'Altitude' => $altitude
+			'Altitude' => $altitude,
+			'Datum' => $datum
 		);
 		$arrayofvalues = array_merge((array)$arrayofvalues,(array)$arv);
 		$updated =0;
@@ -359,22 +363,24 @@ $erro++;
 	//cadastro da identificacao
 	if ($erro==0) { //se nao houve erro no cadastro
 		//seleciona a identidade antiga e indica o que deve ser feito
-		if ($_SESSION['editando'] && (!isset($plantaid) || $plantaid==0 || empty($plantaid))) { //editando
+		if ($_SESSION['editando'] && $especimenid>0) { //editando
+			//echo "PRECISA TER ENTRADO AQUI";
 			$qq = "SELECT Identidade.* FROM Especimenes JOIN Identidade USING(DetID) WHERE EspecimenID='$especimenid'";
 			$res = mysql_query($qq,$conn);
 			$row = mysql_fetch_assoc($res);
 			$olddetid = $row['DetID'];
 			if (!empty($detset)) {
+				//echo "PRECISA TER ENTRADO AQUI";
 				$arrayofvalues = unserialize($detset);
 				$detchanged = CompareOldWithNewValues('Identidade','DetID',$olddetid,$arrayofvalues,$conn);
 			}
 			if ($detchanged==0 || empty($detchanged)) { //se for identifico nesse campos nao faz nada
-				$detchange = 'naomudou';
+				$detchangespec = 'naomudou';
 			} else {
-				$detchange = 'mudou';
+				$detchangespec = 'mudou';
 			}
 		} 
-		elseif ($plantaid>0) {
+		if ($_SESSION['editando']  && $plantaid>0) {
 			$qq = "SELECT Identidade.* FROM Plantas JOIN Identidade USING(DetID) WHERE PlantaID='".$plantaid."'";
 			$res = mysql_query($qq,$conn);
 			$row = mysql_fetch_assoc($res);
@@ -384,13 +390,14 @@ $erro++;
 				$detchanged = CompareOldWithNewValues('Identidade','DetID',$olddetid,$arrayofvalues,$conn);
 			}
 			if ($detchanged==0 || empty($detchanged)) { //se for identifico nesse campos nao faz nada
-				$detchange = 'naomudou';
+				$detchangepl = 'naomudou';
 			} else {
-				$detchange = 'mudou';
+				$detchangepl = 'mudou';
 			}
 		}
 		//se mudou ou se e nova, insere nova determinacao
-		if (empty($detchange) || $detchange=='mudou') {
+		//echo $detchange."<br >";
+		if (empty($detchangepl) || $detchangepl=='mudou' || empty($detchangespec) || $detchangespec=='mudou') {
 			$arrayofvalues = unserialize($detset);
 			if (count($arrayofvalues)>0 && ($arrayofvalues['FamiliaID']+0)>0) {
 				//echo "det";
@@ -412,7 +419,8 @@ $erro++;
 
 	if ($plantaid>0  && $uppl==0 && $newdetid>0) {
 				CreateorUpdateTableofChanges($plantaid,'PlantaID','Plantas',$conn);
-	} elseif ($especimenid>0  && $upp==0  && $newdetid>0)  {
+	}
+	if ($especimenid>0  && $upp==0  && $newdetid>0)  {
 				CreateorUpdateTableofChanges($especimenid,'EspecimenID','Especimenes',$conn);
 	} elseif (empty($especimenid)) {
 			$especimenid=$newspec;
@@ -473,7 +481,7 @@ $erro++;
 		) {
 		$traitarray = unserialize($_SESSION['variation']);
 		if (count($traitarray)>0) {
-			$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$conn);
+			$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$bibtex_id,$conn);
 			if (!$resultado) {
 				$erro++;
 				echo "
@@ -493,7 +501,8 @@ $erro++;
 			$arrayofvalues = array('DetID' => $newdetid);
 			if ($plantaid>0) {
 				$newupdate = UpdateTable($plantaid,$arrayofvalues,'PlantaID','Plantas',$conn);
-			} else {
+			} 
+			if ($especimenid>0) {
 				$newupdate = UpdateTable($especimenid,$arrayofvalues,'EspecimenID','Especimenes',$conn);
 			}
 			if (!$newupdate) {
@@ -511,14 +520,14 @@ $erro++;
 
 
 	if ($erro==0) {
-		if ($_SESSION['editando']==1 && empty($updated) && $detchange=='naomudou' && $final!=2) {
+		if ($_SESSION['editando']==1 && empty($updated) && ($detchangespec=='naomudou'  || $detchangepl=='naomudou') && $final!=2) {
 			echo "
 <br />
 <table cellpadding=\"7\" width='50%' align='center' class='erro'>
   <tr><td class='tdsmallbold' align='center'>".GetLangVar('messagenochange')."</td></tr>
 </table>
 <br />";
-		} elseif ($_SESSION['editando']!=1 || $updated>0 || $detchange='mudou') {
+		} elseif ($_SESSION['editando']!=1 || $updated>0 || $detchangespec='mudou') {
 		
 //ATUALIZA A TABELA CHECKLIST SPECIMENS
 $newtbname = 'tempSpec_'.$uuid;
@@ -690,6 +699,8 @@ if (($submeteu=='editando' && ($erro+0)==0) || ($especimenid>0 && empty($final) 
 	$latdec = $row['Latitude'];
 	$longdec = $row['Longitude'];
 	$inpaid = $row['INPA_ID'];
+
+	$datum = $row['Datum'];
 
 
 
@@ -1135,6 +1146,15 @@ if ($bgi % 2 == 0) {$bgcolor = $linecolor2 ;} else { $bgcolor = $linecolor1 ;} $
           <table border=0 cellpadding=\"3\">
             <tr class='tdformnotes'>
               <td align='center'><input type='text' size='6' name='altitude' value='$altitude' /></td>
+              <td align='left'>m</td>
+            </tr>
+          </table>
+        </td>
+        <td align='right'><i>DATUM</i></td>
+        <td >
+          <table border=0 cellpadding=\"3\">
+            <tr class='tdformnotes'>
+              <td align='center'><input type='text' size='6' name='datum' value='".$datum."' /></td>
               <td align='left'>m</td>
             </tr>
           </table>

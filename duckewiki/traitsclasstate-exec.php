@@ -35,12 +35,9 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />");
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />"
+);
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
 $title = 'Variável';
 $body = '';
@@ -73,7 +70,8 @@ if ($traitid>0 && is_numeric($traitid)) {
 	}
 	$titulo = GetLangVar('nameeditar')." ".strtolower($traitkind);
 	if ($traitkind!=$traittipo) { $titulo .=  " (".strtolower($traittipo).")";}
-} else {
+} 
+else {
 	$titulo = GetLangVar('namecadastrar')." ".strtolower($traitkind);
 }
 
@@ -99,9 +97,9 @@ echo "
   <table align='left' >
     <tr>
       <td class='tdsmallbold'>".GetLangVar('namenome')."</td>
-      <td class='tdsmallbold'><input type='text' size=50 name='traitname' value='$traitname' /></td>
+      <td class='tdsmallbold'><input type='text' size=50 name='traitname' value='".$traitname."' /></td>
       <td class='tdsmallbold' style='color:red'>em inglês</td>
-      <td class='tdsmallbold' style='color:red'><input type='text' size='50' name='traitname_english' value='$traitname_english' /></td>
+      <td class='tdsmallbold' style='color:red'><input type='text' size='50' name='traitname_english' value='".$traitname_english."' /></td>
     </tr>
   </table>
   </td>
@@ -120,7 +118,7 @@ echo "
       <td class='tdsmallbold'>".GetLangVar('messagepertenceaocaractere')."</td>";}
 echo "
       <td class='tdformleft'>
-        <select name='parenttraitid'>";
+        <select name='parenttraitid' >";
 			if ($parenttraitid=='padrao') {echo "
           <option  selected value='padrao'>".GetLangVar('messagenenhumgrupo')."</option>";
 			} 
@@ -132,11 +130,11 @@ echo "
           <option value=''>".GetLangVar('nameselect')."</option>";
 			} 
 			elseif ($parenttraitid!='padrao') {
-				$qq = "SELECT * FROM Traits WHERE TraitID='$parenttraitid'";
+				$qq = "SELECT * FROM Traits WHERE TraitID='".$parenttraitid."'";
 				$rr = mysql_query($qq,$conn);
 				$row = mysql_fetch_assoc($rr);
 				echo "
-          <option selected value=".$row['TraitID'].">".$row['TraitName']." (".$row['PathName'].")</option>
+          <option selected value='".$row['TraitID']."' >".$row['TraitName']." (".$row['PathName'].")</option>
           <option value='padrao'>".GetLangVar('messagenaopertence')."</option>";}
 			echo "<option value=''>----</option>";
 			if ($traitkind=='Classe') {
@@ -148,17 +146,10 @@ echo "
 			$res = mysql_query($filtro,$conn);
 			while ($aa = mysql_fetch_assoc($res)){
 					$PathName = $aa['PathName'];
-					$level = $aa['MenuLevel'];
-					if ($level==1) {
-						$espaco='';
-						echo "
-          <option class='optselectdowlight' value=''>".$aa['TraitName']."</option>";
-					} else {
-						$espaco = str_repeat('&nbsp;',$level);
-						$espaco = $espaco.str_repeat('-',$level-1);
-						echo "
-          <option value=".$aa['TraitID'].">$espaco".$aa['TraitName']." (".$aa['PathName'].")</option>";
-					}
+					$espaco = str_repeat('&nbsp;',$level);
+					$espaco = $espaco.str_repeat('-',$level-1);
+					echo "
+          <option value='".$aa['TraitID']."'  >".$espaco.$aa['TraitName']." (".$aa['PathName'].")</option>";
 			}
 echo "
           </select>
@@ -174,7 +165,7 @@ echo "
     <table align='left' >
       <tr>
         <td class='tdsmallbold'>".GetLangVar('namedefinicao')."</td>
-        <td class='tdsmallbold'><textarea name='traitdefinicao' cols=40 rows=4 wrap=SOFT>$traitdefinicao</textarea></td>
+        <td class='tdsmallbold'><textarea name='traitdefinicao' cols=40 rows=4 wrap=SOFT>".$traitdefinicao."</textarea></td>
         <td class='tdsmallbold' style='color:red'>em inglês</td>
         <td class='tdsmallbold' style='color:red'><textarea name='traitdefinicao_english' cols=40 rows=4 wrap=SOFT>$traitdefinicao_english</textarea></td>
       </tr>
@@ -227,9 +218,7 @@ echo "
 </tbody>
 </table>
 ";
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

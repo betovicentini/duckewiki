@@ -116,8 +116,9 @@ if ($criou) {
 	echo "
 <form name='myform' action='singlelabel-pdf.php' method='post'>
   <input type='hidden' name='temptable' value='".$temptable."'>
+  <input type='hidden' name='apenasuma' value='1'>
   <script language=\"JavaScript\">setTimeout('document.myform.submit()',1);</script>
 </form>";
-//
+
 }
 ?>

@@ -2,6 +2,7 @@
 //Start session
 session_start();
 
+
 //INCLUI FUNCOES PHP E VARIAVEIS
 include "functions/HeaderFooter.php";
 include "functions/MyPhpFunctions.php";
@@ -88,13 +89,14 @@ $plantastbname = 'checklist_pllist';
 //
 
 //CABEÇALHO DA TABELA
-$headd = array("Marcado", "EDIT" , "DetID","GeneroID", "FamiliaID", "InfraEspecieID", "EspecieID",  "DetNivel", "FAMILIA", "NOME", "NOME_AUTOR", "MORFOTIPO", "ESPECIMENES", "PLANTAS", "PLOTS", "MAP", "OBS", "HABT", "IMG","NIRSpectra",  "SILICA", "FLORES", "FRUTOS");
-$headexplan = array("Marcar ou desmarcar o registro","Editar e link para Tropicos.org","Uma das determinações nesse nível","Identificador do Genero em Tax_Generos","Identificador da Familia em Tax_Familias","Identificador da InfraEspécie em Tax_InfraEspecies","Identificador da Espécie em Tax_Especies","Nível da determinação","Familia","Nome da identificação sem autor","Nome da identificação com autor","Se o nome é um morfotipo spp indica no nivel de espécie e infspp no nível de infraespécie", "Número de especímenes com a identificação em NOME","Número de plantas marcadas com a identificação em NOME","Número de parcelas com árvores marcadas identificadas com esse NOME","Visualizar os ESPECIMENES num mapa ou baixar um arquivo KML para visualizar local","Notas associados à ESPECIMENES e PLANTAS com a identificação em NOME - a ser implementado como um resumo da variação associada","Mapear HABITATS LOCAIS associados à ESPECIMENES e PLANTAS com a identificação em NOME","Imagens associadas à ESPECIMENES e PLANTAS com a identificação em NOME","Espectros de InfraVermelho Próximo de Folhas Secas associados à ESPECIMENES e PLANTAS com a identificação em NOME","Número de amostras em silica","Número de amostras com flores","Número de amostras com frutos");
-$exportcols = array("false","false","false","false","false","false","false","true","true","true","true","true","true","true","false","false","false","true","true","true","true","true","true");
+$headd = array("Marcado", "EDIT" , "DetID","GeneroID", "FamiliaID", "InfraEspecieID", "EspecieID",  "DetNivel", "FAMILIA", "NOME", "NOME_AUTOR", "MORFOTIPO", "ESPECIMENES", "PLANTAS", "PLOTS", "MAP", "OBS", "HABT", "IMG","NIRSpectra",  "SILICA", "FLORES", "FRUTOS", "VEG_CHARS", "FERT_CHARS", "FOLHA_IMG", "FLOR_IMG", "FRUTO_IMG", "EXSICATA_IMG");
+
+$headexplan = array("Marcar ou desmarcar o registro","Editar e link para Tropicos.org","Uma das determinações nesse nível","Identificador do Genero em Tax_Generos","Identificador da Familia em Tax_Familias","Identificador da InfraEspécie em Tax_InfraEspecies","Identificador da Espécie em Tax_Especies","Nível da determinação","Familia","Nome da identificação sem autor","Nome da identificação com autor","Se o nome é um morfotipo spp indica no nivel de espécie e infspp no nível de infraespécie", "Número de especímenes com a identificação em NOME","Número de plantas marcadas com a identificação em NOME","Número de parcelas com árvores marcadas identificadas com esse NOME","Visualizar os ESPECIMENES num mapa ou baixar um arquivo KML para visualizar local","Notas associados à ESPECIMENES e PLANTAS com a identificação em NOME - a ser implementado como um resumo da variação associada","Mapear HABITATS LOCAIS associados à ESPECIMENES e PLANTAS com a identificação em NOME","Imagens associadas à ESPECIMENES e PLANTAS com a identificação em NOME","Espectros de InfraVermelho Próximo de Folhas Secas associados à ESPECIMENES e PLANTAS com a identificação em NOME","Número de amostras em silica","Número de amostras com flores","Número de amostras com frutos","Informacao de caracteres vegetativos no formulario Familia_VEGCHARS para 3 individuos do taxon correspondentes. Se 1 signfica que todos os 3 individuos tem informacao para todos os caracteres no formulario se existir", "Informacao de caracteres reprodutivos no formulario Familia_FERCHARS para 3 individuos do taxon correspondentes. Se 1 signfica que todos os 3 individuos tem informacao para todos os caracteres no formulario se existir", "Se existem imagens de folhas frescas", "Se existem imagens de flores", "Se existem imagens de frutos", "Se existem imagens de exsicata");
+$exportcols = array("false","false","false","false","false","false","false","true","true","true","true","true","true","true","false","false","false","true","true","true","true","true","true",'false','false','false','false','false','false');
 //LARGURA INICIAL DAS COLNUAS
 $colw = array(
 "Marcado" => 70,
-"EDIT" => 50,
+"EDIT" => 70,
 "DetID" => 0,
 "GeneroID" => 0,
  "FamiliaID" => 0,
@@ -115,7 +117,13 @@ $colw = array(
   "NIRSpectra" => 70,
   "SILICA" => 70,
   "FLORES" => 70,
-  "FRUTOS" => 70
+  "FRUTOS" => 70,
+    "VEG_CHARS" => 70,
+  "FERT_CHARS" => 70,
+  "FOLHA_IMG" => 70,
+    "FLOR_IMG" => 70,
+  "FRUTO_IMG" => 70,
+  "EXSICATA_IMG" => 70
   );
 
 //copia cabecalho para gerar ARRAYS PARA ATRIBUIR FORMATO (atribuido adiante)
@@ -133,14 +141,19 @@ $numericfilter[]  = 'NIRSpectra';
 $numericfilter[]  = 'SILICA'; 
 $numericfilter[]  = 'FLORES'; 
 $numericfilter[]  = 'FRUTOS'; 
-
+$numericfilter[]  = 'VEG_CHARS'; 
+$numericfilter[]  = 'FERT_CHARS'; 
+$numericfilter[]  = 'FOLHA_IMG'; 
+$numericfilter[]  = 'FLOR_IMG'; 
+$numericfilter[]  = 'FRUTO_IMG'; 
+$numericfilter[]  = 'EXSICATA_IMG'; 
 //FAZ UM LOOP PARA CADA COLUNA E DEFINE OS ARRAYS DE FORMATO
 	//COLUNAS SEM FILTRO
 	$nofilter = array("Marcado", "MAP", "OBS", "HABT","IMG");
 	//COLUNAS QUE SAO IMAGENS
-	$imgfields = array("EDIT","ESPECIMENES", "PLANTAS", "MAP", "OBS", "HABT","IMG","PLOTS","NIRSpectra");
+	$imgfields = array("EDIT","ESPECIMENES", "PLANTAS", "MAP", "OBS", "HABT","IMG","PLOTS","NIRSpectra","VEG_CHARS", "FERT_CHARS", "FOLHA_IMG", "FLOR_IMG", "FRUTO_IMG", "EXSICATA_IMG");
 	//COLUNAS QUE NAO DEVEM APARECER
-	$hidefields = array("GeneroID", "FamiliaID", "InfraEspecieID", "EspecieID", "OBS", "DetID",  "DetNivel", "NOME_AUTOR","MORFOTIPO","SILICA", "FLORES", "FRUTOS");
+	$hidefields = array("GeneroID", "FamiliaID", "InfraEspecieID", "EspecieID", "OBS", "DetID",  "DetNivel", "NOME_AUTOR","MORFOTIPO","SILICA", "FLORES", "FRUTOS","VEG_CHARS", "FERT_CHARS", "FOLHA_IMG", "FLOR_IMG", "FRUTO_IMG", "EXSICATA_IMG");
 	$i=1;
 	$colidx = array();
 	$collist = array();
@@ -280,6 +293,21 @@ function custom_format_list(\$data){
     \$genid = (\$data->get_value(\"GeneroID\"))+0;
     \$specid = (\$data->get_value(\"EspecieID\"))+0;
     \$infspecid = (\$data->get_value(\"InfraEspecieID\"))+0;
+    
+    \$nomesciid = '';
+    if (\$infspecid>0) {
+        \$nomesciid = 'infspid_'.\$infraspecid;
+    } else {
+        if (\$specid>0) {
+            \$nomesciid = 'speciesid_'.\$specid;
+        } else {
+            if (\$genid>0) {
+                \$nomesciid = 'genusid_'.\$genid;
+            } else {
+                if (\$famid>0) { \$nomesciid = 'famid_'.\$famid; }
+            }
+        }
+    }
     \$mark = \$data->get_value(\"Marcado\");
     \$recid = \$data->get_id();";
 if ($uuid>0) {
@@ -299,9 +327,95 @@ $stringData .= "
 	 }
     \$data->set_value(\"ESPECIMENES\",\$imagen);
 
+///////////////
+\$famnome = \$data->get_value(\"FAMILIA\");
+\$ruv = mysql_query(\"SELECT checkformtaxastatus('\".\$famnome.\"_VEGCHARS', \".\$famid.\", \".\$genid.\", \".\$specid.\", \".\$infspecid.\", 3) AS vegechars\");
+//\$rutxt = \"SELECT checkformtaxastatus('\".\$famnome.\"_VEGCHARS', \".\$famid.\", \".\$genid.\", \".\$specid.\", \".\$infspecid.\", 3) AS vegechars\";
+\$ruwv = mysql_fetch_assoc(\$ruv);
+\$nvegc = \$ruwv['vegechars'];
+if (\$nvegc>0) {
+if (\$nvegc<=0.33) {
+\$cimg = \"icons/redcircle.png\";
+}
+if (\$nvegc>0.33 && \$nvegc<=0.66) {
+\$cimg = \"icons/orangecircle.png\";
+}
+if (\$nvegc>0.66) {
+\$cimg = \"icons/greencircle.png\";
+}
+\$vegcimg = \"<sup>\".\$nvegc.\"</sup><img style='cursor:pointer;' src='\".\$cimg.\"' height='20'  onmouseover=\\\"Tip('Proporção de Caracteres vegetativos Mínimos para o taxon');\\\" />\";
+} else {
+  \$vegcimg = \"\";
+}
+\$data->set_value(\"VEG_CHARS\", \$vegcimg);
+
+\$ruv = mysql_query(\"SELECT checkformtaxastatus('\".\$famnome.\"_FERTCHARS'), \".\$famid.\", \".\$genid.\", \".\$specid.\", \".\$infspecid.\", 3) AS fertchars\");
+\$ruwv = mysql_fetch_assoc(\$ruv);
+\$nfertc = \$ruwv['fertchars'];
+if (\$nfertc>0) {
+if (\$nfertc<=0.33) {
+\$cimg = \"icons/redcircle.png\";
+}
+if (\$nfertc>0.33 && \$nvegc<=0.66) {
+\$cimg = \"icons/orangecircle.png\";
+}
+if (\$nfertc>0.66) {
+\$cimg = \"icons/greencircle.png\";
+}
+\$fertcimg = \"<sup>\".\$nfertc.\"</sup><img style='cursor:pointer;' src='\".\$cimg.\"' height='20'  onmouseover=\\\"Tip('Proporção de Caracteres reprodutivos mínimos para o taxon');\\\" />\";
+} else {
+\$fertcimg = \"\";
+}
+\$data->set_value(\"FERT_CHARS\", \$fertcimg);
+
+
+
+\$ruv =mysql_query(\"SELECT checktaxaimg(\".\$famid.\", \".\$genid.\", \".\$specid.\", \".\$infspecid.\",".$folhaimgtraitid.") AS folimg\");
+\$ruwv = mysql_fetch_assoc(\$ruv);
+\$nfolimg = \$ruwv['folimg'];
+if (\$nfolimg>0) {
+\$cimg = \"icons/greencircle.png\";
+\$folimg = \"<sup>\".\$nfolimg.\"</sup>&nbsp;<img style='cursor:pointer;' src='\".\$cimg.\"' height='20'  onmouseover=\\\"Tip('Tem pelo menos 1 imagem de folha fresca para o taxon');\\\"  alt=''  title='' >\";
+} else {
+\$folimg =\$nfolimg;
+}
+\$data->set_value(\"FOLHA_IMG\", \$folimg);
+
+\$ruv =mysql_query(\"SELECT checktaxaimg(\".\$famid.\", \".\$genid.\", \".\$specid.\", \".\$infspecid.\",".$florimgtraitid.") AS florimg\");
+\$ruwv = mysql_fetch_assoc(\$ruv);
+\$nflorimg = \$ruwv['florimg'];
+if (\$nflorimg>0) {
+\$cimg = \"icons/greencircle.png\";
+\$florimg = \"<sup>\".\$nflorimg.\"</sup><img style='cursor:pointer;' src='\".\$cimg.\"' height='20'  onmouseover=\\\"Tip('Tem pelo menos 1 imagem de flores para o taxon');\\\" />\";
+} else {
+\$florimg =\$nflorimg;
+}
+\$data->set_value(\"FLOR_IMG\", \$florimg);
+
+\$ruv =mysql_query(\"SELECT checktaxaimg(\".\$famid.\", \".\$genid.\", \".\$specid.\", \".\$infspecid.\",".$frutoimgtraitid.") AS frutoimg\");
+\$ruwv = mysql_fetch_assoc(\$ruv);
+\$nfrutoimg = \$ruwv['frutoimg'];
+if (\$nfrutoimg>0) {
+\$cimg = \"icons/greencircle.png\";
+\$frutoimg = \"<sup>\".\$nfrutoimg.\"</sup><img style='cursor:pointer;' src='\".\$cimg.\"' height='20'  onmouseover=\\\"Tip('Tem pelo menos 1 imagem de frutos para o taxon');\\\" />\";
+} else {
+\$frutoimg =\$nfrutoimg;
+}
+\$data->set_value(\"FRUTO_IMG\", \$frutoimg);
+
+\$ruv =mysql_query(\"SELECT checktaxaimg(\".\$famid.\", \".\$genid.\", \".\$specid.\", \".\$infspecid.\",".$exsicatatrait.") AS exsicataimg\");
+\$ruwv = mysql_fetch_assoc(\$ruv);
+\$nexsicataimg = \$ruwv['exsicataimg'];
+if (\$nexsicataimg>0) {
+\$cimg = \"icons/greencircle.png\";
+\$exsicataimg = \"<sup>\".\$nexsicataimg.\"</sup><img style='cursor:pointer;' src='\".\$cimg.\"' height='20'  onmouseover=\\\"Tip('Tem pelo menos 1 imagem de exsicatas para o taxon');\\\" />\";
+} else {
+\$exsicataimg =\$nexsicataimg;
+}
+\$data->set_value(\"EXSICATA_IMG\", \$exsicataimg);
 \$plnumb = \$data->get_value(\"PLANTAS\");
 ";
-if ($linktoplantas==1) {
+if ($listsarepublic['plantas'] == 'on' || $uuid>0) {
 	$pltlktxt =   "\$imagen= \"<sup>  \".\$data->get_value(\"PLANTAS\").\"</sup><img style='cursor:pointer;' src='icons/tree-icon.png' height='20'  onclick=\\\"javascript:small_window('".$url."/checkllist_plantas_save.php?tbname=".$plantastbname."&famid=\".\$famid.\"&genid=\".\$genid.\"&specid=\".\$specid.\"&infspecid=\".\$infspecid.\"',950,500,'Plantas');\\\"  onmouseover=\\\"Tip('Visualizar plantas desse taxon');\\\" />\";";
 } else {
 	$pltlktxt =   "\$imagen= \"<sup>  \".\$data->get_value(\"PLANTAS\").\"</sup><img style='cursor:pointer;' src='icons/tree-icon.png' height='20'  onmouseover=\\\"Tip('Este taxon tem árvores marcadas \\\n mas você não tem permissão para ver esses dados');\\\" alt=\\\"\\\" />\";";
@@ -323,6 +437,7 @@ if ((\$data->get_value(\"PLOTS\"))>0) {
 	\$tropicos = (\$data->get_value(\"EDIT\"));
 	\$imagen = \" \";
 	\$imagen2 = \"\";
+	\$imagen3 = \"\";
 	unset(\$nameedit);
 	if (!empty(\$tropicos)) {
 		\$imagen=\"<img style='cursor:pointer;' src='icons/mobot.png' height='18' onclick=\\\"javascript:small_window('http://www.tropicos.org/NameSearch.aspx?name=\".\$tropicos.\"',1000,800,'Tropicos');\\\" onmouseover=\\\"Tip('Ver registro do nome \".\$tropicos.\" em tropicos.org');\\\" />\";
@@ -330,12 +445,21 @@ if ((\$data->get_value(\"PLOTS\"))>0) {
 	\$nameedit=  (\$data->get_value(\"NOME\"));";
 if ($uuid>0 && $acceslevel!='visitor') {
 $stringData .= "
-	\$imagen2 = \"<img style='cursor:pointer;' src='icons/diversity.png' height='18' onclick=\\\"javascript:small_window('".$url."/taxa-form.php?final=1&nomesciid=nomesciid&famid=\".\$famid.\"&genusid=\".\$genid.\"&speciesid=\".\$specid.\"&infraspid=\".\$infspecid.\"&ispopup=1',700,500,'Editando nome');\\\" onmouseover=\\\"Tip('Editando a taxonomia de \".\$nameedit.\"');\\\" alt='' />\";
-	\$imagen = \$imagen2.\"&nbsp;\".\$imagen;
-";
+	\$imagen2 = \"<img style='cursor:pointer;' src='icons/diversity.png' height='18' onclick=\\\"javascript:small_window('".$url."/taxa-form.php?final=1&nomesciid=nomesciid&famid=\".\$famid.\"&genusid=\".\$genid.\"&speciesid=\".\$specid.\"&infraspid=\".\$infspecid.\"&ispopup=1',700,500,'Editando nome');\\\" onmouseover=\\\"Tip('Editando a taxonomia de \".\$nameedit.\"');\\\" alt='' />\";";
+	if ($acceslevel!='user') {
+$stringData .= "
+	if (\$specid>0 || \$infspecid>0) {
+	\$imagen3 = \"<img style='cursor:pointer;' src='icons/changename.png' height='18' onclick=\\\"javascript:small_window('".$url."/identifybyname_all.php?nomesearch=\".\$nameedit.\"&speciesid=\".\$specid.\"&infraspid=\".\$infspecid.\"&tempid=\".\$recid.\"&tbname=".$tbname."',700,500,'Substituindo o nome \".\$nameedit.\" por outro');\\\" onmouseover=\\\"Tip('Substituindo o nome \".\$nameedit.\" por outro');\\\" alt='' />\";
+	}";
+	} 
+$stringData .= "   \$imgg33 =\"<img style='cursor:pointer;' src='icons/nota-icon.png' height='16' onclick=\\\"javascript:small_window('".$url."/traits_coletorvariacao.php?nomesciid=\".\$nomesciid.\"&taxavariacao=1',800,800,'Editando notas');\\\"  onmouseover=\\\"Tip('Edita notas da amostra # \".\$pltag.\"');\\\" >\";";
+$stringData .= "
+	\$imagen = \$imagen2.\"&nbsp;\".\$imagen.\"&nbsp;\".\$imagen3.\"&nbsp;\".\$imgg33;
+	";
 } 
 $stringData .= "
 	\$data->set_value(\"EDIT\",\$imagen);
+
 	\$idds = \$famid+\$genid+\$specid+\$infspecid;
 	\$myhabitat = (\$data->get_value(\"HABT\"))+0;
     if (\$myhabitat>0) {

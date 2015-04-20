@@ -41,9 +41,9 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 
-$qq = "SELECT DISTINCT(PlantaID) FROM `Monitoramento` WHERE CensoID=".$censoid."  OR (CensoID IS NULL)";
-$rr =  mysql_query($qq,$conn);
-$nrr = mysql_numrows($rr);
+//$qq = "SELECT DISTINCT(PlantaID) FROM `Monitoramento` WHERE CensoID=".$censoid."  OR (CensoID IS NULL)";
+//$rr =  mysql_query($qq,$conn);
+//$nrr = mysql_numrows($rr);
 
 
 
@@ -60,11 +60,6 @@ $which_css = array(
 "<link rel='stylesheet' type='text/css' href='dhtmlxconnector/dhtmlxCalendar/codebase/dhtmlxcalendar.css'>",
 "<link rel='stylesheet' type='text/css' href='dhtmlxconnector/dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_skyblue.css'>"
 );
-
-        
-$hh = explode(",",$ffields);
-$nf = count($hh);
-
 $which_java = array(
 //"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
 //"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",

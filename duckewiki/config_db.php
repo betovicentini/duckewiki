@@ -48,9 +48,9 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 
 if (!isset($final)) {
 
-$numvars = array('habitotraitid','pomtraitid', 'statustraitid', 'traitfertid', 'alturatraitid', 'daptraitid', 'duplicatesTraitID', 'exsicatatrait','traitsilica','localidadetraitid');
-$vartxt = array('habtrname','pomtrname', 'statustrname', 'traitferttrname', 'alttrname', 'daptrname', 'duplicatestrname', 'exsicatatrname','traitsilicaname','localidadestrname','introtext');
-
+$numvars = array('habitotraitid','pomtraitid', 'statustraitid', 'traitfertid', 'alturatraitid', 'daptraitid', 'duplicatesTraitID', 'exsicatatrait','traitsilica','localidadetraitid','folhaimgtraitid','florimgtraitid','frutoimgtraitid');
+$vartxt = array('habtrname','pomtrname', 'statustrname', 'traitferttrname', 'alttrname', 'daptrname', 'duplicatestrname', 'exsicatatrname','traitsilicaname','localidadestrname','folhaimgtrname','florimgtrname','frutoimgtrname');
+//,'introtext'
 //get traitnames
 foreach ($numvars as $kk => $tt) {
 		$tid = $$tt;
@@ -284,6 +284,36 @@ echo "
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
 echo "
 <tr bgcolor = '".$bgcolor."'>
+  <td align='right' class='tdsmallbold'>Variável IMAGEM DE FOLHA
+  &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
+	$help = 'Variável que será usada em alguns scripts para visualizar imagens de plantas frescas. Selecionar variável do tipo IMAGEM, onde são armazenadas imagens de folhas frescas!';
+	echo " onclick=\"javascript:alert('$help');\" /></td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','folhaimgtrname',$folhaimgtrname,'folhaimgtraitres','folhaimgtraitid',$folhaimgtraitid,true,73); echo "</td>
+</tr>
+";
+if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
+echo "
+<tr bgcolor = '".$bgcolor."'>
+  <td align='right' class='tdsmallbold'>Variável IMAGEM DE FRUTO
+  &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
+	$help = 'Variável que será usada em alguns scripts para visualizar imagens de plantas herborizadas. Selecionar variável do tipo IMAGEM, onde são armazenadas imagens de frutos!';
+	echo " onclick=\"javascript:alert('$help');\" /></td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','frutoimgtrname',$frutoimgtrname,'frutoimgtraitres','frutoimgtraitid',$frutoimgtraitid,true,73); echo "</td>
+</tr>
+";
+if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
+echo "
+<tr bgcolor = '".$bgcolor."'>
+  <td align='right' class='tdsmallbold'>Variável IMAGEM DE FLORES
+  &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
+	$help = 'Variável que será usada em alguns scripts para visualizar imagens de plantas herborizadas. Selecionar variável do tipo IMAGEM, onde são armazenadas imagens de flores!';
+	echo " onclick=\"javascript:alert('$help');\" /></td>
+  <td class='tdformnotes'>"; autosuggestfieldval3('search-traits.php','florimgtrname',$florimgtrname,'florimgtraitres','florimgtraitid',$florimgtraitid,true,73); echo "</td>
+</tr>
+";
+if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
+echo "
+<tr bgcolor = '".$bgcolor."'>
   <td align='right' class='tdsmallbold'>Variável NÚMERO DE DUPLICATAS de amostra
   &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
 	$help = 'Variável que será usada em alguns scripts para gerar etiquetas. Selecionar variável referente ao número de duplicatas de amostras herborizadas!';
@@ -496,8 +526,9 @@ echo "
 ";
 }
 else {
+//echopre($ppost);
 	$strvars = array('dbname', 'databaseconnection', 'databaseconnection_clean', 'relativepathtoroot', 'metatitle', 'metadesc', 'metakeyw', 'metacompany', 'lang', 'herbariumnome', 'herbariumsigla', 'blockacess','herbariumlogo','sitetitle','sitelogo','introtext');
-	$numvars = array( 'habitotraitid','pomtraitid', 'statustraitid', 'traitfertid', 'alturatraitid', 'daptraitid', 'duplicatesTraitID', 'exsicatatrait', 'formidhabitat', 'formnotes','traitsilica','localidadetraitid');
+	$numvars = array( 'habitotraitid','pomtraitid', 'statustraitid', 'traitfertid', 'alturatraitid', 'daptraitid', 'duplicatesTraitID', 'exsicatatrait', 'formidhabitat', 'formnotes','traitsilica','localidadetraitid','folhaimgtraitid','florimgtraitid','frutoimgtraitid');
 	$strsim = array('databaseconnection', 'databaseconnection_clean', 'relativepathtoroot', 'lang', 'herbariumnome', 'herbariumsigla', 'blockacess', 'herbariumlogo','sitetitle','sitelogo','introtext');
 
 //echopre($_POST);

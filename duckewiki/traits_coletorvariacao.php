@@ -32,11 +32,37 @@ $gget = cleangetpost($_GET,$conn);
 //$aa = unserialize($_SESSION['variation']);
 //echopre($aa);
 
-if ($apagavarsess==1 && $especimenid>0 && $saveit>0) {
-	//echo "ESTOU ENTRANDO AQUI<br />";
+if ($apagavarsess==1 && (($especimenid>0 && $saveit>0)  ||  !empty($nomesciid))) {
+		$typeid = '';
+		$idd=0;
+		if ($especimenid>0) {
+			$typeid = 'EspecimenID';
+			$idd= $especimenid;
+		} else {
+			list($famid,$genusid,$speciesid,$infraspid) = gettaxaids($nomesciid,$conn);
+			if ($infraspid>0) {
+				$typeid = 'InfraEspecieID';
+				$idd = $infraspid;
+			} else {
+				if ($speciesid>0) {
+					$typeid = 'EspecieID';
+					$idd = $speciesid;
+				} else {
+					if ($genusid>0) {
+						$typeid = 'GeneroID';
+						$idd = $genusid;
+					} elseif ($famid>0) {
+						$typeid = 'FamiliaID';
+						$idd = $famid;
+					}
+				}
+			}
+		}
 	unset($_SESSION['variation']);
-	$oldvals = storeoriginaldatatopost($especimenid,'EspecimenID',0,$conn,'');
+	$oldvals = storeoriginaldatatopost($idd,$typeid,0,$conn,'');
 	$_SESSION['variation'] = serialize($oldvals);
+	
+	
 }
 
 //CABECALHO
@@ -45,11 +71,13 @@ $menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/Stickman.MultiUpload.css' />",
-"<link rel='stylesheet' href='javascript/magiczoomplus/magiczoomplus/magiczoomplus.css' type='text/css' media='screen' />"
+"<link rel='stylesheet' href='javascript/magiczoomplus/magiczoomplus/magiczoomplus.css' type='text/css' media='screen' />",
+"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' >"
 );
 
 //UPLOAD IMAGENS FIELD - para subir + de uma imagem individualmente em campos
 $which_java = array(
+"<script type='text/javascript' src='javascript/ajax_framework.js'></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/common.js\"></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/css.js\"></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/standardista-table-sorting.js\"></script>",
@@ -67,11 +95,6 @@ $body = '';
 //echopre($ppost);
 
 if ($resetar=='1') {
-	echo "ESTOU ENTRANDO AQUI 2<br />";
-	#$qq = "SELECT * FROM Formularios WHERE FormID=".$formid;
-	#$rr = mysql_query($qq,$conn);
-	#$row= mysql_fetch_assoc($rr);
-	#$fieldids = explode(";",$row['FormFieldsIDS']);
 	$qf = "SELECT GROUP_CONCAT(TraitID SEPARATOR ';') AS TraitLIST FROM FormulariosTraitsList WHERE FormID=".$formid;
 	$rr = mysql_query($qf,$conn);
 	$row= mysql_fetch_assoc($rr);
@@ -130,11 +153,13 @@ if ($resetar=='1') {
 	$_SESSION['variation'] = serialize($valores);
 	@extract($valores);
 }
+
 $aa = unserialize($_SESSION['variation']);
 @extract($aa);
 ///process submition to parent sending the whole array of values as arraynotes
 if ($option1=='2' || isset($imgdone)) {
-	if (!isset($imgdone)) {		$arval = $ppost;
+	if (!isset($imgdone)) {
+	   $arval = $ppost;
 		unset($arval['MAX_FILE_SIZE'],  
 			$arval['formid' ],  $arval['option1'],  
 			$arval['especimenid'],  
@@ -146,11 +171,18 @@ if ($option1=='2' || isset($imgdone)) {
 			$arval['formname'],  
 			$arval['elementid'],  
 			$arval['traitids'],
-			$arval['final']
+			$arval['final'],
+			$arval['addcoltxt'],
+			$arval['specieslist'],
+			$arval['saveit'],
+			$arval['taxavariacao'],
+			$arval['nomesciid']
 		);
+		//echopre($arval);
 		if (isset($_SESSION['variation'])) {
 			$variaveis = unserialize($_SESSION['variation']);
-		} else {
+		} 
+		else {
 			$variaveis = array();
 		}
 	
@@ -185,17 +217,6 @@ if ($option1=='2' || isset($imgdone)) {
 	
 		//junta os novos valores para o array de resultados e imagens se estas tiverem sido postas
 		$arval = array_merge((array)$arval,(array)$result,(array)$_FILES);
-	
-		//foreach ($variaveis as $kk => $vv) {
-			//$arraykey = explode("_",$kk); 
-			//$charid = $arraykey[1];
-			//$varorunit = $arraykey[0];
-			//if ($varorunit=='traitmulti') {
-				//if (!array_key_exists($kk,$arval)) {
-					//$variaveis[$kk] = NULL;
-				//} 
-			//}
-		//}
 		$newarr = array();
 		foreach ($variaveis as $kk => $vv) {
 			$arraykey = explode("_",$kk); 
@@ -219,11 +240,9 @@ if ($option1=='2' || isset($imgdone)) {
 				}
 			}
 		}
-		//echopre($variaveis);
 		//armazena os dados novos e do novo relatorio a variavel de sessao variation....
 		$newimagefile = array();
-		//echopre($arval);
-		foreach ($arval as $key => $value) {//para cada variavel no array
+		foreach ($arval as $key => $value) {  //para cada variavel no array
 			$ttt = explode("_",$key);
 			if (!is_array($value) && $ttt[0]!='traitimg' && $ttt[0]!='traitmulti' && $ttt[0]!='traitimgautor' && $ttt[0]!='imagid' && $ttt[0]!= 'traitimgold' && $ttt[0]!= 'traitimgautortxt' && $ttt[0]!='imgtodel' ) { //se nao e uma imagem ou array com info de imagem
 				if (@array_key_exists($key,$variaveis)) { //se ela ja existe na variavel de sessao atualiza se diferente
@@ -246,7 +265,7 @@ if ($option1=='2' || isset($imgdone)) {
 					//echo "fotografo ".$fotografo;
 	
 					$ccid = explode("_",$key); //extrai o numero do caractere
-					$filedate = $_SESSION['sessiondate'];	//a data de hoje
+					$filedate = $_SESSION['sessiondate']; //a data de hoje
 					$fva = $filedate."_charid".$ccid[1]."_".$value['name']; //pega o nome do arquivo no diretorio temporario
 	
 					$qq = "SELECT * FROM Imagens WHERE Name='$fva' AND Deleted=0";
@@ -374,17 +393,43 @@ if ($option1=='2' || isset($imgdone)) {
 		} 
 		else { //if imagedone
 			unset($_SESSION['newimagfiles']);
+			unset($_SESSION['addcoltxt']);
 			extract($_SESSION['othervars']);
 			$variaveis = unserialize($_SESSION['variation']);
 		}
 		$elementid2txt = describetraits($variaveis,$img=FALSE,$conn);
 		FazHeader($title,$body,$which_css,$which_java,$menu);
 		if ($final==1) {
-			if ($saveit==1 && $especimenid>0) {
+			if (($saveit==1 && $especimenid>0) || ($taxavariacao==1 && !empty($nomesciid))) {
+						$typeid = '';
+						$idd=0;
+						if ($especimenid>0) {
+							$typeid = 'EspecimenID';
+							$idd= $especimenid;
+						} else {
+							list($famid,$genusid,$speciesid,$infraspid) = gettaxaids($nomesciid,$conn);
+							if ($infraspid>0) {
+								$typeid = 'InfraEspecieID';
+								$idd = $infraspid;
+							} else {
+								if ($speciesid>0) {
+									$typeid = 'EspecieID';
+									$idd = $speciesid;
+								} else {
+									if ($genusid>0) {
+										$typeid = 'GeneroID';
+										$idd = $genusid;
+									} elseif ($famid>0) {
+										$typeid = 'FamiliaID';
+										$idd = $famid;
+									}
+								}
+							}
+						}
 						$changedtraits=0;
 						//faz o cadastro das variaveis se houver
 						if (!empty($_SESSION['variation'])) {
-									$oldtraitids = storeoriginaldatatopost($especimenid,'EspecimenID',0,$conn,'');
+									$oldtraitids = storeoriginaldatatopost($idd,$typeid,0,$conn,'');
 									$newtraitids = unserialize($_SESSION['variation']);
 									//compare arrays
 									foreach ($newtraitids as $key => $val) {
@@ -398,8 +443,9 @@ if ($option1=='2' || isset($imgdone)) {
 						if ($changedtraits>0) {
 								$traitarray = unserialize($_SESSION['variation']);
 								if (count($traitarray)>0) {
-									//echo "ATUALIZANDO<BR>";
-									$resultado = updatetraits($traitarray,$especimenid,'EspecimenID',$conn);
+									//echo "ATUALIZANDO<BR> bibtex:".$bibtex_id;
+									//echopre($traitarray);
+									$resultado = updatetraits($traitarray,$idd,$typeid,$bibtex_id,$conn);
 								}
 						}
 			echo "
@@ -487,8 +533,24 @@ if ($especimenid>0) {
 	$ru = mysql_query($qu,$conn);
 	$rwu = mysql_fetch_assoc($ru);
 	$titlef = $rwu['COLETOR']."  ".$rwu['NUMERO'];
-} else {
+} 
+else {
+	if ($taxavariacao==1) {
+	$idtxt = explode("_",$nomesciid);
+	//echo  $nomesciid."<br >";
+	$qu = "SELECT getnamewithautorone(".$idtxt[1].",'".$idtxt[0]."', 0, 0) as nn";
+	//echo $qu."<br />";
+	$ru = mysql_query($qu,$conn);
+	$nru = mysql_numrows($ru);
+		if ($nru>0) { 
+		$nn = mysql_fetch_assoc($ru);
+		$ntxt = $nn['nn'];
+		$titlef =  "Entrando variação para ".$ntxt;
+		}
+	} 
+	else {
 	$titlef = GetLangVar('namenova')." ".GetLangVar('namevariacao'); 
+	}
 }
 echo "
 <table class='myformtable' align='center' cellpadding='7' > 
@@ -501,8 +563,16 @@ echo "
   <input type='hidden' name='elementid' value='".$elementid."' />
   <input type='hidden' name='traitsinenglish' value='".$traitsinenglish."' />
   <input type='hidden' name='saveit' value='".$saveit."' />
-  <input type='hidden' name='especimenid' value='".$especimenid."' />
-
+  <input type='hidden' name='especimenid' value='".$especimenid."' />";
+if ($taxavariacao==1) { 
+echo " 
+  <input type='hidden' name='taxavariacao' value='".$taxavariacao."' />
+  <input type='hidden' name='nomesciid' value='".$nomesciid."' />
+  <input type='hidden' name='typeid' value='".$typeid."' />
+  <input type='hidden' name='idd' value='".$idd."' />  
+";
+}
+echo "
 <tr>
   <td >
     <table>
@@ -551,10 +621,15 @@ if (($formid+0)>0) {
 	}
 echo "
 <tr>
-<td  align='right' ><a onclick=\"javascript:document.getElementById('traitlang').value=".$flagval.";document.getElementById('varform2').submit();\"><img height='30' src=\"icons/".$flag."\" alt='Mudar idioma' style='cursor: pointer;' /></a></td></tr>
+<td  align='right' ><a onclick=\"javascript:document.getElementById('traitlang').value=".$flagval.";document.getElementById('varform2').submit();\"><img height='30' src=\"icons/".$flag."\" alt='Mudar idioma' style='cursor: pointer;' /></a></td></tr>";
+
+//echopre($ppost);
+//echopre(unserialize($_SESSION['variation']));
+
+echo "
 <tr>
-  <td align='center' >
-<form id='varform2' method='post' enctype='multipart/form-data' action='traits_coletorvariacao.php' >
+<td>
+  <form id='varform2' name='varform2' method='post' enctype='multipart/form-data' action='traits_coletorvariacao.php' >
   <input type='hidden' id='traitlang' name='traitsinenglish' value='' />
   <input type='hidden' name='MAX_FILE_SIZE' value='10000000' />
   <input type='hidden' name='formid' value='".$formid."' />
@@ -563,6 +638,61 @@ echo "
   <input type='hidden' name='saveit' value='".$saveit."' />
   <input type='hidden' name='especimenid' value='".$especimenid."' />
   <input type='hidden' name='option1' value='2' />";
+	 if ($taxavariacao==1) { 
+	$qbib = "SELECT DISTINCT BibtexIDS FROM Traits_variation as tr LEFT JOIN FormulariosTraitsList as lista ON lista.TraitID=tr.TraitID WHERE tr.".$typeid."=".$idd." AND lista.FormID=".$formid;
+	//echo $qbib."<br />";
+	$rbib = @mysql_query($qbib,$conn);
+	$bibids = array();
+	while($rwbib = mysql_fetch_assoc($rbib)) {
+		$bb = $rwbib['BibtexIDS'];
+		$bz = explode(";",$bb);
+		$bibids = array_merge((array)$bibids,(array)$bz);
+	}
+	$bibids = array_unique($bibids);
+	$bibtexts = array();
+	if (count($bibids)>0) {
+		$bibtex_id = implode(";",$bibids);
+		foreach($bibids as $bib) {
+			$qb = "SELECT BibKey FROM BiblioRefs WHERE BibID=".$bib;
+			$rb = mysql_query($qb,$conn);
+			$rwb = mysql_fetch_assoc($rb);
+			$bibtexts[] = $rwb['BibKey'];
+		}
+	} else {
+		$bibtex_id = '';
+	}
+	if (count($bibtexts)>0) {
+		$bibtex_txt = implode(";",$bibtexts);
+	} else {
+		$bibtex_txt = '';
+	}
+	
+echo " 
+  <input type='hidden' name='taxavariacao' value='".$taxavariacao."' />
+  <input type='hidden' name='nomesciid' value='".$nomesciid."' />
+  <input type='hidden' name='typeid' value='".$typeid."' />
+  <input type='hidden' name='idd' value='".$idd."' />
+";
+echo "
+    <table>
+      <tr>
+      <td class='tdsmallboldright'>Referência FONTE&nbsp;<img height='15' src=\"icons/icon_question.gif\" ";
+$help = "Indique referência(s) bibliográfica(s) de onde a informação das variáveis está sendo extraída";
+echo " onclick=\"javascript:alert('$help');\" />&nbsp;&nbsp;
+      </td>
+      <td ><span id='bibtex_txt'>".$bibtex_txt."</span><input type='hidden' id='bibtex_id' name='bibtex_id'  value='".$bibtex_id."'></td>
+      <td><input type=button style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  value='Bibliografia'  onmouseover=\"Tip('Indique referência(s) bibliográfica(s) de onde a informação das variáveis está sendo extraída');\" ";
+		$myurl = "bibtext-gridsave.php?bibtex_txt=bibtex_txt&bibtex_id=bibtex_id&bibids=".$bibtex_id;
+		echo " onclick = \"javascript:small_window('".$myurl."',800,600,'Referências Bibliográficas');\" /></td>
+      </tr>
+    </table>";
+	}
+echo "
+  </td>
+</tr>";
+echo "
+<tr>
+  <td align='center' >";
   include "traits_generalform.php";
 echo "
   </td>
@@ -580,7 +710,17 @@ echo "
   <input type='hidden' name='elementid2' value='".$elementid2."' />
   <input type='hidden' name='elementid' value='".$elementid."' />
   <input type='hidden' name='saveit' value='".$saveit."' />
-  <input type='hidden' name='especimenid' value='".$especimenid."' />
+  <input type='hidden' name='especimenid' value='".$especimenid."' />";
+	if ($taxavariacao==1) { 
+echo " 
+  <input type='hidden' name='taxavariacao' value='".$taxavariacao."' />
+  <input type='hidden' name='nomesciid' value='".$nomesciid."' />
+  <input type='hidden' name='typeid' value='".$typeid."' />
+  <input type='hidden' name='idd' value='".$idd."' />
+
+";
+	}  
+echo "
   <input type='hidden' name='resetar' value='1' />
         <td align='left'><input style='cursor: pointer' type='submit' value='".GetLangVar('namereset')."' class='breset' /></td>
 </form>

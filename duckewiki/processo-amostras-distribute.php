@@ -158,7 +158,7 @@ else {
 	 foreach ($herb as $hh) {
 	 	$hv =  trim($hh);
 		if (!empty($hv)) {
-	 		$herbcl[] = trim($hh);
+	 		$herbcl[] =  trim(strtoupper($hh));
 	 	}
 	 }
 	if (!empty($ferttoexcl)) {
@@ -217,15 +217,13 @@ else {
 					If ($kz2>0) {
 						$allherbs[$kz] = $allherbs[$kz2];
 						unset($allherbs[$kz2]);
+					} else {
+						$allherbs[$kz] = $theespherb;
 					}
-				}
-				$kz = array_search('ESPECIALISTA',$allherbs);
-				if ($kz>0 &&  !empty($theespherb)) {
-					$allherbs[$kz] = $theespherb;
 				} elseif ($kz>0) {
 					unset($allherbs[$kz]);
-					$allherbs = array_values($allherbs);
 				}
+				$allherbs = array_values($allherbs);
 			    for($i=0;$i<=$iend;$i++) {
 					$curh = $allherbs[$i];
 					$theherb[] = $curh;

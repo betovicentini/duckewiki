@@ -37,7 +37,8 @@ function Header()
 	$vartoprint = strip_tags("   Identificador:_________________________________  <b>".GetLangVar('namedata')."</b>: _____/____/______");
 	$ll = strlen($vartoprint);
     $this->SetFillColor(235, 245, 233);
-    $this->Cell(0,10,$vartoprint.'    Pg. '.$this->PageNo().'/{nb}',1,0,'C',1);
+    $message = iconv('UTF-8', 'windows-1252',$vartoprint.'    Pg. '.$this->PageNo().'/{nb}');
+    $this->Cell(0,10,$message,1,0,'C',1);
 	$var = "Dados coletados por?";
 	$ll2 = strlen($var);
 	$tt = str_repeat("_", $ll-$ll2);
@@ -56,6 +57,7 @@ function Footer()
     $this->SetFont('Times','',8);
     //Page number
     $userstring = strip_tags("<i>".$_SESSION['userfirstname']." ".$_SESSION['userlastname']." (".$_SESSION['sessiondate'].")</i>");
+    $userstring = iconv('UTF-8', 'windows-1252',$userstring);
     $this->Cell(0,10,"Impresso por ".$userstring." ",0,0,'L');
     $this->Cell(0,10,'Pg.'.$this->PageNo().'/{nb}',0,0,'R');
 
@@ -100,6 +102,7 @@ if ($formid>0) {
 				$trclass = trim($zz[0]);
 				$pdf->Ln($ln);
 			    $vartoprint = "<b>".$row['TraitName']." (".$trclass.")</b>";
+			    $vartoprint = iconv('UTF-8', 'windows-1252',$vartoprint);
 				$pdf->WriteHTML($vartoprint,$ln);
 
 				//se categoria
@@ -115,6 +118,7 @@ if ($formid>0) {
 							$pdf->Ln(5);
 					    }
 					    $vartoprint =  "\t[  ]-".$rw['TraitName']."\t";
+					    $vartoprint = iconv('UTF-8', 'windows-1252',$vartoprint);
 						$pdf->WriteHTML($vartoprint,$ln);
 						$cr++;
 					} 
@@ -122,11 +126,13 @@ if ($formid>0) {
 				//se quantitativo
 				if ($row['TraitTipo']=='Variavel|Quantitativo') {
 					$vartoprint =  " ______________________________________________<b>".strtolower(GetLangVar('medidoem'))."</b>:_______";
+					$vartoprint = iconv('UTF-8', 'windows-1252',$vartoprint);
 					$pdf->WriteHTML($vartoprint,$ln);
 				}
 				//se texto
 				if ($row['TraitTipo']=='Variavel|Texto') {
 					$vartoprint = " ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________";
+					$vartoprint = iconv('UTF-8', 'windows-1252',$vartoprint);
 					$pdf->WriteHTML($vartoprint,$ln);
 
 				}

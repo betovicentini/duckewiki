@@ -179,7 +179,7 @@ if ($final==1) {
 	$traitarray = unserialize($_SESSION['variation']);
 	//echopre($traitarray);
 	if (count($traitarray)>0) {
-			$traitupdate = updatetraits($traitarray,$groupid,'GrupoSppID',$conn);
+			$traitupdate = updatetraits($traitarray,$groupid,'GrupoSppID',$bibtex_id,$conn);
 			if ($traitupdate) {
 				$updated++;
 			} else {

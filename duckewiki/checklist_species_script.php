@@ -29,6 +29,11 @@ $qq = "DROP TABLE ".$tbname;
 
 //SE NAO FOR UM FILTRO POR LOCALIDADE, ENTAO GERA O CHECKLIST A PARTIR DOS DADOS
 $perc = 1;
+
+//TaxonomySimple($all=true,$conn);
+TaxonomySimple($all=false,$conn);
+
+
 $qnu = "UPDATE `temp_progspp".$tbname."` SET percentage=".$perc; 
 mysql_query($qnu, $conn);
 session_write_close();
@@ -57,8 +62,14 @@ NIRSpectra INT(10),
 SILICA INT(10),
 FLORES INT(10),
 FRUTOS INT(10),
+VEG_CHARS INT(10),
+FERT_CHARS INT(10),
+FOLHA_IMG INT(10),
+FLOR_IMG INT(10),
+FRUTO_IMG INT(10),
+EXSICATA_IMG INT(10),
 PRIMARY KEY (TempID)) CHARACTER SET utf8";
-//echo $qq."<br>";
+echo $qq."<br>";
 @mysql_query($qq,$conn);
 $qq = "ALTER TABLE ".$tbname."  ENGINE = InnoDB";
 @mysql_query($qq,$conn);
@@ -71,7 +82,7 @@ if (empty($tableref) || !isset($tableref)) {
 	$nspecs = $rzw['nspecies'];
 	$stepsize = 1;
 	$nsteps = ceil(($nspecs)/$stepsize);
-	$qbase = "INSERT INTO ".$tbname." ( DetNivel, FamiliaID, GeneroID, EspecieID, InfraEspecieID, NOME, NOME_AUTOR, MORFOTIPO,ESPECIMENES, PLANTAS, PLOTS, FAMILIA, HABT, IMG, EDIT, MAP, OBS,NIRSpectra, SILICA,FLORES, FRUTOS) ";
+	$qbase = "INSERT INTO ".$tbname." ( DetNivel, FamiliaID, GeneroID, EspecieID, InfraEspecieID, NOME, NOME_AUTOR, MORFOTIPO,ESPECIMENES, PLANTAS, PLOTS, FAMILIA, HABT, IMG, EDIT, MAP, OBS,NIRSpectra, SILICA,FLORES, FRUTOS, VEG_CHARS, FERT_CHARS, FOLHA_IMG, FLOR_IMG, FRUTO_IMG, EXSICATA_IMG) ";
     $qq = "(SELECT 
 IF (SUBSTRING(nomeid,1,5)='famid','Familia', IF (SUBSTRING(nomeid,1,5)='genus','Genero', IF (SUBSTRING(nomeid,1,5)='infsp','InfraEspecie', IF (SUBSTRING(nomeid,1,5)='speci','Especie','')))) as DetNivel,
 FamiliaID,
@@ -86,20 +97,26 @@ countplantas(id, nomeid) ,
 countplantasplots(id, nomeid),
 Familia,
 checklocalhabitat(InfraEspecieID, EspecieID, GeneroID, FamiliaID),
-checktaxaimg(FamiliaID, GeneroID, EspecieID, InfraEspecieID),
+checktaxaimg(FamiliaID, GeneroID, EspecieID, InfraEspecieID,0),
 gettropicosnamelong(FamiliaID, GeneroID, EspecieID, InfraEspecieID,0) ,
 'mapping.png',
  'edit-notes.png',
 checktaxanir(FamiliaID, GeneroID, EspecieID, InfraEspecieID) as NIRSpectra,
 countsilica(".$traitsilica.",FamiliaID, GeneroID, EspecieID, InfraEspecieID) as SILICA,
 (countfert(100,FamiliaID, GeneroID, EspecieID, InfraEspecieID)+countfert(103,FamiliaID, GeneroID, EspecieID, InfraEspecieID)) as FLORES,
-(countfert(101,FamiliaID, GeneroID, EspecieID, InfraEspecieID)+countfert(564,FamiliaID, GeneroID, EspecieID, InfraEspecieID)) as FRUTOS
-FROM `TaxonomySimpleSearch`";
+(countfert(101,FamiliaID, GeneroID, EspecieID, InfraEspecieID)+countfert(564,FamiliaID, GeneroID, EspecieID, InfraEspecieID)) as FRUTOS,
+0 AS VEG_CHARS,
+0 AS FERT_CHARS,
+0 AS FOLHA_IMG,
+0 AS FLOR_IMG,
+0 AS FRUTO_IMG,
+0 AS EXSICATA_IMG
+ FROM `TaxonomySimpleSearch`";
 
 	$step=0;
 	while ( $step<=$nsteps ) {
 		if ($step==0) {
-			$st1 = 1;
+			$st1 = 0;
 		} 
 		else {
 			$st1 = $st1+$stepsize;
@@ -118,7 +135,7 @@ FROM `TaxonomySimpleSearch`";
    }
 } 
 else {
-$qsql = "INSERT INTO ".$tbname." ( FamiliaID, GeneroID, EspecieID, InfraEspecieID, NOME, NOME_AUTOR, MORFOTIPO, ESPECIMENES, PLANTAS, PLOTS, FAMILIA, MAP, OBS,DetID,NIRSpectra, SILICA,FLORES, FRUTOS)  (SELECT 
+$qsql = "INSERT INTO ".$tbname." ( FamiliaID, GeneroID, EspecieID, InfraEspecieID, NOME, NOME_AUTOR, MORFOTIPO, ESPECIMENES, PLANTAS, PLOTS, FAMILIA, MAP, OBS,DetID,NIRSpectra, SILICA,FLORES, FRUTOS, VEG_CHARS, FERT_CHARS, FOLHA_IMG, FLOR_IMG, FRUTO_IMG, EXSICATA_IMG)  (SELECT 
 iddet.FamiliaID,
 iddet.GeneroID,
 iddet.EspecieID,
@@ -137,6 +154,12 @@ checktaxanir(FamiliaID, GeneroID, EspecieID, InfraEspecieID) as NIRSpectra,
 countsilica(".$traitsilica.",FamiliaID, GeneroID, EspecieID, InfraEspecieID) as SILICA,
 (countfert(100,FamiliaID, GeneroID, EspecieID, InfraEspecieID)+countfert(103,FamiliaID, GeneroID, EspecieID, InfraEspecieID)) as FLORES,
 (countfert(101,FamiliaID, GeneroID, EspecieID, InfraEspecieID)+countfert(564,FamiliaID, GeneroID, EspecieID, InfraEspecieID)) as FRUTOS
+0 AS VEG_CHARS,
+0 AS FERT_CHARS,
+0 AS FOLHA_IMG,
+0 AS FLOR_IMG,
+0 AS FRUTO_IMG,
+0 AS EXSICATA_IMG
 FROM Identidade as iddet 
 LEFT JOIN Especimenes as especs ON especs.DetID=iddet.DetID 
 LEFT JOIN Plantas as pl ON pl.DetID=iddet.DetID
@@ -165,7 +188,7 @@ $qnu = "UPDATE `temp_progspp".$tbname."` SET percentage=".$perc;
 mysql_query($qnu, $conn);
 session_write_close();
 
-$sql = "UPDATE ".$tbname." SET IMG=checktaxaimg(FamiliaID,GeneroID,EspecieID,InfraEspecieID)";
+$sql = "UPDATE ".$tbname." SET IMG=checktaxaimg(FamiliaID,GeneroID,EspecieID,InfraEspecieID,0)";
 mysql_query($sql,$conn);
 $perc = 85;
 $qnu = "UPDATE `temp_progspp".$tbname."` SET percentage=".$perc; 
@@ -177,6 +200,24 @@ $perc = 95;
 $qnu = "UPDATE `temp_progspp".$tbname."` SET percentage=".$perc; 
 mysql_query($qnu, $conn);
 session_write_close();
+
+$sql = "UPDATE ".$tbname." SET VEG_CHARS=checkformtaxastatus(CONCAT(Familia,'_VEGCHARS' SEPARATOR ''), FamiliaID, GeneroID, EspecieID, InfraEspecieID, 3)";
+mysql_query($sql,$conn);
+
+$sql = "UPDATE ".$tbname." SET FERT_CHARS=checkformtaxastatus(CONCAT(Familia,'_FERTCHARS' SEPARATOR ''), FamiliaID, GeneroID, EspecieID, InfraEspecieID, 3)";
+mysql_query($sql,$conn);
+
+$sql = "UPDATE ".$tbname." SET FOLHA_IMG=checktaxaimg(FamiliaID, GeneroID, EspecieID, InfraEspecieID,".$folhaimgtraitid.")";
+mysql_query($sql,$conn);
+
+$sql = "UPDATE ".$tbname." SET FLOR_IMG=checktaxaimg(FamiliaID, GeneroID, EspecieID, InfraEspecieID,".$florimgtraitid.")";
+mysql_query($sql,$conn);
+
+$sql = "UPDATE ".$tbname." SET FRUTO_IMG=checktaxaimg(FamiliaID, GeneroID, EspecieID, InfraEspecieID,".$frutoimgtraitid.")";
+mysql_query($sql,$conn);
+
+$sql = "UPDATE ".$tbname." SET EXSICATA_IMG=checktaxaimg(FamiliaID, GeneroID, EspecieID, InfraEspecieID,".$exsicatatrait.")";
+mysql_query($sql,$conn);
 
 }
 //$check = mysql_query($qq,$conn);

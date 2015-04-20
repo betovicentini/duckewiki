@@ -21,6 +21,7 @@ IF padrao>=1 THEN
 		END IF;
 	END IF;
 	IF padrao=3 THEN
+		SET coletor = REPLACE(coletor,"WIKIESPECIMENID-","");
 		SET specid = (coletor+0);
 		SELECT EspecimenID,count(*) into resultado,nn FROM Especimenes WHERE EspecimenID=specid;
 	END IF;

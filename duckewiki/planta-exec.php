@@ -399,7 +399,7 @@ if (($final>0 && $nosample=='no') || ($final>0 && !empty($especimensids))) {
    		(empty($_SESSION['editando']) && !empty($_SESSION['variation']))) && $erro==0 && $nosample=='no') {
    			$traitarray = unserialize($_SESSION['variation']);
    		if (count($traitarray)>0) {
-			$resultado = updatetraits($traitarray,$plantaid,'PlantaID',$conn);
+			$resultado = updatetraits($traitarray,$plantaid,'PlantaID',$bibtex_id,$conn);
 			if (!$resultado) {
 				$erro++;
 				echo "

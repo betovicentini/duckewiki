@@ -214,7 +214,7 @@ FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 				if ($changedtraits>0) {
 					$traitarray = unserialize($_SESSION['variation']);
 					if (count($traitarray)>0) {
-						$resultado = updatetraits($traitarray,$plantaid,'PlantaID',$conn);
+						$resultado = updatetraits($traitarray,$plantaid,'PlantaID',$bibtex_id,$conn);
 						//echo "mudei".$plantaid."<br />";
 					}
 				}

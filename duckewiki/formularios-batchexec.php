@@ -42,19 +42,24 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 
 //echopre($ppost);
 
-if (!empty($formid) && is_numeric($formid)) {
+if (!empty($formid) && is_numeric($formid) && !isset($final) && !isset($orderchange)) {
 	$qq = "SELECT * FROM Formularios WHERE FormID='".$formid."'";
 	$rr = mysql_query($qq,$conn);
 	$row = mysql_fetch_assoc($rr);
 	$traitids = explode(";",$row['FormFieldsIDS']);
+} else {
+	$traitids = unserialize($runtraitids);
 }
-
 if (empty($final) && $orderchange==1) {
 	$arvals = $ppost;
 	unset($arvals['orderchange'],$arvals['formid'],$arvals['final']);
+	//echopre($arvals);
 	$newtraitids = array();
+	//MUDA A ORDEM
+	//QUEM MUDA?
 	$olid = 0;
 	$orgorder=1;
+	unset($neworder);
 	foreach($arvals as $kk => $vv) {
 		$zz = explode("_",$kk);
 		$tid = $zz[1]+0;
@@ -67,34 +72,63 @@ if (empty($final) && $orderchange==1) {
 		}
 	}
 	if (isset($neworder)) {
-		$newtraitids[$neworder] = $traichanging;
-		$nt=0;
-		foreach ($traitids as $cid) {
-			if ($cid!=$traichanging) {
-				if ($nt==$neworder) { $nt++;}
-				$newtraitids[$nt] = $cid;
-				$nt++;
+		$aa = array_search($traichanging,$traitids);
+		$tridd = $traitids;
+		unset($tridd[$aa]);
+		$tridd = array_values($tridd);
+		$newtraitids = array();
+		if ($neworder==0) {
+			$newtraitids = array_merge((array)array($traichanging),(array)$tridd);
+		} else {
+			$nt = count($tridd);
+			$idx=0;
+			for($tt=0;$tt<=$nt;$tt++) {
+				$curtr = $traitids[$idx];
+				if ($curtr==$traichanging) {
+					$idx = $idx+1;
+					$curtr = $traitids[$idx];
+				}
+				if ($tt==$neworder) {
+					$curtr = $traichanging;
+				} else {
+					$idx++;
+				}
+				$newtraitids[$tt] = $curtr;
 			}
 		}
-		ksort($newtraitids);
+		$newtraitids = array_values($newtraitids);
+
+//		$newtraitids[$neworder] = $traichanging;
+//		$nt=0;
+//		foreach ($traitids as $cid) {
+//			if ($cid!=$traichanging) {
+//				if ($nt==$neworder) { $nt++;}
+//				$newtraitids[$nt] = $cid;
+//				$nt++;
+//			}
+//		}
+//		ksort($newtraitids);
 		$traitids = $newtraitids;
 	}	
 }
 if (empty($final)) {
+$runtraitids = serialize($traitids);
 echo "
 <br />
 <form action=formularios-batchexec.php name='formulario' method='post'>
   <input type='hidden' name='ispopup' value='$ispopup' />
   <input type='hidden' value='1' name='orderchange' />
   <input type='hidden' value='".$formid."' name='formid' />
+  <input type='hidden' value='".$runtraitids."' name='runtraitids' />
 <table align='center' cellpadding='5' class='myformtable' width='70%' />
 <thead>
 <tr>
   <td>".GetLangVar('nameclasse')."</td>
   <td>".GetLangVar('namevariavel')."</td>
   <td>".GetLangVar('namedefinicao')."</td>
-  <td>NameEnglish</td>
+<!---  <td>NameEnglish</td>
   <td>Definition</td>
+--->  
   <td>".GetLangVar('nameorder')."</td>
 </tr>
 </thead>
@@ -155,10 +189,11 @@ echo "
 echo "
     </select>
   </td>
-  <td><input type='text' size='40' name=\"traitname_".$tid."\" value='".$tname."' /></td>
-  <td><textarea name=\"traitdefinicao_".$tid."\" cols='40' rows='3'>$definicao</textarea></td>
-  <td><input type='text' size='40' name=\"traitnameeng_".$tid."\" value='".$tnameeng."' /></td>
+  <td><input type='text' size='40' name=\"traitname_".$tid."\" value='".$tname."' readonly=T/></td>
+  <td><textarea name=\"traitdefinicao_".$tid."\" cols='40' rows='3' readonly=T>$definicao</textarea></td>
+<!---  <td><input type='text' size='40' name=\"traitnameeng_".$tid."\" value='".$tnameeng."' /></td>
   <td><textarea name=\"traitdefinicaoeng_".$tid."\" cols='40' rows='3'>$definicaoeng</textarea></td>
+  --->
   <td>
     <select name=\"traitorder_".$tid."\" onchange='this.form.submit();'>
       <option selected value='".$i."'>$i</option>";
@@ -199,6 +234,8 @@ else { //processa
 	$identical=0;
 	$updated=0;
 	$erro=0;
+///NAO ATUALIZA VARIAVEIS POR ESSE CAMINHO	
+if ($lixo=10000) {
 	foreach($newt as $tid) {
 		$newparentid = $arvals["parentid_".$tid];
 		$newtname = $arvals["traitname_".$tid];
@@ -242,6 +279,7 @@ else { //processa
   <tr><td>$erro variáveis modificadas NAO foi possivel atualizar</td></tr>
 </table>";
 	}
+}	
 	
 	//update formulario
 	$formtraits = implode(";",$newt);
