@@ -6,13 +6,15 @@ LEIA O ARQUIVO duckewiki/dhtmlxconnecto_README.txt - essa é uma restrição que
 	duckewiki
 	cgi-local (requer imagemagick instalado no seu servidor para que os scripts nesta pasta possam trabalhar imagens)
   Atenção, as pastas:
+        duckewiki/img (se houver)
+        duckewiki/icons
 	duckewiki/temp
 	duckewiki/uploads
-	uploads/batch_images
-	uploads/bibtex
-	uploads/data_files
-	uploads/gazetteer_files
-	uploads/gps_files
+	duckewiki/uploads/batch_images
+	duckewiki/uploads/bibtex
+	duckewiki/uploads/data_files
+	duckewiki/uploads/gazetteer_files
+	duckewiki/uploads/gps_files
  devem ter permissão de escrita para o usuário do apache (normalmente usuário www-data), no linux:
 	sudo chwon www-data:www-data  temp
 	sudo chwon -R www-data:www-data  uploads
@@ -38,7 +40,7 @@ senha: @dm!n
 6) NO MENU ADMINISTRACAO:
 	a) Executar funções mysql;
 	
-7) PODE COMEÇAR A IMPORTAR DADOS. USE A INTERFACE, NAO O PHP MY ADMIN PARA FAZER ISSO.
+7) PODE COMEÇAR A IMPORTAR DADOS. USE A INTERFACE, NAO O PHPMYADMIN PARA FAZER ISSO.
 
 
 
