@@ -19,6 +19,8 @@ IF (charid>0) THEN
 	SET rss = REPLACE(rss, '  ', ' ');
 	SET rss = REPLACE(rss, '.', ' ');
 	SET rss = REPLACE(rss, '  ', '_');
+	SET rss = REPLACE(rss, '(', '');
+	SET rss = REPLACE(rss, ')', '');
 	 SET rss2 = UPPER(SUBSTRING(rss,1,2));
 	 IF resultado='' THEN
 	 	SET resultado = rss;

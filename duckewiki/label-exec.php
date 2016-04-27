@@ -94,7 +94,7 @@ addcolldescr(maintb.AddColIDS) as addcol";
 //DATE_FORMAT(concat(IF(maintb.Ano>0,maintb.Ano,1),'-',IF(maintb.Mes>0,maintb.Mes,1),'-',IF(maintb.Day>0,maintb.Day,1)),'%d-%b-%Y') as datacol,
 		//$qq .= ", IF (maintb.PlantaID>0,localidadestring(secondtb.GazetteerID,secondtb.GPSPointID,0,0,0,secondtb.Latitude,secondtb.Longitude,secondtb.Altitude), localidadestring(maintb.GazetteerID,maintb.GPSPointID,maintb.MunicipioID,maintb.ProvinceID,maintb.CountryID,maintb.Latitude,maintb.Longitude,maintb.Altitude)) as locality";
 		$qq .= ", 
-localidadestring(maintb.GazetteerID,maintb.GPSPointID,maintb.MunicipioID,maintb.ProvinceID,maintb.CountryID,maintb.Latitude,maintb.Longitude,maintb.Altitude) as locality";
+localidadestring2(maintb.GazetteerID,maintb.GPSPointID,maintb.MunicipioID,maintb.ProvinceID,maintb.CountryID,maintb.Latitude,maintb.Longitude,maintb.Altitude,1) as locality";
 		if ($processoid>0) {
 			$qq .= ", prcc.".$herbariumsigla." as herbnum";
 			$qq .= ", prcc.Herbaria as herbarios";
@@ -109,7 +109,11 @@ localidadestring(maintb.GazetteerID,maintb.GPSPointID,maintb.MunicipioID,maintb.
 			if ($duplicatesTraitID2>0) {
 				$qq .= ", ".$duplicatesTraitID2." as ndups";
 			} else {
-				$qq .= ", 1 as ndups";
+			 	if ($duplicatesTraitID>0) {
+					$qq .= ", nduplicates(".$duplicatesTraitID.",maintb.EspecimenID,'Especimenes') as ndups";
+				} else {
+					$qq .= ", 1 as ndups";
+				}
 			}
 		}
 
@@ -123,7 +127,7 @@ localidadestring(maintb.GazetteerID,maintb.GPSPointID,maintb.MunicipioID,maintb.
 		IF(maintb.TaggedDate>0,DAY(maintb.TaggedDate),0) as day, 
 		addcolldescr(maintb.TaggedBy) as addcol";
 //		IF(maintb.TaggedDate>0,DATE_FORMAT(maintb.TaggedDate,'%d-%b-%Y'),'') as datacol, 
-		$qq .= ", localidadestring(maintb.GazetteerID,maintb.GPSPointID,0,0,0,maintb.Latitude+0,maintb.Longitude+0,maintb.Altitude+0) as locality";
+		$qq .= ", localidadestring2(maintb.GazetteerID,maintb.GPSPointID,0,0,0,maintb.Latitude+0,maintb.Longitude+0,maintb.Altitude+0,1) as locality";
 		$qq .= ", '' as herbnum";
 		if ($formid>0) {
 			//$qq .= ", notastring(PlantaID,$formid,TRUE,'Plantas') as descricao";

@@ -7,7 +7,6 @@ include "functions/MyPhpFunctions.php";
 //include "bibtex2html.php";
 require_once "functions/DescricaoModelo.php";
 
-
 //FAZ A CONEXAO COM O BANCO DE DADOS
 $lang = $_SESSION['lang'];
 $dbname = $_SESSION['dbname'];
@@ -107,8 +106,9 @@ $which_css = array(
 	position: relative;
 	height: 300px;
 	width: 99%;
-	overflow: scroll;
 	padding-right: 5px;
+	resize: both;
+	overflow: auto;
 }
 #modelo ol {
 	height: 400px;
@@ -384,7 +384,7 @@ $('#filtralista').keyup(function(){
                     txtf.underscore = subl;
                 var letcase = $(this).find(\"div input.level1lettercase:checked\").val();
                     txtf.caso = letcase;
-                var obj2 = JSON.stringify(txtf);
+                var obj2 = txtf;
                 if (obj2!='{}') {
                    item.textformat = txtf;
                 }
@@ -437,7 +437,7 @@ $('#filtralista').keyup(function(){
                                subtxtf.underscore = subl;
                            var letcase = $(this).find(\"div input.level2lettercase:checked\").val();
                                subtxtf.caso = letcase;
-                           var obj2 = JSON.stringify(subtxtf);
+                           var obj2 = subtxtf;
                            if (obj2!='{}') {
                               subitem.textformat = subtxtf;
                            }
@@ -450,7 +450,7 @@ $('#filtralista').keyup(function(){
                 }
                 modelo.items.push(item);
             });
-            var md = JSON.stringify(modelo);
+            var md = modelo;
             return md;
         }
         
@@ -465,7 +465,7 @@ $('#filtralista').keyup(function(){
            //alert(simbs);
           var time = new Date().getTime();
           var model = getdefinition();
-          $.get('monografia-modelo-save.php', { t: time, monografiaid: '".$monografiaid."', modelo: model, simbolos: simbs}, function (data) {
+          $.post('monografia-modelo-save.php', { t: time, monografiaid: '".$monografiaid."', modelo: model, simbolos: simbs}, function (data) {
             var progress = parseInt(data, 10);
             if (progress==0 && data!='nao mudou') {
                 alert('Houve um erro consulte o administrador!');

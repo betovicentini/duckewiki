@@ -2,14 +2,12 @@
 session_start();
 //INCLUI FUNCOES PHP E VARIAVEIS
 include "functions/HeaderFooter.php";
-require_once("../".$relativepathtoroot.$databaseconnection_clean);
+require_once($relativepathtoroot.$databaseconnection_clean);
 
 $uuid = $_POST['uuid'];
 $tbname = 'ProjetosEspecs';
 $especimenes = $_POST['especimenes'];
 $projetoid = $_POST['projetoid'];
-$status = $_POST['status'];
-
 $status = $_POST['status'];
 $apagatodos = $_POST['apagatodos'];
 if ($apagatodos==1) {
@@ -27,11 +25,11 @@ $rr =  mysql_query("SELECT * FROM `".$tbname."` WHERE EspecimenID=".$spid."  AND
 $nrr = mysql_numrows($rr);
 if ($nrr>0) {
   $rrw = mysql_fetch_assoc($rr);
-  $oldIncluido = $rrw['Incluido']+0;
-   if ($oldIncluido!=$status && $status==0) {
-        $rup = mysql_query("DELETE FROM  `".$tbname."` WHERE `EspecimenID`=".$spid."  AND ProjetoID=".$projetoid);
+  //$oldIncluido = $rrw['Incluido']+0;
+   if ($status==0) {
+        $rup = mysql_query("DELETE FROM  `".$tbname."` WHERE `EspecimenID`=".$spid."  AND `ProjetoID`=".$projetoid);
         if ($rup) {
-        	$atu++;
+            $atu++;
         }
   } else {
         $nochange++;

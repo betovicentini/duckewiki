@@ -111,7 +111,7 @@ $stilo =" border:1px solid #cccccc;  -webkit-box-shadow:inset 0 0 6px #cccccc; -
 if (($_SESSION['userid']+0)==0) {
 echo "
 <div style='position: absolute; top: 5px; left: 5px; cursor: pointer;'  onclick = \"javascript: self.location='index.php?ispopup=1';\" >
-<img  src=\"icons/".$sitelogo."\"  height='100' />&nbsp;<span style='position: relative; top: 20px; vertical-align: top; font-size: 3em; color: #8B0000;' >
+<img  src=\"icons/".$sitelogo."\"  height='100' />&nbsp;<span style='position: relative; top: 20px; vertical-align: top; font-size: 2em; color: #8B0000;' >
 ".$sitetitle."</span>
 </div>";
 } else {
@@ -164,12 +164,15 @@ if ($footer) {
 <table align='center'>
    <tr>
      <td align='center'>
-        <img style='border: 0px; height: 80px; cursor: pointer;'  src='icons/fapeam.png' alt='Inpa'  onclick = \"javascript: window.open(
+        <img style='border: 0px; height: 20px; cursor: pointer;'  src='icons/fapeam.png' alt='Inpa'  onclick = \"javascript: window.open(
   'http://http://www.fapeam.am.gov.br/','_blank' );\" />&nbsp;&nbsp;&nbsp;
      </td>
      <td align='center'>
-        <img style='border: 0px; height: 80px; cursor: pointer;'  src='icons/inpa_gov.png' alt='Inpa'  onclick = \"javascript: window.open(
+        <img style='border: 0px; height: 20px; cursor: pointer;'  src='icons/inpa_gov.png' alt='Inpa'  onclick = \"javascript: window.open(
   'http://www.inpa.gov.br','_blank' );\" />&nbsp;&nbsp;&nbsp;
+     </td>
+     <td align='center'>
+     <img style=\"".$stilo." vertical-align:text-bottom;\"  height='20px' src='icons/ctfs_logo.png' onmouseover = \"javascript: Tip('CTFS - Center for Tropical Forest Science') ;\"  onclick = \"javascript: window.open('http://www.forestgeo.si.edu','_blank' );\" />
      </td>
    </tr>
  </table>";

@@ -27,22 +27,14 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+//echopre($ppost);
+
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-//"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Processamento de amostras físicas';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -168,9 +160,10 @@ $qup = "ALTER TABLE `ProcessosLIST`  ADD `ProcessosListID` INT(11) NOT NULL AUTO
 //INSERE OU ATUALIZA REGISTROS AO PROCESSO QUANDO FOR O CASO
 if ($erro==0 && $processoid>0) {
 	if ($filtroid>0) {
-		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE, Herbaria, ".$herbariumsigla." ) (SELECT ".$processoid.", pltb.EspecimenID,0 as EXISTE, pltb.Herbaria, pltb.INPA_ID FROM Especimenes as pltb LEFT JOIN ProcessosLIST as proc USING(EspecimenID) WHERE (pltb.FiltrosIDS LIKE '%filtroid_".$filtroid.";%' OR pltb.FiltrosIDS LIKE '%filtroid_".$filtroid."') AND  proc.EspecimenID<>pltb.EspecimenID)";
+		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE, Herbaria, ".$herbariumsigla." ) (SELECT ".$processoid.", tbalias.EspecimenID,0 as EXISTE, tbalias.Herbaria, tbalias.INPA_ID FROM (SELECT pltb.EspecimenID,pltb.Herbaria, pltb.INPA_ID,proc.EspecimenID as procspec FROM Especimenes as pltb LEFT JOIN ProcessosLIST as proc USING(EspecimenID) WHERE (pltb.FiltrosIDS LIKE '%filtroid_".$filtroid.";%' OR pltb.FiltrosIDS LIKE '%filtroid_".$filtroid."')) AS tbalias WHERE tbalias.procspec IS NULL)";
+		
 		//CONCAT(proc.ProcessoID,'_',proc.EspecimenID)<>CONCAT(".$processoid.",'_',pltb.EspecimenID))";
-		//echo $qz."<br /><br />";
+		echo $qz."<br /><br />";
 		@mysql_query($qz,$conn);
 	} elseif (!empty($tbname)) {
 		$qz = "INSERT INTO ProcessosLIST (ProcessoID,EspecimenID,EXISTE ) (SELECT ".$processoid.", pltb.EspecimenID,tb.EXISTE FROM Especimenes as pltb JOIN ".$tbname." as tb ON tb.PlantaID=pltb.PlantaID LEFT JOIN ProcessosLIST AS lista ON lista.EspecimenID=pltb.EspecimenID WHERE tb.EXISTE=1 AND lista.EspecimenID<>pltb.EspecimenID)";
@@ -203,25 +196,24 @@ echo "
       <option value=''>------------</option>";
       $qq = "SELECT * FROM ProcessosEspecs ";
       if ($acclevel!='admin') {
-          $qq .= " WHERE CreatedBy='".$uuid."'";
+          //$qq .= " WHERE CreatedBy='".$uuid."'";
       }
+      $qq .= " WHERE Status=0";
       $qq .= " ORDER BY Name ASC ";
       $rrr = @mysql_query($qq,$conn);
       while ($row = @mysql_fetch_assoc($rrr)) {
 			echo "
-      <option value=".$row['ProcessoID'].">".$row['Name']." </option>";
+      <option value=".$row['ProcessoID'].">".$row['Name']."       ".$row['Inicio']."</option>";
 		}
 	echo "
     </select>
     </td>
 </tr>";
-if ($acclevel=='admin') {
 echo "<tr>
  <td align='center' >
  <input  type='button'  style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Exportar dados INPA'  onmouseover=\"Tip('Exporta dados para INPA de vários processos');\"    onclick = \"javascript:small_window('processo-amostras-exportavarios.php',600,500,'Exporta dados para INPA de vários processos');\" >
  </td>
  </tr>";
-}
 echo "
 </tbody>
 </table>
@@ -431,61 +423,71 @@ echo "
         </tr>
         <tr>
         <td align='left'>Dados NIR</td>
-        <td align='left'><progress id='probar' value='".$pernir."' max='100'></progress>    ".$pernir."% </td>
-        <td align='left'>";
-        if ($pernir<100) {
-        echo "<input  type='button'  style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Exporta NIR'  onmouseover=\"Tip('Exportar planilha para ler dados NIR');\"   onclick = \"javascript:small_window('export-nir-spreadsheet.php?wikiid=1&sampletype=specimens&processoid=".$processoid."&ispopup=1',650,300,'Exporta planilha NIR');\" >";
-        }
-echo "</td>
+        <td colspan='2'   align='left'><progress id='probar' value='".$pernir."' max='100'></progress>    ".$pernir."% </td>
+";
+//        <td align='left'>";
+  //      if ($pernir<100) {
+    //    echo "<input  type='button'  style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Exporta NIR'  onmouseover=\"Tip('Exportar planilha para ler dados NIR');\"   onclick = \"javascript:small_window('export-nir-spreadsheet.php?wikiid=1&sampletype=specimens&processoid=".$processoid."&ispopup=1',650,300,'Exporta planilha NIR');\" >";
+      //  }
+// echo "</td>
+echo "
         </tr>
+        <tr>
+           <td align='left'>No. Duplicadas anotado</td>
+           <td colspan='2'  align='left'><progress style='color: green' id='probar' value='".$perdups."' max='100'></progress>    ".$perdups."% </td>
       </table>
     </td>
   </tr>
       </table>
     </td>
   </tr>"; 
-if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi++;
-echo "
-  <tr bgcolor = '".$bgcolor."'>
-    <td >
-      <table>
-        <tr>
-        <td class='tdsmallbold'   align='center' >PASSO 03 &nbsp;<img height=15 src=\"icons/icon_question.gif\" ";
-	$help = "Distribuir duplicatas para diferentes herbários, seguindo a ordem de preferência e o número de duplicatas informado para cada amostra. A palavra ESPECIALISTA, se usada na lista, será substituida pelo herbário do especialista da familia se houveer, conforme a tabela de especialistas. Antes de distribuir amostras você precisa anotar o número de duplicatas para todas as amostras marcadas como EXISTE, mesmo para unicatas!";
-	echo "onclick=\"javascript:alert('$help');\" /></td>
-        <td>
-        <table>
-        <tr>
-        <td align='left'>No. duplicatas anotado</td>
-        <td align='left'><progress style='color: green' id='probar' value='".$perdups."' max='100'></progress>    ".$perdups."% </td>
-        <td align='center'> <input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Especialistas'  onmouseover=\"Tip('Ver/editar Especialistas');\" onclick = \"javascript:small_window('especialista-gridsave.php?processoid=".$processoid."&ispopup=1',900,600,'Especialistas');\" /></td>
-        </tr>
-        <tr>
-        <td align='left'>Lista de herbários</td>
-        <td align='left'>
-        <input type='text' style='height: 2.5em;' size='80'  id='herbariumlista'  name=\"herbaria\"  value='".$herbaria."'  ".$readon." /></td>";
-        if ($status==0 || $acclevel=='admin') { 
-echo "
-        <td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Distribuir amostras'  onmouseover=\"Tip('Distribuir as duplicatas para herbários indicados');\"  ";
-       if ($perdups<100) {
-echo " onclick = \"javascript:alert('Precisa primeiro anotar as duplicatas das amostras marcadas como EXISTE no processo. Importante marcar APENAS as amostras que de fato serão distribuidas');\" ";
-       } else {
-echo " onclick = \"javascript:small_window('processo-amostras-distribute.php?processoid=".$processoid."&ispopup=1',800,400,'Distribui amostras');\" ";
-		}        
-echo "
-        ></td>";
-	}  else {
-echo "
-          <td align='left'>&nbsp;</td>";
-	}      
-echo "
-        </tr>
-      </table>
-    </td>
-  </tr>
-      </table>
-    </td>
-  </tr>";       
+///DESCOMENTAR PARA REINTRODUZIR A SEPARACAO POR HERBARIO  
+//if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi++;
+//echo "
+//  <tr bgcolor = '".$bgcolor."'>
+//    <td >
+//      <table>
+//        <tr>
+//        <td class='tdsmallbold'   align='center' >PASSO 03 &nbsp;<img height=15 src=\"icons/icon_question.gif\" ";
+//	$help = "Distribuir duplicatas para diferentes herbários, seguindo a ordem de preferência e o número de duplicatas informado para cada amostra. A palavra ESPECIALISTA, se usada na lista, será substituida pelo herbário do especialista da familia se houveer, conforme a tabela de especialistas. Antes de distribuir amostras você precisa anotar o número de duplicatas para todas as amostras marcadas como EXISTE, mesmo para unicatas!";
+//	echo "onclick=\"javascript:alert('$help');\" /></td>
+//        <td>
+//        <table>
+//        <tr>
+//        <td align='left'>No. duplicatas anotado</td>
+//        <td align='left'><progress style='color: green' id='probar' value='".$perdups."' max='100'></progress>    ".$perdups."% </td>
+//        <td align='center'> <input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Especialistas'  onmouseover=\"Tip('Ver/editar Especialistas');\" onclick = \"javascript:small_window('especialista-gridsave.php?processoid=".$processoid."&ispopup=1',900,600,'Especialistas');\" /></td>
+//        </tr>
+//        <tr>
+//        <td align='left'>Lista de herbários</td>
+//        <td align='left'>
+//        <input type='text' style='height: 2.5em;' size='80'  id='herbariumlista'  name=\"herbaria\"  value='".$herbaria."'  ".$readon." /></td>";
+//        if ($status==0 || $acclevel=='admin') { 
+//echo "
+//        <td align='center' ><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Distribuir amostras'  onmouseover=\"Tip('Distribuir as duplicatas para herbários indicados');\"  ";
+//       if ($perdups<100) {
+//echo " onclick = \"javascript:alert('Precisa primeiro anotar as duplicatas das amostras marcadas como EXISTE no processo. Importante marcar APENAS as amostras que de fato serão distribuidas');\" ";
+//       } else {
+//echo " onclick = \"javascript:small_window('processo-amostras-distribute.php?processoid=".$processoid."&ispopup=1',800,400,'Distribui amostras');\" ";
+//		} 
+//		
+//echo "
+//        ></td>";
+//	}  
+//	else {
+//echo "
+//          <td align='left'>&nbsp;</td>";
+//	}      
+//echo "
+//        </tr>
+//      </table>
+//    </td>
+//  </tr>
+//      </table>
+//    </td>
+//  </tr>";
+//  
+//    
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
   <tr bgcolor = '".$bgcolor."'>
@@ -506,7 +508,9 @@ if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi
 	  // $txt1 = " onclick = \"javascript:alert('Precisa concluir os passos 02 e 03 para poder exportar os dados e concluir o processo!');\" ";
 	   //$txt2 = $txt1;
 	//} else {
-	   $txt1 = " onclick = \"javascript:small_window('processo-amostras-export.php?processoid=".$processoid."&ispopup=1',800,400,'Exportar dados');\" ";
+	   $txt1 = " onclick = \"javascript:small_window('processo-amostras-export2.php?processoid=".$processoid."&ispopup=1',800,400,'Exportar dados');\" ";
+//	   $txt1 = " onclick = \"javascript:small_window('processo-amostras-export.php?processoid=".$processoid."&ispopup=1',800,400,'Exportar dados');\" ";
+
 	   $txt2 = "onclick = \"javascript:small_window('processo-amostras-importarinpa.php?processoid=".$processoid."&ispopup=1',800,400,'Importar No. INPA');\" ";
 	//}
   echo "

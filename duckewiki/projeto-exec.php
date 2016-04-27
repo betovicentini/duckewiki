@@ -202,13 +202,27 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 <br />
 <table cellpadding=\"5\" align='center' class='success'>
   <tr><td class='tdsmallbold' align='center'>".GetLangVar('sucesso1')."</td></tr>
+  <tr><td class='tdsmallbold' align='center'>
+  <form action='projeto-form.php' method='post'>
+  <input type='hidden'  value='editando' name='submitted'>
+  <input type='hidden'  value='".$projetoid."' name='projetoid'> 
+    <input type='submit'  value='Voltar' style='cursor: pointer;' > 
+  </form></td></tr>
 </table>
+
+
 <br />";
 				} else {
 					echo "
 <br />
 <table cellpadding=\"5\" align='center' class='erro'>
   <tr><td class='tdsmallbold' align='center'>".GetLangVar('erro2')."</td></tr>
+  <tr><td class='tdsmallbold' align='center'>
+  <form action='projeto-form.php' method='post'>
+  <input type='hidden'  value='editando' name='submitted'>
+  <input type='hidden'  value='".$projetoid."' name='projetoid'> 
+    <input type='submit'  value='Voltar' style='cursor: pointer;' > 
+  </form></td></tr>
 </table>
 <br />";
 				}

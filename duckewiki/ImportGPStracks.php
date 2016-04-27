@@ -233,7 +233,7 @@ else { //se continuar foi apertado
 				$long = $coord[1];
 				$lat = $coord[0];
 				$alt = $wpt->ele;
-				$time = trim($wpt->cmt);
+				//$time = trim($wpt->cmt);
 				$time2 = trim($wpt->time);
 				unset($dateoriginal);
 				unset($timeoriginal);

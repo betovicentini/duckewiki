@@ -77,6 +77,8 @@ STRIP_NON_DIGIT(pltb.PlantaTag) as TAG,
 famtb.Familia as FAMILIA,
 acentosPorHTML(gettaxonname(pltb.DetID,1,0)) as NOME,
 acentosPorHTML(gettaxonname(pltb.DetID,1,1)) as NOME_AUTOR,
+detpessoa.Abreviacao as DETBY, 
+IF(YEAR(iddet.DetDate)>0,YEAR(iddet.DetDate),IF(iddet.DetDateYY>0,iddet.DetDateYY,'')) as DETYY,
 emorfotipo(pltb.DetID,0,0) as MORFOTIPO,
 (IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS, 
 (IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO, 
@@ -132,6 +134,7 @@ if ($quickview>0 && !empty($quicktbname)) {
 }
 $qq .= "
 LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
+LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID
 LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID 
 LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID 
 LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID  
@@ -210,7 +213,7 @@ while ( $step<=$nsteps ) {
 		$qbase = "INSERT INTO ".$tbname;
 	}
 	$qqq = $qbase." ".$qq." LIMIT $st1,$stepsize)";
-	echo $qqq."<br />";
+	//echo $qqq."<br />";
 	$check = mysql_query($qqq,$conn);
 	if ($check) {
 		$perc = ceil(($step/$nsteps)*100);

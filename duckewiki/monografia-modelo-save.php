@@ -11,25 +11,37 @@ $dbname = $_SESSION['dbname'];
 $conn = ConectaDB($dbname);
 
 //////PEGA E LIMPA VARIAVEIS
-$ppost = cleangetpost($_POST,$conn);
+$ppost = @cleangetpost($_POST,$conn);
 @extract($ppost);
 $arval = $ppost;
-$gget = cleangetpost($_GET,$conn);
+$gget = @cleangetpost($avars,$conn);
 @extract($gget);
 
+if (count($gget)>count($ppost)) {
+	$avars = $_GET;
+} else {
+	$avars = $_POST;
+}
 //$fnn = 'testando.txt';
 //$fh = fopen("temp/".$fnn, 'w');
-//$stringData = 'monografiaid='.$monografiaid.'    '.$_GET['modelo'];
+//$stringData = 'monografiaid='.$monografiaid."\n";
+//echopre($avars['modelo']);
+//$md = json_encode($avars['modelo'], JSON_UNESCAPED_UNICODE);
+//echo $md."<br >";
+//$stringData .= $md;
 //fwrite($fh, $stringData);
 //fclose($fh);
-
+ 
+$omodelo = json_encode($avars['modelo'], JSON_UNESCAPED_UNICODE);
+$lixo=1;
+if ($lixo>0) {
 if ($monografiaid>0) {
-    $nn = json_decode($_GET['modelo']);
+    $nn = json_decode($omodelo);
     $nvars = count($nn-> items);
     if ($listaespecs>0) {
-      $arrayofvalues = array('ModeloListaEspecimenes' => $_GET['modelo'], 'ModeloSimbolosEspecimenes' => $_GET['simbolos']);
+      $arrayofvalues = array('ModeloListaEspecimenes' => $omodelo, 'ModeloSimbolosEspecimenes' => $avars['simbolos']);
     } else {
-		$arrayofvalues = array('ModeloDescricoes' => $_GET['modelo'], 'ModeloSimbolos' => $_GET['simbolos']);
+		$arrayofvalues = array('ModeloDescricoes' => $omodelo, 'ModeloSimbolos' => $omodelo);
 	}
 	$upp = CompareOldWithNewValues('Monografias','MonografiaID',$monografiaid,$arrayofvalues,$conn);
 	if (!empty($upp) && $upp>0) { 
@@ -40,8 +52,10 @@ if ($monografiaid>0) {
 			echo 'nao mudou';
 		}
 	}
-} else {
+} 
+else {
 	echo 0;
+}
 }
 session_write_close();
 ?>

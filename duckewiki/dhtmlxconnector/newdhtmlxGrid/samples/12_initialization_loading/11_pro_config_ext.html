@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>Run commands from XML</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="title" content="Samples" />
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+		<link rel="icon" href="../common/favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="../common/favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="../common/css/style.css" type="text/css" media="screen" />
+
+	</head>
+	<body>
+        <div class="header">
+            <a class="logo" href="http://www.dhtmlx.com" title="DHTMLX homepage"></a>
+            <div class="tittle-dhtmlx">DHTMLX Docs & Samples Explorer</div>
+            <div class="search-field">
+                <form action="http://docs.dhtmlx.com/doku.php" accept-charset="utf-8" id="dw__search"><div class="no"><input type="hidden" name="do" value="search" /><input type="text" id="qsearch__in" accesskey="f" name="id" title="Search" /><button type="submit">Search</button><div id="qsearch__out" class="ajax_qsearch JSpopup"></div></div></form>
+            </div>
+            <div class="buttons">
+                <a class="doc_inact" href="../../../docsExplorer/index.html" title="DHTMLX Documentation homepage"></a>
+                <a class="sample"></a>
+            </div>
+        </div>
+        <div class="content">
+            <div class="navigation-div">
+                <a href="../../../docsExplorer/samples.html" class="navigation"><img src="../common/icons/file.gif" alt="" >All components</a>
+                <div class="arrow"></div>
+                <a href="../index.html" class="navigation"><img height="22" src="../common/icons/grid.gif" alt="" >dhtmlxGrid</a>
+                <div class="arrow"></div>
+                <a href="./index.html" class="navigation"><img src="../common/icons/none.gif" alt="" >Initialazation/Loading</a>
+            </div>
+            <div style="display:block;">
+                <h3>Run commands from XML</h3>
+            </div>
+            <div class="navigation-div">
+                <a href="#code" class="navigation view-source"><img src="../common/icons/source.gif" alt="" >View page source</a>
+            </div>
+            <link rel="STYLESHEET" type="text/css" href="../../codebase/dhtmlxgrid.css">
+	<link rel="stylesheet" type="text/css" href="../../codebase/skins/dhtmlxgrid_dhx_skyblue.css">
+	<script  src="../../codebase/dhtmlxcommon.js"></script>
+	<script  src="../../codebase/dhtmlxgrid.js"></script>
+	<script  src="../../codebase/dhtmlxgridcell.js"></script>
+	<script>
+		function loadGridFromString(){
+			mygrid = new dhtmlXGridObject('gridbox');
+			mygrid.setDelimiter("|");
+			//mygrid.setStyle("text-align:center", "", "", "");
+			mygrid.setImagePath("../../codebase/imgs/");
+			//mygrid.setSkin("light")
+			mygrid.loadXMLString(document.getElementById("gridcont1").value);
+		}
+		function loadGridFromString2(){
+			mygrid2 = new dhtmlXGridObject('gridbox2');
+			mygrid2.setImagePath("../../codebase/imgs/");
+			mygrid2.setSkin("dhx_skyblue")
+			mygrid2.loadXMLString(document.getElementById("gridcont2").value);
+		}
+	</script>
+
+
+
+	
+	<p>You are allowed to use methods before grid intialization:</p>
+	<div>
+		<li>Example:  <a href="javascript:void(0)" onClick="loadGridFromString()">Load grid with skyblue skin</a> set from XML by calling setSkin method before grid initialization</li>
+	</div>
+	<br>
+	<div id="gridbox" style="width:600px; height:100px; background-color:white;"></div>
+
+The same as with script:<br/>
+
+<textarea id="gridcont1" style="width:600px;height:100px;"><?xml version="1.0" encoding="UTF-8"?>
+<rows>
+    <head>
+        <beforeInit>
+			<call command="setSkin"><param>dhx_skyblue</param></call>
+			<call command="setStyle"><param>text-align:center;</param></call>
+		</beforeInit>
+		<column width="50" type="dyn" align="right"  sort="str">Sales</column>
+        <column width="150" type="ed" align="left"  sort="str">Book Title</column>
+        <column width="100" type="ed" align="left"  sort="str">Author</column>
+        <column width="80" type="price" align="right" sort="str">Price</column>
+        <column width="80" type="ch" align="center" sort="str">In Store</column>
+        <column width="80" type="co" align="left" sort="str">Shipping
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">10</option>
+            <option value="5">20</option>
+            <option value="6">30</option>
+        </column>
+        <column width="80" type="ra" align="center" sort="str">Bestseller</column>
+        <column width="200" type="ro" align="center" sort="str">Date of Publication</column>
+        <settings>
+            <colwidth>px</colwidth>
+        </settings>
+    </head>
+ 	<row id="1">
+		<cell>-1500</cell>
+		<cell>A Time to Kill</cell>
+		<cell>John Grisham</cell>
+		<cell>12.99</cell>
+		<cell>1</cell>
+		<cell>24</cell>
+		<cell>0</cell>
+		<cell>05/01/1998</cell>
+	</row>
+	<row id="2">
+		<cell>1000</cell>
+		<cell>Blood and Smoke</cell>
+		<cell>Stephen King</cell>
+		<cell>0</cell>
+		<cell>1</cell>
+		<cell>24</cell>
+		<cell>0</cell>
+		<cell>01/01/2000</cell>
+	</row>
+</rows>
+</textarea>
+
+<p>Also, you can run methods after grid intialization</p>
+	<div>
+		<li>Example:  <a href="javascript:void(0)" onClick="loadGridFromString2()">Load grid and set the 2nd column hidden</a> by calling setColumnHidden method from xml after grid initialization</li>
+	</div><br>
+<div id="gridbox2" style="width:600px;height:100px;background-color:white;"></div>
+
+The same as with script:<br/>
+
+<textarea id="gridcont2" style="width:600px;height:100px;"><?xml version="1.0" encoding="UTF-8"?>
+<rows>
+    <head>
+        <afterInit>
+			<call command="setColumnHidden"><param>1</param><param>true</param></call>
+		</afterInit>
+		<column width="50" type="dyn" align="right"  sort="str">Sales</column>
+        <column width="150" type="ed" align="left"  sort="str">Book Title</column>
+        <column width="100" type="ed" align="left"  sort="str">Author</column>
+        <column width="80" type="price" align="right" sort="str">Price</column>
+        <column width="80" type="ch" align="center" sort="str">In Store</column>
+        <column width="80" type="co" align="left" sort="str">Shipping
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">10</option>
+            <option value="5">20</option>
+            <option value="6">30</option>
+        </column>
+        <column width="80" type="ra" align="center" sort="str">Bestseller</column>
+        <column width="200" type="ro" align="center" sort="str">Date of Publication</column>
+        <settings>
+            <colwidth>px</colwidth>
+        </settings>
+    </head>
+ 	<row id="1">
+		<cell>-1500</cell>
+		<cell>A Time to Kill</cell>
+		<cell>John Grisham</cell>
+		<cell>12.99</cell>
+		<cell>1</cell>
+		<cell>24</cell>
+		<cell>0</cell>
+		<cell>05/01/1998</cell>
+	</row>
+	<row id="2">
+		<cell>1000</cell>
+		<cell>Blood and Smoke</cell>
+		<cell>Stephen King</cell>
+		<cell>0</cell>
+		<cell>1</cell>
+		<cell>24</cell>
+		<cell>0</cell>
+		<cell>01/01/2000</cell>
+	</row>
+</rows>
+</textarea>
+			
+			
+         </div>
+    <div class="source">
+        <div class="teg">Source</div>
+        <div class="code" id="code">
+		<div class="hl-main"><pre><span class="hl-brackets">&lt;</span><span class="hl-reserved">link</span><span class="hl-code"> </span><span class="hl-var">rel</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">STYLESHEET</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">text/css</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">href</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">../../codebase/dhtmlxgrid.css</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">link</span><span class="hl-code"> </span><span class="hl-var">rel</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">stylesheet</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">text/css</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">href</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">../../codebase/skins/dhtmlxgrid_dhx_skyblue.css</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">script</span><span class="hl-code">  </span><span class="hl-var">src</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">../../codebase/dhtmlxcommon.js</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">script</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">script</span><span class="hl-code">  </span><span class="hl-var">src</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">../../codebase/dhtmlxgrid.js</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">script</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">script</span><span class="hl-code">  </span><span class="hl-var">src</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">../../codebase/dhtmlxgridcell.js</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">script</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">script</span><span class="hl-brackets">&gt;</span><span class="hl-code"><div class="hl-main"><pre><span class="hl-reserved">function</span><span class="hl-code"> </span><span class="hl-identifier">loadGridFromString</span><span class="hl-brackets">(</span><span class="hl-brackets">)</span><span class="hl-code"> </span><span class="hl-brackets">{</span><span class="hl-code">
+    </span><span class="hl-identifier">mygrid</span><span class="hl-code"> = </span><span class="hl-reserved">new</span><span class="hl-code"> </span><span class="hl-identifier">dhtmlXGridObject</span><span class="hl-brackets">(</span><span class="hl-quotes">'</span><span class="hl-string">gridbox</span><span class="hl-quotes">'</span><span class="hl-brackets">)</span><span class="hl-code">;
+    </span><span class="hl-identifier">mygrid</span><span class="hl-code">.</span><span class="hl-identifier">setDelimiter</span><span class="hl-brackets">(</span><span class="hl-quotes">&quot;</span><span class="hl-string">|</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">)</span><span class="hl-code">;
+    </span><span class="hl-comment">//</span><span class="hl-comment">mygrid.setStyle(&quot;text-align:center&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;);</span><span class="hl-comment"></span><span class="hl-code">
+    </span><span class="hl-identifier">mygrid</span><span class="hl-code">.</span><span class="hl-identifier">setImagePath</span><span class="hl-brackets">(</span><span class="hl-quotes">&quot;</span><span class="hl-string">../../codebase/imgs/</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">)</span><span class="hl-code">;
+    </span><span class="hl-comment">//</span><span class="hl-comment">mygrid.setSkin(&quot;light&quot;);</span><span class="hl-comment"></span><span class="hl-code">
+    </span><span class="hl-identifier">mygrid</span><span class="hl-code">.</span><span class="hl-identifier">loadXMLString</span><span class="hl-brackets">(</span><span class="hl-builtin">document</span><span class="hl-code">.</span><span class="hl-identifier">getElementById</span><span class="hl-brackets">(</span><span class="hl-quotes">&quot;</span><span class="hl-string">gridcont1</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">)</span><span class="hl-code">.</span><span class="hl-identifier">value</span><span class="hl-brackets">)</span><span class="hl-code">;
+</span><span class="hl-brackets">}</span><span class="hl-code">
+</span><span class="hl-reserved">function</span><span class="hl-code"> </span><span class="hl-identifier">loadGridFromString2</span><span class="hl-brackets">(</span><span class="hl-brackets">)</span><span class="hl-code"> </span><span class="hl-brackets">{</span><span class="hl-code">
+    </span><span class="hl-identifier">mygrid2</span><span class="hl-code"> = </span><span class="hl-reserved">new</span><span class="hl-code"> </span><span class="hl-identifier">dhtmlXGridObject</span><span class="hl-brackets">(</span><span class="hl-quotes">'</span><span class="hl-string">gridbox2</span><span class="hl-quotes">'</span><span class="hl-brackets">)</span><span class="hl-code">;
+    </span><span class="hl-identifier">mygrid2</span><span class="hl-code">.</span><span class="hl-identifier">setImagePath</span><span class="hl-brackets">(</span><span class="hl-quotes">&quot;</span><span class="hl-string">../../codebase/imgs/</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">)</span><span class="hl-code">;
+    </span><span class="hl-identifier">mygrid2</span><span class="hl-code">.</span><span class="hl-identifier">setSkin</span><span class="hl-brackets">(</span><span class="hl-quotes">&quot;</span><span class="hl-string">dhx_skyblue</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">)</span><span class="hl-code">;
+    </span><span class="hl-identifier">mygrid2</span><span class="hl-code">.</span><span class="hl-identifier">loadXMLString</span><span class="hl-brackets">(</span><span class="hl-builtin">document</span><span class="hl-code">.</span><span class="hl-identifier">getElementById</span><span class="hl-brackets">(</span><span class="hl-quotes">&quot;</span><span class="hl-string">gridcont2</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">)</span><span class="hl-code">.</span><span class="hl-identifier">value</span><span class="hl-brackets">)</span><span class="hl-code">;
+</span><span class="hl-brackets">}</span></pre></div></span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">script</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+ 
+ 
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">div</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">li</span><span class="hl-brackets">&gt;</span><span class="hl-code">Example:  </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">a</span><span class="hl-code"> </span><span class="hl-var">href</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">javascript:void(0)</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">onClick</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">loadGridFromString()</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Load grid with skyblue skin</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">a</span><span class="hl-brackets">&gt;</span><span class="hl-code"> set from XML by calling setSkin method before grid initialization</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">li</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">div</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">br</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">div</span><span class="hl-code"> </span><span class="hl-var">id</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">gridbox</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">style</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">width:600px; height:100px; background-color:white;</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">div</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+The same as with script:</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">br</span><span class="hl-brackets">/&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">textarea</span><span class="hl-code"> </span><span class="hl-var">id</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">gridcont1</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">style</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">width:600px;height:100px;</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;?</span><span class="hl-reserved">xml</span><span class="hl-code"> </span><span class="hl-var">version</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">1.0</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">encoding</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">UTF-8</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">?&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">rows</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">head</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">beforeInit</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">call</span><span class="hl-code"> </span><span class="hl-var">command</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">setSkin</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">div</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">li</span><span class="hl-brackets">&gt;</span><span class="hl-code">Example:  </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">a</span><span class="hl-code"> </span><span class="hl-var">href</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">javascript:void(0)</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">onClick</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">loadGridFromString2()</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Load grid and set the 2nd column hidden</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">a</span><span class="hl-brackets">&gt;</span><span class="hl-code"> by calling setColumnHidden method from xml after grid initialization</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">li</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">div</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">br</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">div</span><span class="hl-code"> </span><span class="hl-var">id</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">gridbox2</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">style</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">width:600px;height:100px;background-color:white;</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">div</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+The same as with script:</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">br</span><span class="hl-brackets">/&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">textarea</span><span class="hl-code"> </span><span class="hl-var">id</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">gridcont2</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">style</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">width:600px;height:100px;</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;?</span><span class="hl-reserved">xml</span><span class="hl-code"> </span><span class="hl-var">version</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">1.0</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">encoding</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">UTF-8</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">?&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">rows</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">head</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">afterInit</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">call</span><span class="hl-code"> </span><span class="hl-var">command</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">setColumnHidden</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">param</span><span class="hl-brackets">&gt;</span><span class="hl-code">1</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">param</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">param</span><span class="hl-brackets">&gt;</span><span class="hl-code">true</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">param</span><span class="hl-brackets">&gt;</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">call</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">afterInit</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">column</span><span class="hl-code"> </span><span class="hl-var">width</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">50</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">dyn</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">align</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">right</span><span class="hl-quotes">&quot;</span><span class="hl-code">  </span><span class="hl-var">sort</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">str</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Sales</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">column</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">column</span><span class="hl-code"> </span><span class="hl-var">width</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">150</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">ed</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">align</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">left</span><span class="hl-quotes">&quot;</span><span class="hl-code">  </span><span class="hl-var">sort</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">str</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Book Title</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">column</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">column</span><span class="hl-code"> </span><span class="hl-var">width</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">100</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">ed</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">align</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">left</span><span class="hl-quotes">&quot;</span><span class="hl-code">  </span><span class="hl-var">sort</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">str</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Author</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">column</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">column</span><span class="hl-code"> </span><span class="hl-var">width</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">80</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">price</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">align</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">right</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">sort</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">str</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Price</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">column</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">column</span><span class="hl-code"> </span><span class="hl-var">width</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">80</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">ch</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">align</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">center</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">sort</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">str</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">In Store</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">column</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">column</span><span class="hl-code"> </span><span class="hl-var">width</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">80</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">co</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">align</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">left</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">sort</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">str</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Shipping
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">option</span><span class="hl-code"> </span><span class="hl-var">value</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">1</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">1</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">option</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">option</span><span class="hl-code"> </span><span class="hl-var">value</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">2</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">2</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">option</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">option</span><span class="hl-code"> </span><span class="hl-var">value</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">3</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">3</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">option</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">option</span><span class="hl-code"> </span><span class="hl-var">value</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">4</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">10</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">option</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">option</span><span class="hl-code"> </span><span class="hl-var">value</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">5</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">20</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">option</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">option</span><span class="hl-code"> </span><span class="hl-var">value</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">6</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">30</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">option</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">column</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">column</span><span class="hl-code"> </span><span class="hl-var">width</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">80</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">ra</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">align</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">center</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">sort</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">str</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Bestseller</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">column</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">column</span><span class="hl-code"> </span><span class="hl-var">width</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">200</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">type</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">ro</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">align</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">center</span><span class="hl-quotes">&quot;</span><span class="hl-code"> </span><span class="hl-var">sort</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">str</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">Date of Publication</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">column</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">settings</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+        </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">colwidth</span><span class="hl-brackets">&gt;</span><span class="hl-code">px</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">colwidth</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">settings</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">head</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+ </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">row</span><span class="hl-code"> </span><span class="hl-var">id</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">1</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">-1500</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">A Time to Kill</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">John Grisham</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">12.99</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">1</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">24</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">0</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">05/01/1998</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">row</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;</span><span class="hl-reserved">row</span><span class="hl-code"> </span><span class="hl-var">id</span><span class="hl-code">=</span><span class="hl-quotes">&quot;</span><span class="hl-string">2</span><span class="hl-quotes">&quot;</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">1000</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">Blood and Smoke</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">Stephen King</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">0</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">1</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">24</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">0</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+    </span><span class="hl-brackets">&lt;</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">01/01/2000</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">cell</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">row</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">rows</span><span class="hl-brackets">&gt;</span><span class="hl-code">
+</span><span class="hl-brackets">&lt;/</span><span class="hl-reserved">textarea</span><span class="hl-brackets">&gt;</span></pre></div>
+        </div>
+    <div class="footer">
+        <div class="footer-logo"></div>
+        <div class="copyright">Copyright &copy; 1998-2011 DHTMLX LTD.<br />All rights reserved.</div>
+    </div>
+	</body>
+</html>

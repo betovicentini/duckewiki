@@ -106,6 +106,12 @@ localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.Provin
 	} else {
 	$qqbrahms .=", '' as locnotes";
 	}
+	if ($formidhabitat>0) {
+	
+		$qqbrahms .= ", habitatstring2(pltb.HabitatID, ".$formidhabitat.", TRUE,FALSE)  as habitatnotes";
+	} else {
+		$qqbrahms .=", '' as habitatnotes";
+	}
 	$qqbrahms .= ", 
 abs(getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID, CountryID, 1,5))  as `lat`,
 getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 1,4) as NS,
@@ -119,7 +125,21 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as alt";
 		$qqbrahms .= ", labelnotes_nomoni(pltb.EspecimenID,0,".($formnotas+0).",1,0) as plantdesc";
 	}
 	$qqbrahms .= ", vernaculars(pltb.VernacularIDS) as vernacular";
-	$qqbrahms .=", pltb.Herbaria as dups";
+	if ($traitsilica>0) {
+		$qqbrahms .= ", checkspecsilica(pltb.EspecimenID,".$traitsilica.") as HasSilica";
+	}
+	if ($exsicatatrait>0) {
+		//EXTRAI A URL 
+		$url = $_SERVER['HTTP_REFERER'];
+		$uu = explode("/",$url);
+		$nu = count($uu)-1;
+		unset($uu[$nu]);
+		$httppath = implode("/",$uu);
+		$qqbrahms .= ", getspecexsicataimg(pltb.EspecimenID,'".$httppath."/img/originais',".$exsicatatrait.") as ImagesLinks";
+	}
+	
+	
+	$qqbrahms .=", pltb.Herbaria as Herbaria";
 	$qqbrahms .= ", projetostringbrahms(pltb.ProjetoID) as project";
 	
 ////////////////////	

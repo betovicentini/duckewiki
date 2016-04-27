@@ -102,7 +102,7 @@ if ($erro==0) {
 	//echopre($_SESSION);
 	//echopre($ppost);
 	$_SESSION['imgpost']  = $ppost;
-	echo "Chegou aqui corretamente";
+	//echo "Chegou aqui corretamente";
 	//echopre($_SESSION);
 	header("location: imagens-import-batch-exec1.php");
 } else {

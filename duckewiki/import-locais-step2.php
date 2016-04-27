@@ -30,13 +30,14 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+
+//echopre($ppost);
+//echopre($gget);
+
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
+
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"

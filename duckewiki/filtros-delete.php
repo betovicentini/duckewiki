@@ -60,7 +60,7 @@ echo "
       <tr>
         <td class='tdsmallbold'>".GetLangVar('namefiltro')."s</td>
         <td>
-          <select name='filtro[]' multiple='20'>";
+          <select name='filtro[]' multiple size=20>";
 			$qq = "SELECT * FROM Filtros WHERE AddedBy=".$_SESSION['userid']." OR Shared=1 ORDER BY AddedDate";
 			$res = @mysql_query($qq,$conn);
 			while ($rr = @mysql_fetch_assoc($res)) {
@@ -96,6 +96,7 @@ else {
 	$nf = count($filtro);
 	if ($nf>0) {
 		$succ=0;
+
 		foreach($filtro as $ff) {
 			$filtronome = "filtroid_".$ff;
 			$erro=0;
@@ -113,7 +114,11 @@ else {
 				$sql = "DELETE FROM Filtros WHERE FiltroID=".$ff;
 				mysql_query($sql,$conn);
 				$succ++;
+				echo "Filtro ".$ff."<br />";
+				session_write_close();
 			}
+			mysql_free_result($rr);
+			
 		}
 		if ($succ>0) {
 					echo "

@@ -158,6 +158,7 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 echo "<script type='text/javascript' src='javascript/wz_tooltip.js'></script>";
 
 echo "
+
 <table class='tableform' align='center' cellpadding=\"7\">
   <tr class='tabhead'>
     <td >".GetLangVar('namedisponivel')."</td>
@@ -166,9 +167,12 @@ echo "
   </tr>
   <tr>
 <td >
+
 <div style='align: center;'>
+<!---
 Filtrar:&nbsp;&nbsp;<input type='text' id='filtralista'  style='height: 20px; width:260px' />
 <br />
+--->
 <ul  id='fitrable1' class='droptrue' >";
 $rrr = getpessoa('',$abb=TRUE,$conn);
 while ($row = mysql_fetch_assoc($rrr)) {
@@ -184,8 +188,13 @@ echo "
 </td>
 <td >
 <div style='align: center;'>
+<span style=\"color: red; font-size: 1em;\">
+Indique o Coletor Padrão como o primeiro da lista.
+</span>
+<!---
 Filtrar:&nbsp;&nbsp;<input type='text' id='filtralista2'  style='height: 20px; width:260px' />
 <br />
+--->
 <ul  id='fitrable2' class='droptrue' >";
 echo "
 </ul>

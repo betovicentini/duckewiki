@@ -51,15 +51,15 @@ $qq = "CREATE TABLE ".$temptable." (TempID INT(10) NOT NULL AUTO_INCREMENT, PRIM
 
 if ($etitype =='EspecimenesIDS') { 
 	$qq .= " SELECT 
-	maintb.EspecimenID as wikid, 
-	colpessoa.Abreviacao as coletor, 
-	CONCAT(IF(maintb.Prefixo IS NULL OR maintb.Prefixo='','',CONCAT(maintb.Prefixo,'-')),maintb.Number,IF(maintb.Sufix IS NULL OR maintb.Sufix='','',CONCAT('-',maintb.Sufix))) as numcol, 
-	DATE_FORMAT(concat(IF(maintb.Ano>0,maintb.Ano,1),'-',IF(maintb.Mes>0,maintb.Mes,1),'-',IF(maintb.Day>0,maintb.Day,1)),'%d-%b-%Y') as datacol, 
-	addcolldescr(maintb.AddColIDS) as addcol, 
-	localidadestring(maintb.GazetteerID,maintb.GPSPointID,maintb.MunicipioID,maintb.ProvinceID,maintb.CountryID,maintb.Latitude,maintb.Longitude,maintb.Altitude) as locality, 
-	INPA_ID as herbnum,
-	maintb.Herbaria as herbarios,
-	plantatag(maintb.PlantaID) as tagnum";
+maintb.EspecimenID as wikid, 
+colpessoa.Abreviacao as coletor, 
+CONCAT(IF(maintb.Prefixo IS NULL OR maintb.Prefixo='','',CONCAT(maintb.Prefixo,'-')),maintb.Number,IF(maintb.Sufix IS NULL OR maintb.Sufix='','',CONCAT('-',maintb.Sufix))) as numcol, 
+DATE_FORMAT(concat(IF(maintb.Ano>0,maintb.Ano,1),'-',IF(maintb.Mes>0,maintb.Mes,1),'-',IF(maintb.Day>0,maintb.Day,1)),'%d-%b-%Y') as datacol, 
+addcolldescr(maintb.AddColIDS) as addcol, 
+localidadestring2(maintb.GazetteerID,maintb.GPSPointID,maintb.MunicipioID,maintb.ProvinceID,maintb.CountryID,maintb.Latitude,maintb.Longitude,maintb.Altitude,1) as locality,
+INPA_ID as herbnum,
+maintb.Herbaria as herbarios,
+plantatag(maintb.PlantaID) as tagnum";
 	if ($duplicatesTraitID>0) {
 			$qq .= ", nduplicates(".$duplicatesTraitID.",EspecimenID,'Especimenes') as ndups";
 	} else {
@@ -75,7 +75,7 @@ else {
 		'' as numcol,
 		IF(maintb.TaggedDate>0,DATE_FORMAT(maintb.TaggedDate,'%d-%b-%Y'),'') as datacol,
 		addcolldescr(maintb.TaggedBy) as addcol,
-		localidadestring(maintb.GazetteerID,maintb.GPSPointID,0,0,0,maintb.Latitude,maintb.Longitude,maintb.Altitude) as locality,
+localidadestring2(maintb.GazetteerID,maintb.GPSPointID,0,0,0,maintb.Latitude+0,maintb.Longitude+0,maintb.Altitude+0,1) as locality,
 		'' as herbnum,
 		'' as herbarios";
 		if ($duplicatesTraitID>0) {
@@ -84,13 +84,26 @@ else {
 			$qq .= ", 1 as ndups";
 		}
 		$qq .= ", labeldescricao(0,maintb.PlantaID+0,".$formnotes.",TRUE,FALSE) as descricao";
-
 }
 	$qq .=", famtb.Familia as familia";
-	$qq .=", IF(iddet.InfraEspecieID>0,CONCAT('<i>',gentb.Genero,' ',sptb.Especie,' </i> ',sptb.EspecieAutor,' <i>',infsptb.InfraEspecieNivel,' ',infsptb.InfraEspecie,'</i> ',infsptb.InfraEspecieAutor),IF(iddet.EspecieID>0,CONCAT('<i>',gentb.Genero,' ',sptb.Especie,'</i> ',sptb.EspecieAutor), IF(iddet.GeneroID>0,CONCAT('<i>',gentb.Genero,'<i>'),''))) as detnome";
+	$qq .=",  IF(iddet.InfraEspecieID>0 AND infsptb.Morfotipo=0,CONCAT('<i>',gentb.Genero,' ',sptb.Especie,' </i> ',sptb.EspecieAutor,' <i>',infsptb.InfraEspecieNivel,' ',infsptb.InfraEspecie,'</i> ',infsptb.InfraEspecieAutor),IF(iddet.EspecieID>0  AND sptb.Morfotipo=0,CONCAT('<i>',gentb.Genero,' ',sptb.Especie,'</i> ',sptb.EspecieAutor), IF(iddet.GeneroID>0 AND gentb.Genero<>'Indet',CONCAT('<i>',gentb.Genero,'<i>'),''))) as detnome";
 	$qq .= ", CONCAT(detpessoa.Abreviacao,' [',DATE_FORMAT(iddet.DetDate,'%d-%b-%Y'),']') as detdetby";
 	if ($formidhabitat>0) {
 		$qq .= ", habitatstring(maintb.HabitatID, ".$formidhabitat.", TRUE,FALSE)  as habitat";
+	}
+	if ($daptraitid>0) {
+		if ($tbname=='Especimenes') {
+	$qq .=", traitvaluespecs(".$daptraitid.",maintb.PlantaID,maintb.EspecimenID,'mm',0,1) as DAPmm";
+	    } else {
+	$qq .=", traitvaluespecs(".$daptraitid.",maintb.PlantaID,0,'mm',0,1) as DAPmm";
+	    }
+	}
+	if ($alturatraitid>0) {
+		if ($tbname=='Especimenes') {
+			$qq .=", traitvaluespecs(".$alturatraitid.",maintb.PlantaID,maintb.EspecimenID,'m',0,1) as ALTURAm";
+	    } else {
+	$qq .=", traitvaluespecs(".$alturatraitid.",maintb.PlantaID,0,'mm',0,1) as ALTURAm";
+	    }
 	}
 	$qq .= ", vernaculars(maintb.VernacularIDS) as vernacular";
 	$qq .= ", projetostring(maintb.ProjetoID,TRUE,TRUE) as projeto";

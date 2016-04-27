@@ -96,7 +96,7 @@ $exportcols = array("false","false","false","false","false","false","false","tru
 //LARGURA INICIAL DAS COLNUAS
 $colw = array(
 "Marcado" => 70,
-"EDIT" => 70,
+"EDIT" => 80,
 "DetID" => 0,
 "GeneroID" => 0,
  "FamiliaID" => 0,

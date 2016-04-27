@@ -42,7 +42,7 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 //SE ESTIVER FINALIZANDO
 $erro=0;
 if ($final==1 && !isset($cadastrar)) {
-	if (empty($pessoaid)  || empty($colnum1) || empty($colnum2) || empty($localidadeid) || empty($datacol) ) {
+	if ((empty($pessoaid)  || empty($colnum1) || empty($colnum2) || empty($datacol)) && empty($localidadeid) && empty($search_gps_waypoints)) {
 echo "
 <br />
 <ol style='color: red; font-size: 1.3em; margin-left: 25%' >".GetLangVar('erro1')."";
@@ -58,7 +58,7 @@ echo "
 				echo "
 <li >Números para gerar a série</li>";
 			}
-			if (empty($localidadeid)) {
+			if (empty($localidadeid) && empty($search_gps_waypoints)) {
 				echo "
 <li >Localidade é obrigatória mesmo indicando busca por waypoints de GPS.</li>";
 			}
@@ -97,7 +97,7 @@ echo " onclick=\"javascript:alert('$help');\" />
 </tr>
 <tr>
 <td align='center'>
-<input type='submit'  value=\"Adicionar ".$numerodecols." especimenes\"  style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  >
+<input type='submit'  value=\"Adicionar ".($numerodecols+1)." especimenes\"  style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  >
 </td>
 </tr>
 </table>
@@ -145,8 +145,9 @@ for($curcolnum=$colnum1;$curcolnum<=$colnum2;$curcolnum++) {
 			$arvgaz = array('GazetteerID' => 0, 'MunicipioID' => 0,  'ProvinceID' => 0, 'CountryID' => $locid[1]);
 		}
 		$gpspointid=0;
-		if ($search_gps_waypoints===1) {
+		if ($search_gps_waypoints==1) {
 				$qgis = "SELECT PointID FROM GPS_DATA WHERE (cleansppname(Name)+0)=".$curcolnum."  AND DateOriginal='".$datacol."'";
+				//echo $qgis."<br />";
 				$rgis = mysql_query($qgis,$conn);
 				$nrgis = mysql_numrows($rgis);
 				if ($nrgis==1) {
@@ -177,7 +178,7 @@ localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.Provi
 localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'MINORAREA') as MUNICIPIO,
 localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'GAZETTEER') as LOCAL,
 localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'GAZETTEER_SPEC') as LOCALSIMPLES,  
-getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 0) as LONGITUDE, getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 1) as LATITUDE, IF(ABS(pltb.Longitude)>0,pltb.Altitude+0,IF(pltb.GPSPointID>0,gpspt.Altitude+0,IF(ABS(gaz.Longitude)>0,gaz.Altitude+0,NULL))) as ALTITUDE, 'edit-icon.png' AS EDIT, 'mapping.png' AS MAP,  '' as OBS, IF(pltb.HabitatID>0,'environment_icon.png','') as HABT, IF (checkimgs(pltb.EspecimenID, pltb.PlantaID)>0,'camera.png','') as IMG, checknir(pltb.EspecimenID,pltb.PlantaID) as NIRSpectra, "; 
+getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 0) as LONGITUDE, getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 1) as LATITUDE, IF(ABS(pltb.Longitude)>0,pltb.Altitude+0,IF(pltb.GPSPointID>0,gpspt.Altitude+0,IF(ABS(gaz.Longitude)>0,gaz.Altitude+0,NULL))) as ALTITUDE, 'edit-icon.png' AS EDIT, 'mapping.png' AS MAP,  '' as OBS, IF(pltb.HabitatID>0,'environment_icon.png','') as HABT, habitaclasse(pltb.HabitatID) AS HABT_CLASSE, IF (checkimgs(pltb.EspecimenID, pltb.PlantaID)>0,'camera.png','') as IMG, checknir(pltb.EspecimenID,pltb.PlantaID) as NIRSpectra, "; 
 if ($duplicatesTraitID>0) {$sql .= " traitvaluespecs(".$duplicatesTraitID.", pltb.PlantaID, pltb.EspecimenID,'', 0, 0)+0 as DUPS,";}
 if ($daptraitid>0) { $sql .= " traitvaluespecs(".$daptraitid.", pltb.PlantaID, pltb.EspecimenID,'mm', 0, 1)+0 as DAPmm,";}
 if ($alturatraitid>0) { $sql .= " traitvaluespecs(".$alturatraitid.", pltb.PlantaID, pltb.EspecimenID,'mm', 0, 1)+0 as ALTURA,"; }
@@ -186,6 +187,7 @@ if ($traitfertid>0) { $sql .= " (traitvaluespecs(".$traitfertid.", pltb.PlantaID
 $sql .= " IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ, acentosPorHTML(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) as PROJETOstr";
 $sql .= " FROM Especimenes as pltb LEFT JOIN Plantas as thepl ON thepl.PlantaID=pltb.PlantaID LEFT JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID  LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID  LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID  LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID   LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID  LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID   LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID   LEFT JOIN Province as provgaz ON muni.ProvinceID=provgaz.ProvinceID   LEFT JOIN Country  as countrygaz ON provgaz.CountryID=countrygaz.CountryID   LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID   LEFT JOIN Gazetteer as gazgps ON gpspt.GazetteerID=gazgps.GazetteerID   LEFT JOIN Municipio as munigps ON gazgps.MunicipioID=munigps.MunicipioID  LEFT JOIN Province as provigps ON munigps.ProvinceID=provigps.ProvinceID   LEFT JOIN Country  as countrygps ON provigps.CountryID=countrygps.CountryID";
 $sql .= " WHERE pltb.EspecimenID='".$especimenid."')";
+		//echo $sql." <br />";
 		@mysql_query($sql,$conn);
 		$sucesso[] = $curcolnum;
 		}  
@@ -363,8 +365,8 @@ echo " onclick=\"javascript:alert('$help');\" /></td>
       <td colspan='3' ><input type='checkbox'  name='search_gps_waypoints'  ";
       if ($search_gps_waypoints==1) {
       echo "checked";
-      }
-      echo "  value='".$search_gps_waypoints."'  /></td>
+      } 
+      echo "  value='1'  /></td>
   </tr>
   </table>
 </td>

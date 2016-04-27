@@ -33,11 +33,7 @@ $gget = cleangetpost($_GET,$conn);
 
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
 "<link href='css/jquery-ui.css' rel='stylesheet' type='text/css' />"
@@ -48,112 +44,121 @@ $body='';
 $title = 'Script Teste Executa';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
-//$qn = "SELECT * FROM (SELECT list.ProcessoID,list.EspecimenID,list.Herbaria,list.INPA, COUNT(*) as nn FROM `ProcessosLIST` AS list LEFT JOIN ProcessosEspecs as prc USING(ProcessoID) WHERE prc.ProcessoID=18 AND (list.INPA IS NOT NULL) GROUP BY CONCAT(ProcessoID,EspecimenID, INPA)) AS zz WHERE zz.nn>1";
-////echo $qn."<br />";
-//$rn = mysql_query($qn,$conn);
-//while($rw = mysql_fetch_assoc($rn)) {
-//$herb = $rw['Herbaria'];
-//if ($herb=='' OR empty($herb)) {
-//	$herb = " ((Herbaria IS NULL) OR TRIM(Herbaria)='') ";
-//} else {
-//	$herb = " Herbaria='".$herb."'";
-//}
-//$inpa = $rw['INPA'];
-//if ($inpa=='' OR empty($inpa)) {
-//	$inpa = " ((INPA IS NULL) OR TRIM(INPA)='' OR INPA=0) ";
-//} else {
-//	$inpa = " INPA=".$inpa;
-//}
-//	$qz = "SELECT ProcessosListID FROM `ProcessosLIST` WHERE ProcessoID='".$rw['ProcessoID']."' AND EspecimenID='".$rw['EspecimenID']."' AND ".$inpa."  AND EXISTE=1 ORDER BY ProcessosListID LIMIT 0,1";
-//	//echo $qz."<br />";
-//	$rz = mysql_query($qz);
-//	$nrr = mysql_numrows($rz);
-//	if ($nrr==0) {
-//		$qz = "SELECT ProcessosListID FROM `ProcessosLIST` WHERE ProcessoID='".$rw['ProcessoID']."' AND EspecimenID='".$rw['EspecimenID']."' AND ".$inpa."  ORDER BY ProcessosListID LIMIT 0,1";
-//		//echo $qz."<br />";
-//		$rz = mysql_query($qz);
-//	}
-//	$rww = mysql_fetch_assoc($rz);
-//	$keep = $rww['ProcessosListID'];
-//	if ($keep>0) {
-//		$qzz = "DELETE  FROM `ProcessosLIST` WHERE ProcessoID='".$rw['ProcessoID']."' AND EspecimenID='".$rw['EspecimenID']."' AND ".$inpa." AND ProcessosListID<>".$keep;
-//		//echo $qzz."<br />";
-//		$del = mysql_query($qzz);
-//		if ($del) {
-//			echo "=<br />";
-//			session_write_close();
-//		}
-//		
-//	
-//	} 
-//
-//}
-//
-//
-//
-//
-IF ($final==1) {
-	$dataar = unserialize($data);
-	echopre($dataar);
-	if ($escolha==1) {
-		$arrayofvv = array('DetID' => $dataar['plDetID']);
-		//ATUALIZA IDENTIFICACAO DA AMOSTRA
-		$especimenid = $dataar['EspecimenID'];
-		CreateorUpdateTableofChanges($especimenid,'EspecimenID','Especimenes',$conn);
-		$newupdate = UpdateTable($especimenid,$arrayofvv,'EspecimenID','Especimenes',$conn);
-	}
-	if ($escolha==2) {
-		$arrayofvv = array('DetID' => $dataar['specDetID']);
-		//ATUALIZA IDENTIFICACAO DA PLANTA
-		$plantaid = $dataar['PlantaID'];
-		CreateorUpdateTableofChanges($plantaid,'PlantaID','Plantas',$conn);
-		$newupdate = UpdateTable($plantaid,$arrayofvv,'PlantaID','Plantas',$conn);
-	}
+$temptab = "temp_nir_export7tb6j7aehu";
+$export_filename = "temp_nir_export".substr(session_id(),0,10).".csv";
+if (!isset($run)) {
+$qz = "SELECT * FROM ".$temptab;
+$res = mysql_query($qz,$conn);
+$nrecs = mysql_numrows($res);
+//PREPARA O CABEÇALHO
+$qz = "SELECT * FROM ".$temptab."  LIMIT 0,1";
+$res = mysql_query($qz,$conn);
+$count = mysql_num_fields($res);
+$header = '';
+for ($i = 0; $i < $count; $i++){
+	$ffil = mysql_field_name($res, $i);
+	$header .=  '"' . $ffil . '"' . "\t";
 }
-$qq = "SELECT pl.DetID as plDetID, pl.PlantaID, gettaxonname(pl.DetID,1,0) AS plNOME, plpes.Abreviacao as plDetBy, iddpl.DetDate as plDATA, spec.DetID as specDetID, spec.EspecimenID,spec.PlantaID AS SPEC_PlantaID,   gettaxonname(spec.DetID,1,0) AS specNOME, specpes.Abreviacao as specDetBy,  iddspec.DetDate as specDATA FROM Especimenes as spec JOIN Plantas as pl USING(PlantaID) LEFT JOIN Identidade as iddpl ON iddpl.DetID=pl.DetID  LEFT JOIN Identidade as iddspec ON iddspec.DetID=spec.DetID LEFT JOIN Pessoas as plpes ON plpes.PessoaID=iddpl.DetByID LEFT JOIN Pessoas as specpes ON specpes.PessoaID=iddspec.DetByID  WHERE (iddspec.FamiliaID<>iddpl.FamiliaID OR iddspec.GeneroID<>iddpl.GeneroID OR iddspec.EspecieID<>iddpl.EspecieID OR iddspec.InfraEspecieID<>iddpl.InfraEspecieID) LIMIT 0,1";
-$res = mysql_query($qq,$conn);
-$nres = mysql_numrows($res);
-if ($nres>0) {
 $row = mysql_fetch_assoc($res);
-//echopre($row);
-echo "
-<form action='ScriptTeste.php' method='post'>
-<input type='hidden' name='data' value='".serialize($row)."' >
-<input type='hidden' name='final' value='1' >
-ESCOLHA O REGISTRO VALIDO
-<table padding=7>
-<tr>
-<td><input type='radio' name='escolha'  value=1 onclick='javascript: this.form.submit();' ></td>
-<td>".$row['plDetID']."</td>
-<td>".$row['PlantaID']."</td>
-<td>".$row['plNOME']."</td>
-<td>".$row['plDetBy']."</td>
-<td>".$row['plDATA']."</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td><input type='radio' name='escolha'  value=2 onclick='javascript: this.form.submit();'></td>
-<td>".$row['specDetID']."</td>
-    <td>".$row['EspecimenID']."</td>
-    <td>".$row['SPEC_PlantaID']."</td>
-    <td>".$row['specNOME']."</td>
-    <td>".$row['specDetBy']."</td>
-    <td>".$row['specDATA']."</td>
-</tr>
-<tr><td colspan=5><input type='submit'  value='atualizar' /></td></tr>
-</table>
-</form>";
-
-} else {
-	echo "Não encontrei mais nenhuma amostra com nome diferente de planta";
+$fn = $row['FileName'];
+$tbn ="uploads/nir/";
+$fnn = $tbn.$fn;
+$fop = @fopen($fnn, 'r');
+$hhed = array();
+while (($data = fgetcsv($fop, 10000, "\t")) !== FALSE) {
+	$vv = explode(",",$data[0]);
+	$wlen =  round($vv[0],2);
+	$wlen = "X".$wlen;
+	$hhed[] = $wlen;
 }
+fclose($fnn);
+$i = 1;
+$ni = count($hhed);
+foreach ($hhed as $cab) {
+	if ($i<$ni) {
+		$header .=  '"' . $cab . '"' . "\t";
+	} else {
+		$header .=  '"' . $cab . '"';
+	}
+	$i++;
+}
+$header .= "\n";
+$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
+fwrite($fh, $header);
+fclose($fh);
+$qz =- "ALTER TABLE ".$temptab." ADD PRIMARY KEY (`SPECTRUM_ID`)";
+@mysql_query($qz,$conn);
 
+$qz = "SELECT * FROM ".$temptab;
+$res = mysql_query($qz,$conn);
 
+$nrecs = mysql_numrows($res);
+$totalrecs = $nrecs;
+$stepsize = 100;
+$run = 0;
+} 
+//AGORA ACRESCENTA OS DADOS
+$fh = fopen("temp/".$export_filename, 'a') or die("nao foi possivel gerar o arquivo");
+$qz = "SELECT * FROM ".$temptab."  LIMIT ".$run.",".$stepsize;
+$res = mysql_query($qz,$conn);
+$nrecs = mysql_numrows($res);
+$step=0;
+while ($row = mysql_fetch_assoc($res)) {
+		$fn = $row['FileName'];
+		echo $fn."<br />";
+		$tbn ="uploads/nir/";
+		$fnn = $tbn.$fn;
+		$fop = @fopen($fnn, 'r');
+		$nirdata = array();
+		while (($data = fgetcsv($fop, 10000, "\t")) !== FALSE) {
+					$vv = explode(",",$data[0]);
+					$valor = round($vv[1],30);
+					$wlen =  round($vv[0],2);
+					$wlen = "X".$wlen;
+					$nirdata[$wlen] = $valor;
+		}
+		fclose($fnn);
+		//JUNTA OS DADOS DAS AMOSTRAS COM OS DADOS DE ABSOBANCIA DO ARQUIVO
+		$todosvalores = array_merge((array)$row,(array)$nirdata);
+		
+		//SALVA OS VALORES NO ARQUIVO
+		$line = '';
+		$nff  = count($todosvalores);
+		$nii = 1;
+		foreach($todosvalores as $value){
+			if(!isset($value) || $value == ""){
+				$value = "\t";
+			} 
+			else {
+				//important to escape any quotes to preserve them in the data.
+				$value = str_replace('"', '""', $value);
+					if ($nii<$nff) {
+						$value = '"' . $value . '"' . "\t";
+					} else {
+						$value = '"' . $value . '"';
+					}
+			}
+			$nii++;
+			$line .= $value;
+		}
+		$lin = trim($line)."\n";
+		fwrite($fh, $lin);
+}
+fclose($fh);
 
+if ($nrecs>0) {
+echo "Salvando arquivo ".$run."  of  ".$totalrecs;
+echo "
+<form name='myform' action='ScriptTeste.php' method='post'>
+<input type='hidden'  value=".($run+1+$stepsize)."  name='run' >
+<input type='hidden'  value=".$stepsize."  name='stepsize' >
+<input type='hidden'  value=".$totalrecs."  name='totalrecs' >
 
-
-
-
+    <script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
+</form>";
+} else {
+echo "Terminei";
+}
 
 $which_java = array(
 "<script type='text/javascript' src='javascript/myjavascripts.js'></script>"

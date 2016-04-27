@@ -25,27 +25,14 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+//echopre($ppost);
 //CABECALHO
-if (!isset($ispopup)) {
-	$ispopup=1;
-}
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$ispopup=1;
+$menu = FALSE;
 $menu=FALSE;
 $which_css = array(
-"<link rel='stylesheet' type='text/css' href='css/geral.css' />",
-//"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
-"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
-);
-$which_java = array(
-//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-);
+"<link rel='stylesheet' type='text/css' href='css/geral.css' />","<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />");
+$which_java = array("<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
 $title = 'Editando Especie';
 $body= '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -114,7 +101,7 @@ else {
 $erro=0;
 if ($final==1) {
 	//CAMPOS OBRIGATORIOS
-	if (empty($spnome) || empty($nomevalido) || empty($genusid) || empty($autor)) {
+	if (empty($spnome) || (empty($nomevalido) && $nomevalido!=0) || empty($genusid) || empty($autor)) {
 		//entao tem um erro
 		$erro++;
 		echo "
@@ -129,7 +116,7 @@ if ($final==1) {
 			echo "
   <tr class='tdsmallbold' ><td class='tdsmallnotes' align='center'>".GetLangVar('namevalid')."</td></tr>";
 		}
-		if (empty($famid)) {
+		if (empty($genusid)) {
 			echo "
   <tr class='tdsmallbold' ><td class='tdsmallnotes' align='center'>".GetLangVar('namegenus')."</td></tr>";
 		}

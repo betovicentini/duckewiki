@@ -34,11 +34,11 @@ if(!isset($uuid) ||
 
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
+$menu = FALSE;
+if (empty($herbariumsigla)) {
+		$herbariumsigla = 'HERB_NO';
 }
+
 
 if ($idd>0 && !empty($tableref)) {
 			$qq = "DROP TABLE ".$tbname;
@@ -76,9 +76,12 @@ pltb.DetID,
 pltb.Number as NUMERO,
 if(CONCAT(pltb.Ano,'-',pltb.Mes,'-',pltb.Day)<>'0000-00-00',CONCAT(pltb.Ano,'-',pltb.Mes,'-',pltb.Day),'FALTA') as DATA,
 if(pltb.INPA_ID>0,pltb.INPA_ID+0,NULL) as ".$herbariumsigla.",
+pltb.Herbaria as HERBARIA,
 famtb.Familia as FAMILIA,
 acentosPorHTML(gettaxonname(pltb.DetID,1,0)) as NOME,
 acentosPorHTML(gettaxonname(pltb.DetID,1,1)) as NOME_AUTOR,
+detpessoa.Abreviacao as DETBY, 
+IF(YEAR(iddet.DetDate)>0,YEAR(iddet.DetDate),IF(iddet.DetDateYY>0,iddet.DetDateYY,'')) as DETYY,
 emorfotipo(pltb.DetID,0,0) as MORFOTIPO,
 localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'COUNTRY') as PAIS,  
 localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'MAJORAREA') as ESTADO,
@@ -92,6 +95,7 @@ IF(ABS(pltb.Longitude)>0,pltb.Altitude+0,IF(pltb.GPSPointID>0,gpspt.Altitude+0,I
 'mapping.png' AS MAP,
 '' as OBS,
 IF(pltb.HabitatID>0,'environment_icon.png','') as HABT,
+habitaclasse(pltb.HabitatID) AS HABT_CLASSE,
 if (checkimgs(pltb.EspecimenID, pltb.PlantaID)>0,'camera.png','') as IMG,
 checknir(pltb.EspecimenID,pltb.PlantaID) as NIRSpectra,";
 //IF(ABS(pltb.Longitude)>0,pltb.Longitude+0,IF(pltb.GPSPointID>0,gpspt.Longitude+0,IF(ABS(gaz.Longitude)>0,gaz.Longitude+0,NULL))) as LONGITUDE, 
@@ -132,6 +136,7 @@ $qq .= "
 LEFT JOIN Plantas as thepl ON thepl.PlantaID=pltb.PlantaID
 LEFT JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID
 LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
+LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID
 LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID 
 LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID 
 LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID  

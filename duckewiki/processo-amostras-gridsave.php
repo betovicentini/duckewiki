@@ -289,16 +289,10 @@ function myUpdate(\$action){
 
         mysql_query(\"UPDATE `".$tbname."` SET Fert='{\$action->get_value('Fert')}'  WHERE EspecimenID='{\$action->get_id()}'\");
         \$nd = updatetraits_grid(".$traitfertid.",\$action->get_value('Fert'),\$action->get_id(),0, '', '".$dbname."');
-        if (!\$nd) {
-        \$action->fail();
-        } else {
-        \$action->success();
-        }
-        
         
         mysql_query(\"UPDATE `".$tbname."` SET Silica='{\$action->get_value('Silica')}'  WHERE EspecimenID='{\$action->get_id()}'\");
         \$nd = updatetraits_grid(".$traitsilica.",\$action->get_value('Silica'),\$action->get_id(),0, '', '".$dbname."');
-        //\$action->success();
+        \$action->success();
         
         
 }

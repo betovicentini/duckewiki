@@ -28,20 +28,12 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' href='css/colorbuttons.css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
 $title = 'Menu de exportação';
 $body = '';
@@ -49,10 +41,16 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 $minwidth = '300px';
 echo "
 <div style='padding: 10px; width: 100%;'>
-<a href=\"#\" style=\"width: ".$minwidth .";\" class=\"menuicons_azulescuro\" onclick = \"javascript:small_window('export-especimenes-form.php?ispopup=1',800,400,'Exportar Dados de Especímenes');\">Exportar dados de Especímenes</a>";
+<a href=\"#\" style=\"width: ".$minwidth .";\" class=\"menuicons_azulescuro\" onclick = \"javascript:small_window('export-especimendata-form0.php?ispopup=1',900,600,'Exportar Dados de Especímenes');\">Exportar dados de Especímenes</a>";
 echo "<br>";
-echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_amarelo\" onclick = \"javascript:small_window('export-monitoramento-form.php?ispopup=1',800,500,'Exportar dados de Monitoramento');\">Exportar Dados de Monitoramento</a>";
+echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_amarelo\" onclick = \"javascript:small_window('export-plantadata-form0.php?ispopup=1',900,600,'Exportar dados de Plantas Marcadas');\">Exportar Dados de Plantas Marcadas</a>";
 echo "<br>";
+//echo "<br>";
+//echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_amarelo\" onclick = \"javascript:small_window('export-monitoramento-form.php?ispopup=1',800,500,'Exportar dados de Monitoramento');\">Exportar Dados de Monitoramento</a>";
+//echo "<br>";
+
+
+
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_verde\" onclick = \"javascript:small_window('exportAsKML.php?ispopup=1',800,500,'Exportar para arquivo KML (GoogleEarth)');\">Exportar para arquivo KML (GoogleEarth)</a>";
 echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_roxo\" onclick = \"javascript:small_window('checklist_sisbio_form.php?ispopup=1',800,500,'Exportar Relatório SISBIO');\">Exportar para SISBIO</a>";
@@ -60,11 +58,13 @@ echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_branco\" onclick = \"javascript:small_window('export-nir-spreadsheet.php?ispopup=1',800,500,'Exportar Planilha Para Antaris');\">Preparar planilha para NIR</a>";
 echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_cinza\" onclick = \"javascript:small_window('export-nir-data.php?ispopup=1',800,500,'Exportar Dados NIR');\">Exportar dados NIR</a>";
+echo "<br>";
+echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_azul\" onclick = \"javascript:small_window('exportGPX.php?ispopup=1',800,500,'Exportar para GPX');\">Exportar para GPX</a><br>";
+echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_azul\" onclick = \"javascript:small_window('odkcollect_inicio.php?ispopup=1',800,500,'Exportar ODK');\">Formulário ODK Collect</a>";
 echo "<br>
 </div>";
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

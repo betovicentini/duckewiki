@@ -61,7 +61,7 @@ $body = '';
 	echo "&nbsp;";
 	//Create query
 	//if ($login=='beto') {
-	$qry="SELECT * FROM Users WHERE Login='".$login."' AND Passwd='".MD5($password)."'";
+	$qry="SELECT * FROM Users WHERE Login='".$login."' AND Valid=1 AND Passwd='".MD5($password)."'";
 	//echo $qry;
 	$result=mysql_query($qry,$conn);
 	//}
@@ -86,18 +86,28 @@ $body = '';
 			}
 			exit();
 		}else {
-			//Login failed
-			header("location: index.php");
+			$menu=FALSE;
+			$title  = 'Usuário Inexistente';
+			$which_css = array("<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+			$which_java = array();
+			FazHeader($title,$body,$which_css,$which_java,$menu);
+			$_SESSION['introtext'] = '';
+			omenudeicons($quais, $vertical=FALSE, $position='right' , $iconwidth='30', $iconheight='30' );
+			$namefailedlogin = "<p style='align: center; background-color:  yellow; width: 50%; color: red; font-weight: bold; font-size: 2em;' >Usuário inválido ou inexistente</p>";
+			echo($namefailedlogin);
+			$which_java = array();
+			FazFooter($which_java,$calendar=FALSE,$footer=$menu);
+			#$namefailedlogin = "Usuário inválido ou inexistente";
+			#echo($namefailedlogin);
+			//header("location: index.php");
 			exit();
 		}
 	} else {
 		$menu=FALSE;
 		FazHeader($title,$body,$which_css,$which_java,$menu);
-		//$namefailedlogin = "Em manutenção. Desculpe!";
+		$namefailedlogin = "Usuário inválido ou inexistente";
 		echo($namefailedlogin);
-		$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-		"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-		"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+		$which_java = array();
 		FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 	}
 ?>

@@ -74,6 +74,7 @@ if (!isset($runzz)) {
 $oldrunzz = $runzz;
 //PEGA OS NOMES DAS COLUNAS REFERENTES ÀS LOCALIDADES
 $wkk = array_keys($runzz);
+
 //PEGA COLUNA SENDO ITERADA
 $colstep = $wkk[0];
 
@@ -114,7 +115,7 @@ if (count($zz)==count($runzz) && !isset($isrunning)) {
 				$parid = 0;
 			} else {
 				if (!empty($municipio)) {
-					$muid = 'WikiCol_MunicipioID';
+					$muid = $tbprefix."MunicipioID";
 					$parid=0;
 				} 
 			}
@@ -241,7 +242,8 @@ if (isset($muid) && isset($parid)) {
 											$foundmatch['longdec'] = $longdec;
 											$foundmatch['latdec'] = $latdec;
 									}
-							if ($muid==0 && $rww [$tbprefix."MunicipioID"]>0)  {
+									#$mtest = $muid+0;
+							if ($rww [$tbprefix."MunicipioID"]>0)  {
 								$muid = $rww [$tbprefix."MunicipioID"];
 							}
 							if ( $rww[$tbprefix.'ParentID']>0) {

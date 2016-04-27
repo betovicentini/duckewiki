@@ -5,6 +5,7 @@ DECLARE procid char(50) DEFAULT '';
 DECLARE ncat INT(10) DEFAULT 0;
 DECLARE ncatstep INT(10) DEFAULT 1;
 DECLARE val INT(1) DEFAULT 0;
+SET valoresCol = REPLACE(valoresCol, ',', ';');
 SELECT substrCount(valoresCol,';')+1 INTO ncat;
 WHILE ncatstep <= ncat DO
 SET procid = '';

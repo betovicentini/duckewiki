@@ -36,11 +36,7 @@ if (count($gget)>count($ppost)) {
 
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
@@ -57,6 +53,9 @@ $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
 $definedfields = array($pais,$provincia,$municipio,'ImportID');
+
+//echopre($ppost);
+//echopre($gget);
 echo "
 <form action='import-locais-step5.php' method='post' >";
 //coloca as variaveis anteriores
@@ -84,6 +83,7 @@ echo " onclick=\"javascript:alert('$help');\" /></td></tr>
 	$idx=1;
 	$qq = "SELECT * FROM `".$tbname."` PROCEDURE ANALYSE ()";
 	$rq = mysql_query($qq,$conn);
+	//echo $qq."<br />";
 	while ($rw = mysql_fetch_assoc($rq)) {
 		$fin = $rw['Field_name'];
 		$zz = explode(".",$fin);
@@ -91,6 +91,7 @@ echo " onclick=\"javascript:alert('$help');\" /></td></tr>
 		$fieldname = $zz[$xt];
 		$kkv = in_array($fieldname,$definedfields);
 		$npr = strlen($tbprefix);
+		//echo "kkv:".$kkv."   fieldname:".$fieldname."  tbprefix:".$tbprefix."<br />";
 		if (!$kkv && substr($fieldname,0,$npr)!=$tbprefix) {
 			if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "

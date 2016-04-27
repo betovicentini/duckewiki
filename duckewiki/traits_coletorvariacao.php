@@ -30,7 +30,8 @@ $gget = cleangetpost($_GET,$conn);
 //echopre($ppost);
 //echo "ANTES<br />";
 //$aa = unserialize($_SESSION['variation']);
-//echopre($aa);
+//echo "FILES AQUI:";
+//echopre($_FILES);
 
 if ($apagavarsess==1 && (($especimenid>0 && $saveit>0)  ||  !empty($nomesciid))) {
 		$typeid = '';
@@ -70,10 +71,14 @@ if ($apagavarsess==1 && (($especimenid>0 && $saveit>0)  ||  !empty($nomesciid)))
 $menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' media='screen' href='css/Stickman.MultiUpload.css' />",
 "<link rel='stylesheet' href='javascript/magiczoomplus/magiczoomplus/magiczoomplus.css' type='text/css' media='screen' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' >"
 );
+
+//"<link rel='stylesheet' type='text/css' media='screen' href='css/Stickman.MultiUpload.css' />",
+//"<script type='text/javascript' src='javascript/mootools.js'></script>",
+//"<script type='text/javascript' src='javascript/Stickman.MultiUpload.js'></script>",
+
 
 //UPLOAD IMAGENS FIELD - para subir + de uma imagem individualmente em campos
 $which_java = array(
@@ -81,8 +86,6 @@ $which_java = array(
 "<script type=\"text/javascript\" src=\"javascript/sorttable/common.js\"></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/css.js\"></script>",
 "<script type=\"text/javascript\" src=\"javascript/sorttable/standardista-table-sorting.js\"></script>",
-"<script type='text/javascript' src='javascript/mootools.js'></script>",
-"<script type='text/javascript' src='javascript/Stickman.MultiUpload.js'></script>",
 "<script src='javascript/magiczoomplus/magiczoomplus/magiczoomplus.js' type='text/javascript'></script>"
 
 );
@@ -92,8 +95,8 @@ $body = '';
 //if ($submeteu==1) {
 	//unset($_SESSION['monitorvar']);
 //}
-//echopre($ppost);
-
+//echopre($_FILES);
+//echopre($trait_1422);
 if ($resetar=='1') {
 	$qf = "SELECT GROUP_CONCAT(TraitID SEPARATOR ';') AS TraitLIST FROM FormulariosTraitsList WHERE FormID=".$formid;
 	$rr = mysql_query($qf,$conn);
@@ -156,6 +159,7 @@ if ($resetar=='1') {
 
 $aa = unserialize($_SESSION['variation']);
 @extract($aa);
+//echopre($aa);
 ///process submition to parent sending the whole array of values as arraynotes
 if ($option1=='2' || isset($imgdone)) {
 	if (!isset($imgdone)) {
@@ -216,6 +220,7 @@ if ($option1=='2' || isset($imgdone)) {
 		} //end for each
 	
 		//junta os novos valores para o array de resultados e imagens se estas tiverem sido postas
+		//echopre($_FILES);
 		$arval = array_merge((array)$arval,(array)$result,(array)$_FILES);
 		$newarr = array();
 		foreach ($variaveis as $kk => $vv) {
@@ -256,66 +261,89 @@ if ($option1=='2' || isset($imgdone)) {
 					$variaveis = array_merge((array)$variaveis,(array)$nar);
 				}
 			} 
-			else { //se for uma imagem entao e um array que contem as info das images
+			else  {
+				//se for uma imagem entao e um array que contem as info das images
+				//////////////////////////////////////////
+				//echo  "AQUI O VALOR DA IMAGEM? <br />";
+				//echo $key." <br />".$ttt[0];
+				//echopre($value);
 				$fname = trim($value['name']);
-				if (!empty($fname) && $ttt[0]!='traitimg' && $value['error']==0 && is_array($value)) {
-					$ak = "traitimgautor_".$ttt[1];
-					//echo $ak."<br>";
-					$fotografo = $arval[$ak];
-					//echo "fotografo ".$fotografo;
+				$quantasnome = count($value['name']);
+				if ($quantasnome>0 && $ttt[0]!='traitimg' && is_array($value)) {
+					//echo  "E entrei aqui!<br />";
+					foreach($value['name'] as $kimg => $avimg) {
+						//&& $value['error']==0 
+						$ak = "traitimgautor_".$ttt[1];
+						//echo $ak."<br>";
+						$fotografo = $arval[$ak];
+						//echo "fotografo ".$fotografo."<br>";
 	
-					$ccid = explode("_",$key); //extrai o numero do caractere
-					$filedate = $_SESSION['sessiondate']; //a data de hoje
-					$fva = $filedate."_charid".$ccid[1]."_".$value['name']; //pega o nome do arquivo no diretorio temporario
+						$ccid = explode("_",$key); //extrai o numero do caractere
+						$filedate = $_SESSION['sessiondate']; //a data de hoje
+					
+					
+						$fva = $filedate."_charid".$ccid[1]."_".$avimg; //pega o nome do arquivo no diretorio temporario
 	
-					$qq = "SELECT * FROM Imagens WHERE Name='$fva' AND Deleted=0";
-					$qr = @mysql_query($qq,$conn);
-					$nqr = @mysql_numrows($qr);
-	
-				if ($nqr==0) {
-					move_uploaded_file($value["tmp_name"],"img/temp/$fva");  //move o arquivo para a pasta final MAS AQUI PODERIA SER TEMPORARIO PORQUE AINDA NAO GRAVOU OS DADOS
-					/////////////////////////////
-					$ext = explode(".",$value['name']);
-					$ll = count($ext)-1;
-					$imgext = strtoupper($ext[$ll]);
-					$inputfile = "img/temp/$fva";
-					if ($imgext=='JPG' || $imgext=='TIFF' || $imgext=='TIF' || $imgext=='JPEG') {
-							$metadata = @read_exif_data($inputfile);
-							$DateTimeOriginal =$metadata['DateTimeOriginal'];
-	
-							$dattt = explode(" ",$DateTimeOriginal);
+						$qq = "SELECT * FROM Imagens WHERE FileName='".$fva."' AND Deleted=0";
+						//echo $qq."<br />";
+						$qr = mysql_query($qq,$conn);
+						$nqr = @mysql_numrows($qr);
+						$tmpimg = $value["tmp_name"][$kimg];
+						$tmperro = $value["error"][$kimg];
+						//echo $tmpimg."   tmperro: ".$tmperro."<br />NQR:".$nqr."<br />    img/temp/".$fva."<br \>";
+						if ($nqr==0) {
+							if ($tmperro==0) {
+							//echo "entrou<br />";
+							move_uploaded_file($tmpimg,"img/temp/".$fva);  
+							//move o arquivo para a pasta final MAS AQUI PODERIA SER TEMPORARIO PORQUE AINDA NAO GRAVOU OS DADOS
+							/////////////////////////////
+							$ext = explode(".",$avimg);
+							$ll = count($ext)-1;
+							$imgext = strtoupper($ext[$ll]);
+							$imgext = 'lixo';
+							$inputfile = "img/temp/".$fva;
+							//echo $inputfile."  ".$imgext."<br />";
+							if ($imgext=='JPG' || $imgext=='TIFF' || $imgext=='TIF' || $imgext=='JPEG') {
+								$metadata = exif_read_data($inputfile);
+								if (count($metadata)>1) {
+								$DateTimeOriginal =$metadata['DateTimeOriginal'];
+								$dattt = explode(" ",$DateTimeOriginal);
 								$dateoriginal = $dattt[0];
 								$timeoriginal = $dattt[1];
-	
-							$tt = explode(":",$timeoriginal);
-							$ttsec = (((($tt[0]*60)+$tt[1])*60)+$tt[2]);
-	
-							$dd = str_replace(":","-",$dateoriginal);
-							$dd = new DateTime($dd);
-							$dateoriginal = $dd->format("Y-m-d");
-	
-							$imgarray =  array(
+								$tt = explode(":",$timeoriginal);
+								$ttsec = (((($tt[0]*60)+$tt[1])*60)+$tt[2]);
+								$dd = str_replace(":","-",$dateoriginal);
+								$dd = new DateTime($dd);
+								$dateoriginal = $dd->format("Y-m-d");
+								$imgarray =  array(
 										'FileName' => $fva,
 										'DateTimeOriginal' => $DateTimeOriginal,
 										'DateOriginal' => $dateoriginal,
 										'TimeOriginal' => $timeoriginal,
 										'Autores' => $fotografo);
-					} else {
-							$imgarray =  array(
+								} else {
+									$imgarray =  array(
 										'FileName' => $fva,
 										'Autores' => $fotografo);
-					}
-					//echopre($imgarray);
-					$newimg = InsertIntoTable($imgarray,'ImageID','Imagens',$conn);
-					if ($newimg) {
-						$copiado = @copy($inputfile,"img/originais/".$fva);
-						if ($copiado) {
-							unlink($inputfile);
-							$newimagefile[] = $fva;
-	
-						}
-						$kkk = 'trait_'.$ccid[1];
-						if (array_key_exists($kkk,$variaveis)) { //se ela ja existe na variavel de sessao atualiza se diferente
+								}
+							} 
+							else {
+									$imgarray =  array(
+										'FileName' => $fva,
+										'Autores' => $fotografo);
+							}
+							//echo "<br />imgarray AQUI:";
+							//echopre($imgarray);
+							$newimg = InsertIntoTable($imgarray,'ImageID','Imagens',$conn);
+							if ($newimg) {
+								//echo "MOVENDO: <br>";
+								$copiado = @copy($inputfile,"img/originais/".$fva);
+								if ($copiado) {
+									unlink($inputfile);
+									$newimagefile[] = $fva;
+							}
+							$kkk = 'trait_'.$ccid[1];
+							if (array_key_exists($kkk,$variaveis)) { //se ela ja existe na variavel de sessao atualiza se diferente
 							$imgarrs = explode(";",$variaveis[$kkk]);
 							foreach ($imgarrs as $mykk => $myvv) {
 								$mtvv = trim($myvv);
@@ -340,20 +368,31 @@ if ($option1=='2' || isset($imgdone)) {
 							$variaveis = array_merge((array)$variaveis,(array)$nar);
 						}
 					}
-				}
-			} 
+							} 
+							else {  
+								if (!empty($fva)) { //echo "<span  style='color: red; font-size: 1.5em; background-color: yellow;'>Houve erro na importação da imagen: ".$tmperro." ".$fva."</span><br />";
+								}
+							}
+						} else {
+							if (!empty($fva))  {
+								echo "<span  style='color: red; font-size: 1.5em; background-color: yellow;'>Já existe um arquivo com este nome na base de dados</span><br />";
+							}
+						}
+					}
+				} 
 				elseif ($ttt[0]=='traitimg') {
+				    //NO CASO DE APAGAR UMA IMAGEM
 					$ttid  = $ttt[1];
 					$olimgvals = trim($variaveis['trait_'.$ttid]);
-					//echo "<br>aqui entao ".$variaveis['trait_'.$ttid];
+					//echo "key".$key;
+					//echopre($value);
+					//echo "<br>aqui entao:<br>".$variaveis['trait_'.$ttid];
 					if (!empty($olimgvals)) {
 						$valoresvelhos = explode(";",$variaveis['trait_'.$ttid]);
-	
 						foreach ($valoresvelhos as $kvel => $vvimg) {
 							$vimg = trim($vvimg);
 							if ($vimg>0 && !empty($vimg)) {
 							$imgtodel = $arval["imgtodel_".$ttid."_".$vvimg];
-	
 							if ($imgtodel==1) {
 								//print_r($valoresvelhos);
 								unset($valoresvelhos[$kvel]);
@@ -368,27 +407,46 @@ if ($option1=='2' || isset($imgdone)) {
 						}
 						$variaveis['trait_'.$ttid] = implode(";",$valoresvelhos);
 						//echopre($variaveis);
-						//echo "    aqui valores novos ".$variaveis['trait_'.$ttid]."<br>";
+						//echo " <br />aqui valores novos ".$variaveis['trait_'.$ttid]."<br>";
 					}
-	
+					//echo "<hr>";
+					
 				}
+				
+				
+				////////////////
 			}
 		}
 			unset( $_SESSION['variation']);
 			$_SESSION['variation'] = serialize($variaveis);
-	
 			if (count($newimagefile)>0) {
 				$_SESSION['newimagfiles'] = serialize($newimagefile);
 				$_SESSION['othervars'] = array(
 				'elementid2' => $ppost['elementid2'],
 				'elementid' => $ppost['elementid'],
-				'formid' => $ppost['formid']);
-	
-						$zz = explode("/",$_SERVER['SCRIPT_NAME']);
-						$serv = $_SERVER['SERVER_NAME'];
-						$returnto = $serv."/".$zz[1]."/traits_coletorvariacao.php";
-	
-						header("location: http://".$serv."/cgi-local/imagick_function.php?returnto=".$returnto."&folder=".$zz[1]."&returnvar=imgdone");
+				'formid' => $ppost['formid'],
+				'especimenid' => $ppost['especimenid'],
+				'traitsinenglish' => $ppost['traitsinenglish'],
+				'saveit' => $ppost['saveit']
+				);
+				if ($taxavariacao==1) { 
+				$_SESSION['othervars'] = array(
+				'elementid2' => $ppost['elementid2'],
+				'elementid' => $ppost['elementid'],
+				'formid' => $ppost['formid'],
+				'especimenid' => $ppost['especimenid'],
+				'traitsinenglish' => $ppost['traitsinenglish'],
+				'saveit' => $ppost['saveit'],
+				'taxavariacao' => $ppost['taxavariacao'],
+				'nomesciid' => $ppost['nomesciid'],
+				'typeid' => $ppost['typeid'],
+				'idd' => $ppost['idd']
+					);
+				}
+				$zz = explode("/",$_SERVER['SCRIPT_NAME']);
+				$serv = $_SERVER['SERVER_NAME'];
+				$returnto = $serv."/".$zz[1]."/traits_coletorvariacao.php";
+				header("location: http://".$serv."/cgi-local/imagick_function.php?returnto=".$returnto."&folder=".$zz[1]."&returnvar=imgdone");
 					} 
 		} 
 		else { //if imagedone
@@ -435,7 +493,7 @@ if ($option1=='2' || isset($imgdone)) {
 									foreach ($newtraitids as $key => $val) {
 										$oldval = trim($oldtraitids[$key]);
 										$vv = trim($val);
-										if ($vv!='imagem' && $vv!='none' && !empty($vv) && ($vv!=$oldval || empty($oldval))) {
+										if ($vv!='imagem' && $vv!='none' && (!empty($vv) || (!empty($oldval) && $vv!=$oldval)) && ($vv!=$oldval || empty($oldval))) {
 											$changedtraits++;
 										}
 									}
@@ -463,7 +521,7 @@ if ($option1=='2' || isset($imgdone)) {
   <table class='sucessosmall' align='center' cellpadding='7'>
   <input type='hidden' id='sendid' value=\"$elementid2txt\" />
   <tr><td >".GetLangVar('messagevariationset')."</td></tr>
-  <tr><td><input style='cursor: pointer'  type=button value=".GetLangVar('nameconcluir')." class='bsubmit'  onclick=\"javascript:sendval_innerHTML('sendid','$elementid');\" /></td></tr>
+  <tr><td><input style='cursor: pointer'  type='button' value='".GetLangVar('nameconcluir')."' class='bsubmit'  onclick=\"javascript:sendval_innerHTML('sendid','".$elementid."');\" /></td></tr>
 </table>
 <br>
 	";
@@ -631,7 +689,7 @@ echo "
 <td>
   <form id='varform2' name='varform2' method='post' enctype='multipart/form-data' action='traits_coletorvariacao.php' >
   <input type='hidden' id='traitlang' name='traitsinenglish' value='' />
-  <input type='hidden' name='MAX_FILE_SIZE' value='10000000' />
+  <input type='hidden' name='MAX_FILE_SIZE' value='50000000' />
   <input type='hidden' name='formid' value='".$formid."' />
   <input type='hidden' name='elementid2' value='".$elementid2."' />
   <input type='hidden' name='elementid' value='".$elementid."' />
@@ -643,12 +701,14 @@ echo "
 	//echo $qbib."<br />";
 	$rbib = @mysql_query($qbib,$conn);
 	$bibids = array();
+	if ($rbib) {
 	while($rwbib = mysql_fetch_assoc($rbib)) {
 		$bb = $rwbib['BibtexIDS'];
 		$bz = explode(";",$bb);
 		$bibids = array_merge((array)$bibids,(array)$bz);
 	}
 	$bibids = array_unique($bibids);
+	}
 	$bibtexts = array();
 	if (count($bibids)>0) {
 		$bibtex_id = implode(";",$bibids);
@@ -693,7 +753,7 @@ echo "
 echo "
 <tr>
   <td align='center' >";
-  include "traits_generalform.php";
+  include "traits_generalform2.php";
 echo "
   </td>
 </tr>

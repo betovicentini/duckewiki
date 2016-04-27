@@ -99,20 +99,22 @@ $numericfilter[] = "TAG";
 
 //SAVE RESULTS IN A FILE
 //"LONGITUDE", "LATITUDE", "ALTITUDE"
-$headd = array("Marcado","PlantaID","DetID","EDIT","TAGtxt","TAG","FAMILIA", "NOME", "NOME_AUTOR","MORFOTIPO", "PAIS", "ESTADO", "MUNICIPIO", "LOCAL","LOCALSIMPLES","LONGITUDE", "LATITUDE", "ALTITUDE");
-$headexplan = array("Marcar ou desmarcar o registro", "Identificador da planta em Plantas","Identificador da determinação em Identidade","Links para edição do registro e dados associados","Código da placa da árvore  caracteres e números","Número da placa da árvore - apenas numérico","Familia", "Nome da identificação da planta sem autor","Nome da identificação da planta com autor", "Se o nome é um morfotipo spp indica no nivel de espécie e infspp no nível de infraespécie", "Pais  do local", "Estado do local", "Municipio do local", "Localidade completa","Localidade mais especifica", "Longitude em décimos de grau","Latitude em décimos de grau", "Altitude em metros");
-$exportcols = array("false","true","false","false","true","true","true", "true","true","true","true", "true","true","true","true","true","true","true");
+$headd = array("Marcado","PlantaID","DetID","EDIT","TAGtxt","TAG","FAMILIA", "NOME", "NOME_AUTOR","DETBY","DETYY","MORFOTIPO", "PAIS", "ESTADO", "MUNICIPIO", "LOCAL","LOCALSIMPLES","LONGITUDE", "LATITUDE", "ALTITUDE");
+$headexplan = array("Marcar ou desmarcar o registro", "Identificador da planta em Plantas","Identificador da determinação em Identidade","Links para edição do registro e dados associados","Código da placa da árvore  caracteres e números","Número da placa da árvore - apenas numérico","Familia", "Nome da identificação da planta sem autor","Nome da identificação da planta com autor", "Quem identificou","Ano de identificação", "Se o nome é um morfotipo spp indica no nivel de espécie e infspp no nível de infraespécie", "Pais  do local", "Estado do local", "Municipio do local", "Localidade completa","Localidade mais especifica", "Longitude em décimos de grau","Latitude em décimos de grau", "Altitude em metros");
+$exportcols = array("false","true","false","false","true","true","true", "true","true","true","true","true","true", "true","true","true","true","true","true","true");
 
 $colw = array(
 "Marcado" => 70,
 "PlantaID" => 0,
 "DetID" => 0,
-"EDIT" => 100,
+"EDIT" => 110,
 "TAGtxt" => 0,
 "TAG" => 50,
 "FAMILIA" => 80,
 "NOME" => 150,
 "NOME_AUTOR" => 150,
+"DETBY" => 0,
+"DETYY" => 0,
 "MORFOTIPO" => 100,
 "PAIS" => 40,
 "ESTADO" => 60,
@@ -132,14 +134,14 @@ if ($daptraitid>0) {
 	$headd[] = 'DAPmm';
 	$numericfilter[] = "DAPmm";
 	$colw = array_merge((array)$colw,(array)array('DAPmm' => 60));
-	$exportcols[] = "false";
+	$exportcols[] = "true";
 	$headexplan[] = 'Máximo dos DAPs associados à planta em mm';
 }
 if ($alturatraitid>0) {
 	$headd[] = 'ALTURA';
 	$numericfilter[] = "ALTURA";
 	$colw = array_merge((array)$colw,(array)array('ALTURA' => 65));
-	$exportcols[] = "false";
+	$exportcols[] = "true";
 	$headexplan[] = 'Máximo das alturas associadas à planta em metros';
 }
 if ($habitotraitid>0) {
@@ -182,10 +184,10 @@ $nofilter = array("Marcado", "OBS", "IMG", "PRJ", "EDIT", "HABT","MAP","LONGITUD
 $imgfields = array("OBS", "IMG", "PRJ", "EDIT", "HABT","MAP","ESPECIMENES","NIRSpectra");
 
 if(!isset($uuid) || (trim($uuid)=='') || $acceslevel=='visitor' || $uuid==0) {
-	$hidefields = array("PlantaID", "TAGtxt", "DetID","PROJETOstr", "LONGITUDE", "LATITUDE", "ALTITUDE", "PLOT","DUPS","EDIT","GazetteerID","GPSPointID","NOME_AUTOR","MORFOTIPO");
+	$hidefields = array("PlantaID", "TAGtxt", "DetID","PROJETOstr", "LONGITUDE", "LATITUDE", "ALTITUDE", "PLOT","DUPS","EDIT","GazetteerID","GPSPointID","NOME_AUTOR","MORFOTIPO","DETBY","DETYY");
 } 
 else {
-	$hidefields = array("PlantaID", "TAGtxt", "DetID","PROJETOstr", "DUPS","GazetteerID","GPSPointID","PLOT","NOME_AUTOR","MORFOTIPO","LONGITUDE", "LATITUDE", "ALTITUDE");
+	$hidefields = array("PlantaID", "TAGtxt", "DetID","PROJETOstr", "DUPS","GazetteerID","GPSPointID","PLOT","NOME_AUTOR","MORFOTIPO","DETBY","DETYY","LONGITUDE", "LATITUDE", "ALTITUDE");
 }
 $i=0;
 $ncl = count($headd)-count($imgfields)-count($hidefields);
@@ -387,7 +389,18 @@ $stringData .= "
    \$pltid = \$data->get_value(\"PlantaID\");
    \$imgg3 = \"<img style='cursor:pointer;' src='icons/specimen-icon.png' height='20' onclick=\\\"javascript:small_window('".$url."/especimenes_dataform.php?ispopup=1&submeteu=nova&plantaid=\".\$pltid.\"',1000,400,'Nova amostra de planta');\\\" onmouseover=\\\"Tip('Novo especímene da planta # \".\$pltag.\"');\\\" title=''>\";
    \$imgg4 = \"<img style='cursor:pointer;' src='icons/rednameicon.png' height='17' onclick=\\\"javascript:small_window('".$url."/taxonomia-popup.php?updatechecklist=1&ispopup=1&saveit=true&detid=\".\$data->get_value(\"DetID\").\"&plantaid=\".\$data->get_value(\"PlantaID\").\"',800,400,'Editar Identificação');\\\" onmouseover=\\\"Tip('Editar Identificação da planta # \".\$pltag.\"');\\\" title='' >\";
-   \$imagen = \$imagen.\"&nbsp;\".\$imgg2.\"&nbsp;&nbsp;\".\$imgg3.\"&nbsp;&nbsp;\".\$imgg4;
+    \$ruu = mysql_query(\"SELECT TraitID FROM Traits WHERE ParentID='".$traitsilica."' AND LOWER(TraitName) LIKE '%silica%'\");
+     \$ruuw = mysql_fetch_assoc(\$ruu);
+     \$silicavar = \$ruuw['TraitID'];
+     \$rnn = mysql_query(\"SELECT * FROM Traits_variation WHERE TraitID='".$traitsilica."' AND PlantaID=\".\$data->get_value(\"PlantaID\").\" AND (TraitVariation LIKE '\".\$silicavar.\"%'  OR TraitVariation LIKE 
+     '%;\".\$silicavar.\"%' )\");
+     \$nrnn = mysql_numrows(\$rnn);
+     if (\$nrnn==0) {
+     \$imgg5 =\"<img style='cursor:pointer;' src='icons/dna.png' height='20' onclick=\\\"javascript:amostrasilica(0,\".\$data->get_value(\"PlantaID\").\");\\\"  onmouseover=\\\"Tip('Marca que tem amostra em silica');\\\" >\";
+    } else {
+     \$imgg5 =\"<img style='cursor:pointer;' src='icons/dna_ok.png' height='20' onclick=\\\"javascript:alert('Já tem amostra de sílica marcada para esta coleta');\\\"  onmouseover=\\\"Tip('Já tem amostra de sílica marcada para esta planta');\\\" >\";
+    }
+   \$imagen = \$imagen.\"&nbsp;\".\$imgg2.\"&nbsp;&nbsp;\".\$imgg3.\"&nbsp;&nbsp;\".\$imgg4.\"&nbsp;&nbsp;\".\$imgg5;
     \$data->set_value(\"EDIT\",\$imagen);";
 } else {
 $stringData .= "

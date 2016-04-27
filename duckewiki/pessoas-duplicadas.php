@@ -27,10 +27,53 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 extract($gget);
 
+//echopre($ppost);
 //CABECALHO
 $menu = FALSE;
-$which_css = array("<link href='css/geral.css' rel='stylesheet' type='text/css' />");
-$which_java = array();
+$which_css = array("<link href='css/geral.css' rel='stylesheet' type='text/css' />",
+"<link rel='stylesheet' type='text/css' href='css/jquery-ui.css' />");
+$which_java = array(
+"<script src=\"javascript/jquery-1.10.2.js\"></script>",
+"<script src=\"javascript/jquery-ui.js\"></script>",
+"<script> 
+function myFunction() {
+    var selects = document.getElementsByTagName(\"select\");
+    var len = selects.length;
+    var message = \"\";
+    for ( var i = 0; i<len; ++i ) {
+      var kname = selects[i].name;
+      var kname = kname.replace(\"mesmoque\", \"\");
+      var kname = kname.replace(\"[\", \"\");
+      var kname = kname.replace(\"]\", \"\");
+      var kname = kname.replace(\"'\", \"\");
+      var kname = kname.replace(\"'\", \"\");
+      var runn =  selects[i].options[selects[i].selectedIndex].value;
+      if (runn>0) {
+         if (message=='') {
+            message = \"pessoa_\"+kname+\"=\"+runn;
+         } else {
+            message += \"&pessoa_\"+kname+\"=\"+runn;
+         }
+      }
+   }
+   if (message!='') {
+         $.ajax(
+            {
+                type: 'GET',
+                url: 'pessoas-duplicadas-corrige.php',
+                data: message,
+                async: true,
+                success:
+                    function (data) {
+                           alert(data);
+                    }
+            });
+   } else {
+      alert('Você não indicou nenhuma mudança!');
+    }
+}
+</script>"
+);
 $title = 'Novas pessoas';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -46,202 +89,11 @@ GROUP BY CONCAT(UPPER(SUBSTRING(Prenome,1,1)),UPPER(acentostosemacentos(Sobrenom
 } else {
 	$idstocheck = unserialize($idstocheckser);
 	///CORRIGI SE FOR O CASO
-	if ($final==2) {
-		foreach($mesmoque as $kk => $vv) {
-			if ($vv!=$kk && $vv>0) {
-				echo $kk." por ".$vv."<br />";
-				//EM ESPECIMENS
-				$qu = "UPDATE Especimenes SET ColetorID=".$vv." WHERE ColetorID=".$kk;
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeEspecimenes SET ColetorID=".$vv." WHERE ColetorID=".$kk;
-				$ru = mysql_query($qu,$conn);
-
-				$qu = "UPDATE Especimenes SET AddColIDS=pessoaduplicata(AddColIDS,".$kk.",".$vv.")  WHERE pessoainfield(AddColIDS,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeEspecimenes SET AddColIDS=pessoaduplicata(AddColIDS,".$kk.",".$vv.")  WHERE pessoainfield(AddColIDS,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-
-				//IDENTIDADES
-				$qu = "UPDATE Identidade SET DetbyID=".$vv." WHERE DetbyID=".$kk;
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE Identidade SET RefColetor=".$vv." WHERE RefColetor=".$kk;
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE Identidade SET RefDetby=".$vv." WHERE RefDetby=".$kk;
-				$ru = mysql_query($qu,$conn);
-				//IMAGENS
-				$qu = "UPDATE Imagens SET Autores=pessoaduplicata(Autores,".$kk.",".$vv.") WHERE pessoainfield(AddColIDS,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeImagens SET Autores=pessoaduplicata(Autores,".$kk.",".$vv.") WHERE pessoainfield(AddColIDS,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-
-
-				//EXPEDITO
-				$qu = "UPDATE MetodoExpedito SET PessoasIDs=pessoaduplicata(PessoasIDs,".$kk.",".$vv.") WHERE pessoainfield(PessoasIDs,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeMetodoExpedito SET PessoasIDs=pessoaduplicata(PessoasIDs,".$kk.",".$vv.") WHERE pessoainfield(PessoasIDs,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-
-				$qu = "UPDATE MetodoExpeditoPlantas SET PessoasIDs=pessoaduplicata(PessoasIDs,".$kk.",".$vv.") WHERE pessoainfield(PessoasIDs,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeMetodoExpeditoPlantas SET PessoasIDs=pessoaduplicata(PessoasIDs,".$kk.",".$vv.") WHERE pessoainfield(PessoasIDs,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-
-				//PLANTAS
-				$qu = "UPDATE Plantas SET TaggedBy=pessoaduplicata(TaggedBy,".$kk.",".$vv.") WHERE pessoainfield(TaggedBy,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangePlantas SET TaggedBy=pessoaduplicata(TaggedBy,".$kk.",".$vv.") WHERE pessoainfield(TaggedBy,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-
-				//PROJETOS
-				$qu = "UPDATE Projetos SET Equipe=pessoaduplicata(Equipe,".$kk.",".$vv.") WHERE pessoainfield(Equipe,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeProjetos SET Equipe=pessoaduplicata(Equipe,".$kk.",".$vv.") WHERE pessoainfield(Equipe,".$kk.")>0";
-				$ru = mysql_query($qu,$conn);
-
-				//ESPECIALISTAS
-				$qu = "UPDATE Especialistas SET Especialista=".$vv." WHERE Especialista=".$kk;
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeEspecialistas SET Especialista=".$vv." WHERE Especialista=".$kk;
-				$ru = mysql_query($qu,$conn);
-
-				//GRUPOS DE ESPECIES
-				$qu = "UPDATE Tax_SpeciesGroups SET PessoaID=".$vv." WHERE PessoaID=".$kk;
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeTax_SpeciesGroups SET PessoaID=".$vv." WHERE PessoaID=".$kk;
-				$ru = mysql_query($qu,$conn);
-
-				//USUARIOS QUE TAMBEM SAO PESSOAS
-				$qu = "UPDATE Users SET PessoaID=".$vv." WHERE PessoaID=".$kk;
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeUsers SET PessoaID=".$vv." WHERE PessoaID=".$kk;
-				$ru = mysql_query($qu,$conn);
-
-				//EQUIPAMENTOS
-				$qu = "UPDATE Equipamentos SET PessoaID=".$vv." WHERE PessoaID=".$kk;
-				$ru = mysql_query($qu,$conn);
-				$qu = "UPDATE ChangeEquipamentos SET PessoaID=".$vv." WHERE PessoaID=".$kk;
-				$ru = mysql_query($qu,$conn);
-			}
-		}
-		foreach($mesmoque as $kk => $vv) {
-			$nrr=0;
-			if ($vv!=$kk && $vv>0) {
-				echo $kk." por ".$vv." apagando agora!<br />";
-				//EM ESPECIMENS
-				$qu = "SELECT * FROM  Especimenes WHERE pessoainfield(AddColIDS,".$kk.")>0 OR ColetorID=".$kk;
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					echo 'especimenes<br />';
-					$nrr = $nrr+$nru;
-				}
-				//IDENTIDADES
-				$qu = "SELECT * FROM  Identidade WHERE  DetbyID=".$kk." OR RefColetor=".$kk." OR RefDetby=".$kk;
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'identidade<br />';
-				}
-
-				//IMAGENS
-				$qu = "SELECT * FROM   Imagens WHERE pessoainfield(AddColIDS,".$kk.")>0";
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'Imagens<br />';
-				}
-				//EXPEDITO
-				$qu = "SELECT * FROM    MetodoExpedito WHERE pessoainfield(PessoasIDs,".$kk.")>0";
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'MetodoExpedito<br />';
-				}
-
-				$qu = "SELECT * FROM  MetodoExpeditoPlantas WHERE pessoainfield(PessoasIDs,".$kk.")>0";
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'MetodoExpeditoPlantas<br />';
-					
-				}
-
-
-				//PLANTAS
-				$qu = "SELECT * FROM  Plantas WHERE pessoainfield(TaggedBy,".$kk.")>0";
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'Plantas<br />';
-				}
-
-				//PROJETOS
-				$qu = "SELECT * FROM Projetos WHERE pessoainfield(Equipe,".$kk.")>0";
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'Projetos<br />';
-				}
-
-
-				//ESPECIALISTAS
-				$qu = "SELECT * FROM Especialistas WHERE Especialista=".$kk;
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'Especialistas<br />';
-				}
-
-				//GRUPOS DE ESPECIES
-				$qu = "SELECT * FROM Tax_SpeciesGroups WHERE PessoaID=".$kk;
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'Tax_SpeciesGroups<br />';
-				}
-
-				//USUARIOS QUE TAMBEM SAO PESSOAS
-				$qu = "SELECT * FROM Users WHERE PessoaID=".$kk;
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'Users<br />';
-				}
-
-				//EQUIPAMENTOS
-				$qu = "SELECT * FROM Equipamentos WHERE PessoaID=".$kk;
-				$ru = @mysql_query($qu,$conn);
-				$nru = @mysql_numrows($ru);
-				if ($nru>0) {
-					$nrr = $nrr+$nru;
-					echo 'Equipamentos<br />';
-				}
-				if ($nrr==0) {
-					CreateorUpdateTableofChanges($kk,'PessoaID','Pessoas',$conn);
-					$qdel = "DELETE FROM Pessoas WHERE PessoaID=".$kk;
-					//echo $qdel."<br />";
-					$rd = mysql_query($qdel,$conn);
-					if ($rd) {
-						echo "pessoa ".$kk." apagada<br />";
-					} else {
-						echo $qdel."<br />";
-					}
-				}
-			}
-		}
-	}
 	//echopre($ppost);
-	unset($idstocheck[0]);
-	$idstocheck = array_values($idstocheck);
+	if ($final<3) {
+		unset($idstocheck[0]);
+		$idstocheck = array_values($idstocheck);
+	}
 }
 $currid = $idstocheck[0];
 $curids = explode(";",$currid);
@@ -251,8 +103,8 @@ echo "
 <input type='hidden'  name='idstocheckser'  value='".serialize($idstocheck)."' >
 <table align='center' cellpadding='7' class='myformtable'>
 <thead>
-<tr><td colspan='2'>".$nc." pessoas parecem ser a mesma</td></tr>
-<tr class='subhead'><td>Nome cadastrado</td><td>Juntar com</td></tr>
+<tr><td colspan='3'>".$nc." pessoas parecem ser a mesma</td></tr>
+<tr class='subhead'><td>Nome cadastrado</td><td colspan=2>Substituir por</td></tr>
 </thead>
 <tbody>";
 if (count($curids)>0) {
@@ -262,28 +114,36 @@ foreach ($curids as $cid) {
 	if ($cid>0) {
 	$q = "SELECT * FROM Pessoas WHERE PessoaID=".$cid;
 	$m = mysql_query($q,$conn);
-	$r = mysql_fetch_assoc($m);
-	$nome = trim($r['Prenome']." ".$r['SegundoNome']);
-	$nome .= " ".$r['Sobrenome'];
-if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else { $bgcolor = $linecolor1 ;} $bgi++;
+	$mn = mysql_numrows($m);
+	if ($mn>0) {
+		$r = mysql_fetch_assoc($m);
+		$nome = trim($r['Prenome']." ".$r['SegundoNome']);
+		$nome .= " ".$r['Sobrenome'];
+	if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else { $bgcolor = $linecolor1 ;} $bgi++;
 echo "
 <tr bgcolor = '".$bgcolor."'><td>".$nome." [".$r['Abreviacao']."] </td>
-<td>
+<td colspan=2>
 <select name=\"mesmoque[".$cid."]\" >
 <option value='' >Selecione o nome válido</option>";
-
 foreach ($curids as $cid2) {
 	$qp = "SELECT * FROM Pessoas WHERE PessoaID=".$cid2;
 	$mp = mysql_query($qp,$conn);
+	$mnp = mysql_numrows($mp);
+	if ($mnp>0) {
 	$rp = mysql_fetch_assoc($mp);
 	$nome = trim($rp['Prenome']." ".$rp['SegundoNome']);
 	echo "
 <option value='".$rp['PessoaID']."' >".$nome." [".$rp['Abreviacao']."]</option>";
+	} 
 }
 echo "
 </select>
 </td></tr>
 ";
+	} else {
+echo "
+<tr bgcolor = '".$bgcolor."'><td>".$cid." [PessoaID não encontrado] </td></tr>";
+	}
 	$ii++;
 	}
 }
@@ -294,12 +154,14 @@ echo "
 <input type='hidden' name='final' value='' />
 <input style='cursor: pointer'  type='submit' value='Não são os mesmos - pular' class='bsubmit' onclick=\"javascript:document.coletaform.final.value='1'\" /></td>
 <td align='center'>
-<input style='cursor: pointer'  type='submit' value='Salvar mudanças indicadas' class='bblue' onclick=\"javascript:document.coletaform.final.value='2'\" /></td>
+<input style='cursor: pointer'  type='button' value='Salvar mudanças indicadas' class='bblue' onclick=\"javascript: myFunction();\" /></td>
+<td>
+<input style='cursor: pointer'  type='submit' value='Refresh' class='bsubmit' onclick=\"javascript:document.coletaform.final.value='3'\" /></td>
 </tr>
 ";
 } else {
 echo "
-<tr><td align='center' colspan='2'>
+<tr><td align='center' colspan='3'>
 <input style='cursor: pointer'  type='button' value='Fechar nada mais encontrado!' class='bsubmit' onclick=\"javascript:window.close();\" /></td>
 </tr>";
 }

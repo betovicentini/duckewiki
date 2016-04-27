@@ -24,6 +24,18 @@ $ppost = $_SESSION['imgpost'];
 @extract($ppost);
 //echopre($_SESSION['imgpost']);
 
+unset($_SESSION['quaisarquivos']);
+
+function limpaimgnome($string) { 
+	$theval = RemoveAcentos($string);
+	$theval = str_replace("(","",$theval);
+	$theval = str_replace(")","",$theval);
+	$theval = str_replace(",","",$theval);
+	$theval = str_replace("  ","",$theval);
+	return($theval);
+}
+
+//echopre($ppost);
 /*DEFINE PASTA TEMPORARIA ONDE SAO ARMAZENADOS OS ARQUIVOS DURANTE A IMPORTACAO (HA REFERENCIA A ESTA PASTA EM imagesupload-doit.php)*/
 $tbn = "uploadDir_". $_SESSION['userid'];
 $dir = "uploads/batch_images/".$tbn;
@@ -75,13 +87,16 @@ $qu = "SELECT * FROM temp_imgimport_".$uuid;
 if ($linkposterior!=1) {
 	$qu .= " WHERE EspecimenID>0 OR PlantaID>0";
 }
+//echo $qu."<br />";
 $rn = mysql_query($qu, $conn);
 $nii = mysql_numrows($rn);
 $counter_plantas =0;
 $counter_specs = 0;
 $counter_nolink = 0;
 $nao_importou = 0;
+$quaisarquivos = array();
 while ($kw = mysql_fetch_assoc($rn)) {
+//echopre($kw);
 //foreach($imgs_nomes as $kimg => $vimg) {
 	$vimg = $kw['FileName'];
 	$inputfile = $dir."/".$vimg;
@@ -103,12 +118,16 @@ while ($kw = mysql_fetch_assoc($rn)) {
 		}
 	}
 	//NAO IMPORTA SE NAO ENCONTROU E APAGA
+	//echo "importa".$importa."<br />";
 	if ($importa==0) {
+		//echo "importa 000:".$importa."<br />";
 		@unlink($inputfile);
 		$nao_importou = $nao_importou+1;
 		$perc = round(($ii/$nii)*100);
 	} 
 	else {
+		//echo "aqui aqui importa:".$importa."<br />";
+		//echo $qq."<br />";
 		//LE INFORMACOES DO ARQUIVO DE IMAGEM
 		$metadata = @read_exif_data($inputfile);
 		$DateTimeOriginal =$metadata['DateTimeOriginal'];
@@ -118,10 +137,13 @@ while ($kw = mysql_fetch_assoc($rn)) {
 		$tt = explode(":",$timeoriginal);
 		$ttsec = (((($tt[0]*60)+$tt[1])*60)+$tt[2]);
 		$dd = str_replace(":","-",$dateoriginal);
-		$dd = new DateTime($dd);
-		$dateoriginal = $dd->format("Y-m-d");
+		//$dd = new DateTime($dd);
+		//$dateoriginal = $dd->format("Y-m-d");
+		//echopre($metadata);
+		//echo $dd."<br />";
+		$dateoriginal = $dd;
 		if (!$dateoriginal) { $dateoriginal = $_SESSION['sessiondate'];}
-		
+
 		
 		//CASO ESTEJA GEOREFERNCIANDO IMAGENS
 		$latitude = '';
@@ -170,7 +192,13 @@ while ($kw = mysql_fetch_assoc($rn)) {
 			}
 
 		//CADASTRA A IMAGEM
-		$newname = $dateoriginal."_".$vimg;
+		$newvimg = limpaimgnome($vimg);
+		$newname = $dateoriginal."_".$newvimg;
+		
+		
+		//echo "nome: ".$newname;
+		//echo "DateTimeOriginal: ".$DateTimeOriginal;
+		
 		$arrayofvalues = array(
 'FileName' => $newname,
 'DateTimeOriginal' => $DateTimeOriginal,
@@ -181,19 +209,24 @@ while ($kw = mysql_fetch_assoc($rn)) {
 'Altitude' => $altitude,
 'GPSMapDatum' => $datum,
 'GPSPointID' => $gpsptid,
-//'Camera' => $camera,
 'Autores' => $addcolvalue,
 'TraitID' => $ppost['traitid']);
+		//echopre($arrayofvalues);
+		//echo "estamos aqui<br />";
+		//echopre($ppost);
 		
 		//verifica se o registro ja existe
 		if ($ppost['traitid']>0) {
-			$qq = "SELECT * FROM Imagens WHERE FileName LIKE '%".$vimg."' AND DateTimeOriginal='".$DateTimeOriginal."' AND TraitID='".$ppost['traitid']."'";
+			$qq = "SELECT * FROM Imagens WHERE FileName LIKE '%".$newvimg."' AND DateTimeOriginal='".$DateTimeOriginal."' AND TraitID='".$ppost['traitid']."'";
 		} 
 		else {
-			$qq = "SELECT * FROM Imagens WHERE FileName LIKE '%".$vimg."' AND DateTimeOriginal='".$DateTimeOriginal."'";
+			$qq = "SELECT * FROM Imagens WHERE FileName LIKE '%".$newvimg."' AND DateTimeOriginal='".$DateTimeOriginal."'";
 		}
 		$resul = mysql_query($qq,$conn);
 		$nresul = mysql_numrows($resul);
+		//echo $qq."<br />";
+		//echopre($arrayofvalues);
+		//echo "nresul".$nresul."<br />";
 		//SE NAO EXISTE A IMAGEM, ENTAO CADASTRA NO BANCO DE DADOS
 		if ($nresul==0) { 
 				$newimg = InsertIntoTable($arrayofvalues,'ImageID','Imagens',$conn);
@@ -201,6 +234,7 @@ while ($kw = mysql_fetch_assoc($rn)) {
 					$erro++;
 				}
 				else {
+					$quaisarquivos[] = $newname;
 					//SE CADASTROU CORRETAMENTE, COPIA O ARQUIVO PARA A PASTA DE IMAGENS
 					$copiado = copy($inputfile,"img/originais/".$newname);
 					//SE ARQUIVO FOI COPIADO
@@ -233,7 +267,7 @@ while ($kw = mysql_fetch_assoc($rn)) {
 						CreateorUpdateTableofChanges($trvarid,'TraitVariationID','Traits_variation',$conn);
 								$newimgvar = UpdateTable($trvarid,$arrayofvalues,'TraitVariationID','Traits_variation',$conn);
 								
-								} elseif ($nrws==0) {
+							} elseif ($nrws==0) {
 										$arrayofvalues = array('TraitVariation' => $newimg, 'TraitID' => $ppost['traitid'], $field  => $iddam);
 										$newimgvar =  InsertIntoTable($arrayofvalues,'TraitVariationID','Traits_variation',$conn);
 								}
@@ -269,10 +303,17 @@ if ($counter_nolink>0) {
 	 $txt .=  "<tr><td>".$counter_nolink." imagens sem relacionamento</td></tr>";
 }
 if ($nao_importou>0) {
-	 $txt .=  "<tr><td>".$nao_importou." imagens NAO foram importadas&nbsp;<input value='VER LOG' type='button' onclick=\"javascript:small_window('imagens-import-batch-log.php?linkposterior=".$ppost['linkposterior']."',400,300,'');\" ></td></tr>";
+	 $txt .=  "<tr><td>".$nao_importou." imagens NAO foram importadas&nbsp;<input style='font-size: 1.2em; padding: 5px; cursor: pointer;' value='VER LOG DO ERRO' type='button' onclick=\"javascript:small_window('imagens-import-batch-log.php?linkposterior=".$ppost['linkposterior']."',400,300,'');\" ></td></tr>";
 }
-echo $txt."</table>";
-$qnu = "UPDATE `temp_imgprogress".$uuid ."` SET percentage=100"; 
+if ($counter_specs>0 || $counter_plantas>0) {
+	 $txt .=  "<tr><td><input style='font-size: 1.2em; padding: 5px; cursor: pointer;' value='GERAR THUMBNAILS' type='button' onclick=\"javascript:small_window('images_checkthumbs.php?arquivos=quaisarquivos',400,300,'');\" ></td></tr>";
+}
+$txt .=  "<tr><td><input style='font-size: 1.2em; padding: 5px; cursor: pointer;' value='Fechar' type='button' onclick=\"javascript:window.close();\" ></td></tr>";
+$txt .= "</table>";
+$_SESSION['quaisarquivos'] = serialize($quaisarquivos);
+$qnu = "UPDATE `temp_imgprogress".$uuid ."` SET percentage=100";
+echo $txt;
 mysql_query($qnu,$conn);
+
 session_write_close();
 ?>

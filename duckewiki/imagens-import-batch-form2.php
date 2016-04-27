@@ -188,7 +188,7 @@ echo "</form>";
 else {
 	//CHECA POR PLANTASIDS SE FOR O CASO
 	if ($erro==0 && !empty($fnpattern_pl) && (!empty($filtro) || $fnpattern_pl==2) && !isset($plantasids)) {
-		echo "estou entrando corretamente??";
+		//echo "estou entrando corretamente??";
 		$imgs_nomes = scandir($dir);
 		unset($imgs_nomes[0]);
 		unset($imgs_nomes[1]);

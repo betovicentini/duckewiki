@@ -175,7 +175,7 @@ if ($traitkind=='Estado' && $tipo!='Variavel|Categoria') {
 $qq= "SELECT * FROM Traits WHERE TraitID='".$traitid."'";
 $res = mysql_query($qq,$conn);
 $rr=mysql_fetch_assoc($res);
-if (!isset($namechecked) && $traitname!=$rr['TraitName']) {
+if (!isset($namechecked) && $traitname!=$rr['TraitName'] && ($traitid+0)==0) {
 		$wordsinname = explode(" ",$traitname);
 		$ferro=0;
 		foreach ($wordsinname as $key => $value) {
@@ -220,17 +220,25 @@ foreach ($wordsinname as $key => $value) {
 			$nr = mysql_numrows($rr);
 			if ($nr>0) {
 				while ($row = mysql_fetch_assoc($rr)) {
-					if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;}$bgi++;
-					echo "
+					 $ostraits[] = $row['TraitID'];
+			    }
+			}
+		}
+}
+$ostraits = array_unique($ostraits);
+$ostraits = array_values($ostraits);
+foreach($ostraits as $value) {
+	$qq = "SELECT * FROM Traits WHERE TraitID=".$value;
+	$rr = mysql_query($qq,$conn);
+	$row = mysql_fetch_assoc($rr);
+	if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;}$bgi++;
+		echo "
   <tr bgcolor = '".$bgcolor."'>
     <td class='tdformnotes'>".$row['PathName']."</td>
     <td class='tdformnotes'><b>".$row['TraitName']."</b></td>
     <td class='tdformnotes'>".$row['TraitDefinicao']."</td>
   </tr>";
-				}
-			}
-		}
-	}
+}
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;}$bgi++;
 echo "
 <form action='traitsregister-exec.php' method='post'>

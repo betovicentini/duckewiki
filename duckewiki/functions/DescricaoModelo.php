@@ -175,9 +175,9 @@ if ($tipo=='Quantitativo') {
 			$media = round(($media/$N),$decimals);
 			if (abs($media)>0) {
 				sort($vals); 
-    	        $min = $vals[0]; 
+    	        $min = round($vals[0],$decimals);
         	    rsort($vals); 
-            	$max = $vals[0]; 
+            	$max = round($vals[0],$decimals);
 				if ($nformat=='media') {
 					if ($outtype=='html') {
 						if ($N>1) {
@@ -209,7 +209,7 @@ if ($tipo=='Quantitativo') {
 if ($tipo=='Categoria') {
 			$thevals = $vals;
 			foreach ($vals as $thekk => $theval) {
-				$thevals[$thekk] = trim($vals[$thekk]);
+				$thevals[$thekk] = trim($theval);
 			}
 		   $unicos = array_count_values($thevals);
 		   foreach($unicos as $ku => $vu) {

@@ -1,7 +1,7 @@
-CREATE FUNCTION removefromfiltrosids(FiltrosIDS varchar(200),filtroidtoremove varchar(100)) RETURNS text CHARSET utf8
+CREATE FUNCTION removefromfiltrosids(FiltrosIDS varchar(200),filtroidtoremove varchar(100)) RETURNS varchar(200) CHARSET utf8
 BEGIN
-DECLARE novofiltrostring TEXT DEFAULT ' ';
-DECLARE colname TEXT DEFAULT '';
+DECLARE novofiltrostring varchar(200) DEFAULT ' ';
+DECLARE colname varchar(200) DEFAULT '';
 DECLARE ncat INT(10) DEFAULT 0;
 DECLARE ncatstep INT(10) DEFAULT 1;
 DECLARE pessid INT(10) DEFAULT 0;

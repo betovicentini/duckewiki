@@ -1,6 +1,6 @@
-CREATE FUNCTION checkpessoas(pessoasfield varchar(100)) RETURNS text CHARSET utf8
+CREATE FUNCTION checkpessoas(pessoasfield varchar(500)) RETURNS varchar(500) CHARSET utf8
 BEGIN
-DECLARE resultado CHAR(255) DEFAULT '';
+DECLARE resultado VARCHAR(500) DEFAULT '';
 DECLARE res CHAR(255) DEFAULT '';
 DECLARE res1 CHAR(255) DEFAULT '';
 DECLARE pess CHAR(255) DEFAULT '';
@@ -20,6 +20,7 @@ WHILE ncatstep <= ncat DO
 SET sobnome = '';
 SELECT (SUBSTRING_INDEX(SUBSTRING_INDEX(pessoasfield,';',ncatstep),';',-1)) INTO pess;
 SELECT TRIM(pess) INTO pess;
+IF ((pess IS NOT NULL) AND pess<>"") THEN
 SELECT COUNT(PessoaID) INTO matchabr FROM Pessoas WHERE UPPER(Abreviacao) LIKE UPPER(pess);
 IF (matchabr=1) THEN
 SELECT PessoaID INTO res FROM Pessoas WHERE UPPER(Abreviacao) LIKE UPPER(pess);
@@ -48,6 +49,7 @@ ELSE
 SET resultado = CONCAT(resultado,';',res);
 END IF;
 SET ncatstep = ncatstep+1;
+END IF;
 END WHILE;
 IF res1='ERRO' THEN
 SET resultado = res1;

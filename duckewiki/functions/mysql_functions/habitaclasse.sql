@@ -1,4 +1,4 @@
-CREATE FUNCTION habitaclasse(habtid int(10)) RETURNS text CHARSET utf8
+CREATE FUNCTION habitaclasse(habtid int(10)) RETURNS VARCHAR(500) CHARSET utf8
 BEGIN
 DECLARE done INT DEFAULT 0;
 DECLARE respar TEXT DEFAULT '';

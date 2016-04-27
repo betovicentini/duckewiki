@@ -12,6 +12,7 @@ require  "fpdf16/PDF_Label.php";
 require_once('fpdf16/php-barcode-2.0.1.php');
 require_once("fpdf16/MultiCellTag/class.multicelltag.php");
 
+//FAZ A CONEXAO COM O BANCO DE DADOS
 $lang = $_SESSION['lang'];
 $dbname = $_SESSION['dbname'];
 $conn = ConectaDB($dbname);
@@ -65,20 +66,38 @@ $conn_latin1 = ConectaDB($dbname);
 		$prjurl = $rw['prjurl'];
 		$ndups = $rw['ndups'];
 		$tagnum = $rw['tagnum'];
+		$dapmm = round($rw['DAPmm'],1);
+		$altmet = round($rw['ALTURAm'],1);
 
 
 		if ($descricao==".") {
 			$descricao='';
 		}
+		//if ($altmet>0) {
+		//	$descricao =  $altmet." metros de altura. ".$descricao;
+		//}
+		//if ($dapmm>0) {
+		//	$descricao = "DAP de ".$dapmm." mm. ".$descricao;
+		//}
 		if (!empty($vernacular)) {
 			$descricao = $descricao." <i>Vernacular</i>: ".$vernacular.".";
 		}
 		if (!empty($herbarios)) {
-			$descricao = $descricao." <i>Depositado em</i>: ".$herbarios.".";
+			$herbarios = str_replace(";",",",$herbarios);
+			$herbarios = str_replace(" ","",$herbarios);
+			$herb = explode(",",$herbarios);
+			$herbarios = implode(", ",$herb);
+			//$descricao = $descricao." <i>Depositado em</i>: ".$herbarios.".";
 		}
 		if (!empty($tagnum)) {
 			$descricao = $descricao." <b>Planta marcada no. ".$tagnum."</b>.";
 		}
+		//ENTAO É UMA UNICATA
+		if ($ndups==1) {
+			$descricao = $descricao." <b>UNICATA</b>.";
+		}
+		
+		
 		$descricao = trim($descricao);
 		$nd = 1;
 		while($nd<=$ndups) {
@@ -125,7 +144,7 @@ $conn_latin1 = ConectaDB($dbname);
 			$pdf->WriteHTML($vartxt,$ln);
 			$pdf->SetFont('Arial','',10);
 			$pdf->Ln(4);
-			$vartxt2 = "Manaus-Amazonas-Brazil";
+			$vartxt2 = "Manaus-Amazonas-Brasil";
 			$pdf->WriteHTML($vartxt2,$ln);
 			$pdf->Ln(5);
 			$pdf->SetLeftMargin($leftmar);
@@ -244,7 +263,7 @@ $conn_latin1 = ConectaDB($dbname);
 //ob_end_clean();
 $filename = "temp_".substr(session_id(),0,10)."_label.pdf";
 
-@unlink("temp/".$filename);
+unlink("temp/".$filename);
 $pdf->Output("temp/".$filename,'F');
 //$pdf->Output();
 
@@ -256,34 +275,34 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
 $title = 'Listar espécies';
 $body = '';
-//FazHeader($title,$body,$which_css,$which_java,$menu);
+FazHeader($title,$body,$which_css,$which_java,$menu);
 
 ////echo memory_get_usage()."memory inicio";
 $qq = "DROP TABLE $temptable";
 @mysql_query($qq,$conn_latin1);
 
 $zz = explode("/",$_SERVER['SCRIPT_NAME']);
-$href = curPageURL()."/".$zz[1]."/temp/".$filename;
-//echo "
-//<table align='left'  cellpadding='7'>
-//<tr>
-//<td><a  href='".$href."'><img src='icons/pdf_icon.jpg' height='30' onclick='javascript:this.window.close()'></a></td>
-//<td valign='middle'><a  href='".$href."'>Etiquetas da amostra</a></td>
-//</tr>
-//</table>";
-header("location: ".$href);
+//$href = curPageURL()."/".$zz[1]."/temp/".$filename;
+//echopre($zz);
+$href = "temp/".$filename;
+//echo $href."</br >";
+$href = str_replace("http://","",$href);
+//echo $href."</br >";
+echo "
+<table align='left'  cellpadding='7'>
+<tr>
+<td><a  href='".$href."'><img src='icons/pdf_icon.jpg' height='30' onclick='javascript:this.window.close()'></a></td>
+<td valign='middle'><a  href='".$href."'>Etiquetas da amostra</a></td>
+</tr>
+</table>";
+//header("location: ".$href);
 $which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
-//FazFooter($which_java,$calendar=FALSE,$footer=$menu);
+FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ini_set("allow_url_fopen", 0);
 

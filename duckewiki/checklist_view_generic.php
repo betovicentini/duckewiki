@@ -33,8 +33,27 @@ if (count($ppost)==0 && count($gget)==0 && isset($_SESSION['arrofpass'])) {
 	@extract($aarr);
 	//echopre($aarr);
 }
-//echopre($ppost);
-//echopre($gget);
+$exportdata = 0;
+if (($uuid+0)==0) {
+	if ($listsarepublic['speciesdownload'] == 'on' && $tbname='checklist_all' ) {
+		  $exportdata = 1;
+	} 
+	if ($listsarepublic['especimenesdownload'] == 'on' && $tbname='checklist_speclist' ) {
+		$exportdata = 1;
+	} 
+	if ($listsarepublic['plantasdownload'] == 'on' && $tbname='checklist_pllist' ) {
+	  $exportdata = 1;
+	} 
+	if ($listsarepublic['plots'] == 'on' && $tbname='checklist_plots' ) {
+		$plots=1;
+	}
+} 
+else {
+	if ($acclevel!='visitor') {
+		$exportdata = 1;
+	}
+}
+//echo $exportdata."<br />";
 //echopre($_SESSION);
 //CABECALHO
 $title = 'Mostrando dados para a tabela '.$tbname;
@@ -169,7 +188,7 @@ if ($nrecs<50) {
 }
 echo"
 <table>";
-if (($uuid>0 || count($listsarepublic)>0 || ($acclevel!='visitor' && $tbname=='checklist_plots'))  && !empty($exportcols) ) {
+if ($uuid>0 && $exportdata>0 && !empty($exportcols) ) {
 	echo "
 <tr>
   <td align='left'>
@@ -192,7 +211,7 @@ echo "
 <tr>
 <td ><div id=\"pagingArea\"></div></td>
 </tr>";
-if (($uuid>0 || count($listsarepublic)>0)  && !empty($exportcols)) {
+if ($uuid>0 && $exportdata>0  && !empty($exportcols) ) {
 	echo "
 <tr>
   <td align='left'>

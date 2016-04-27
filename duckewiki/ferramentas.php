@@ -77,10 +77,11 @@ echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_roxo\" onclick = \"javascript:small_window('herbarios-form.php?ispopup=1',600,300,'Registra Herbário');\">Registra o(s) herbário(s) de depósito para especímenes</a>";
 echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_cinza\" onclick = \"javascript:small_window('especimenes_duplicados.php?ispopup=1',900,550,'Checa por especímenes duplicados');\">Especímenes duplicados - checar e corrigir</a>";
+echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_cinza\" onclick = \"javascript:small_window('pessoas-duplicadas.php?ispopup=1',900,550,'Checa por especímenes duplicados');\">Pessoas duplicadas - checar e corrigir</a>";
+echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_cinza\" onclick = \"javascript:small_window('pessoas-duplicadas2.php?ispopup=1',900,550,'Pessoas dups2');\">Pessoas duplicadas 2</a>";
 echo "</div>";
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

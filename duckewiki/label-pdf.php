@@ -29,9 +29,8 @@ if(!isset($uuid) ||
 
 //////PEGA E LIMPA VARIAVEIS
 $ppost = cleangetpost($_POST,$conn);
-@extract($ppost);
 $arval = $ppost;
-
+@extract($ppost);
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
@@ -145,7 +144,7 @@ if ($spec_label==1) {
 			$herbarios = str_replace(" ","",$herbarios);
 			$herb = explode(",",$herbarios);
 			$herbarios = implode(", ",$herb);
-			$descricao = $descricao." <i>Depositado em</i>: ".$herbarios.".";
+			//$descricao = $descricao." <i>Depositado em</i>: ".$herbarios.".";
 		}
 		if (!empty($tagnum)) {
 			$descricao = $descricao." <b>Planta marcada no. ".$tagnum."</b>.";
@@ -206,7 +205,7 @@ if ($spec_label==1) {
 		$pdf->WriteHTML($vartxt,$ln);
 		$pdf->SetFont('Arial','',10);
 		$pdf->Ln(4);
-		$vartxt2 = "Manaus-Amazonas-Brazil";
+		$vartxt2 = "Manaus-Amazonas-Brasil";
 		$pdf->WriteHTML($vartxt2,$ln);
 		$pdf->Ln(5);
 		$pdf->SetLeftMargin($leftmar);
@@ -239,7 +238,6 @@ if ($spec_label==1) {
 		$pdf->WriteHTML($locality,$ln);
 			$lenhab = strlen($habitat);
 			$lendesc = strlen($descricao);
-
 			$lenboth = $lenhab+$lendesc;
 			$habitat = trim($habitat);
 			if (!empty($habitat) && $habitat!=".") {

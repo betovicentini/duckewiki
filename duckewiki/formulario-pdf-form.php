@@ -28,20 +28,10 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Imprimir Formulário';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -51,14 +41,14 @@ echo "
 <table class='myformtable' align='center' cellpadding=\"5\">
 <thead>
 <tr >
-<td colspan='100%'>".GetLangVar('nameimprimir')." ".GetLangVar('nameformulario')."</td>
+<td >".GetLangVar('nameimprimir')." ".GetLangVar('nameformulario')."</td>
 </tr>
 </thead>
 <tbody>
 <form method='post' name='finalform' action='formulario-pdf-exec.php'>
-<input type='hidden' name='ispopup' value='".$ispopup."' />
+<input type='hidden' name='ispopup' value='1' />
 <tr class='tabsubhead'>
-  <td colspan='100%'>
+  <td >
     <table>
       <tr>
         <td class='tdsmallbold'>".GetLangVar('nameformulario')."</td>
@@ -75,7 +65,11 @@ echo "
             <option>".GetLangVar('nameselect')."</option>";
 		}
 	//formularios usuario
-	$qq = "SELECT * FROM Formularios WHERE AddedBy=".$_SESSION['userid']." OR Shared=1 ORDER BY FormName,Formularios.AddedDate ASC";
+	if ($acclevel=='admin') {
+	$qq = "SELECT * FROM Formularios ORDER BY FormName,Formularios.AddedDate ASC";
+	} else {
+	$qq = "SELECT * FROM Formularios WHERE AddedBy=".$_SESSION['userid']." OR Shared=1 ORDER BY FormName,Formularios.AddedDate ASC";	
+	}
 	$rr = mysql_query($qq,$conn);
 	while ($row= mysql_fetch_assoc($rr)) {
 		echo "
@@ -91,8 +85,7 @@ echo "
 </form>
 </tbody>
 </table>";
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

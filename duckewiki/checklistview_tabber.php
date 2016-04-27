@@ -221,9 +221,9 @@ function marcarfiltrados(excluir, gridobject, tablename,usertbname) {
          }, 0);
          }
 }
-function amostrasilica(especid) {
+function amostrasilica(especid, pltid) {
          setTimeout(function(){ 
-            var loader = dhtmlxAjax.postSync(\"amostrasilica.php\", encodeURI('especimenid='+especid+'&uuid=".$uuid."&hoje=".$today."'));
+            var loader = dhtmlxAjax.postSync(\"amostrasilica.php\", encodeURI('especimenid='+especid+'&plantaid='+pltid+'&uuid=".$uuid."&hoje=".$today."'));
             var res = loader.xmlDoc.responseText;
             alert(res);
          }, 0);

@@ -74,7 +74,7 @@ echo "
             <option selected value=''>".GetLangVar('nameselect')."</option>
             <option  value='criar'>----------Criar novo----------</option>";
             if ($acclevel !='admin') {
-            	$qw = ' WHERE AddedBy='.$uuid;
+            	//$qw = ' WHERE AddedBy='.$uuid;
             } 
             $qq = "SELECT * FROM Monografias ".$qw." ORDER BY Titulo";
 			$res = @mysql_query($qq,$conn);

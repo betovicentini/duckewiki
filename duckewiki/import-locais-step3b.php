@@ -29,6 +29,10 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+
+//echopre($ppost);
+//echopre($gget);
+
 //CABECALHO
 $ispopup=1;
 if ($ispopup==1) {
@@ -60,18 +64,20 @@ if (!empty($municipio) && !empty($provincia) && !isset($municipiosdone))
 			$colcol = $municipio;
 			$clnl3 = $tbprefix."MunicipioID";
 			if (!isset($municipiodone)) {
-				$qq = "ALTER TABLE ".$tbname." ADD COLUMN ".$clnl3." INT(10) 	DEFAULT 0";
+				$qq = "ALTER TABLE ".$tbname." ADD COLUMN ".$clnl3." INT(10) DEFAULT 0";
 				@mysql_query($qq,$conn);
 				$qq = "UPDATE ".$tbname." as tb, Municipio as pl set tb.".$clnl3."=pl.MunicipioID where LOWER(TRIM(tb.".$colcol."))=LOWER(pl.Municipio) AND pl.ProvinceID=tb.".$clnl2;
 				mysql_query($qq,$conn);
 			} else {
 				if (count($municipioid)>0) {
 					foreach ($municipioid as $kk => $vv) {
+						$kkk = explode("_",$kk);
+						$kkk = $kkk[0];
 						$vvv = explode("_",$vv);
 						$v1 = $vvv[0]+0;
 						$v2 = $vvv[1]+0;
 						if ($v1>0) {
-							$qq = "UPDATE `".$tbname."` SET `".$clnl3."`= '".$v1."' WHERE `".$colcol."`='".$kk."' AND `".$clnl2."`='".$v2."'";
+							$qq = "UPDATE `".$tbname."` SET `".$clnl3."`= '".$v1."' WHERE `".$colcol."`='".$kkk."' AND `".$clnl2."`='".$v2."'";
 							echo $qq."<br />";
 							mysql_query($qq,$conn);
 							flush();
@@ -107,7 +113,9 @@ if (!empty($municipio) && !empty($provincia) && !isset($municipiosdone))
 					}
 					echo "
         <input type='hidden' name='municipiodone' value='1' />";
+        			$idd=0;
 					while ($rw = mysql_fetch_assoc($rr)) {
+						$idd++;
 						$gen = strtolower(trim($rw['missgen']));
 						$gggen = explode(" ",$gen);
 						$ggen = implode("-",$gggen);
@@ -143,7 +151,7 @@ if (!empty($municipio) && !empty($provincia) && !isset($municipiosdone))
         <tr>
           <td>".$lab."</td>
           <td>
-          <select id=\"municipioid_".$ggen."\" name=\"municipioid[".$gk."]\">
+          <select id=\"municipioid_".$ggen.$idd."\" name=\"municipioid[".$gk."_".$idd."]\">
             <option value=''>".GetLangVar('nameselect')."</option>";
 								$res = mysql_query($qq,$conn);
 								$nres = mysql_numrows($res);
@@ -160,7 +168,7 @@ if (!empty($municipio) && !empty($provincia) && !isset($municipiosdone))
           </td>
           <td align='center'>
             <img src='icons/list-add.png' height=15 ";
-								$myurl ="municipio-popup.php?municipioid_val=municipioid_".$ggen."&provinceid=".$coutid."&nome=".$gk; 
+								$myurl ="municipio-popup.php?municipioid_val=municipioid_".$ggen.$idd."&provinceid=".$coutid."&nome=".$gk; 
 								echo " onclick = \"javascript:small_window('$myurl',500,350,'Novo Pais');\"></td></tr>";
 
 				}
@@ -184,8 +192,11 @@ echo "
           <input type='hidden' name='".$kk."' value='".$vv."' />"; 
 		}
 	}
-echo "<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
+echo "
+<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
   </form>";
+//            <input style='cursor: pointer'  type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit'  />
+
 }
 
 $which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>"

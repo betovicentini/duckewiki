@@ -90,6 +90,13 @@ function fecharwin() {
  document.body.appendChild(el);
 }
      function marcarfiltrados(excluir) {
+       var tot = mygrid.getRowsNum();
+         var tt = mygrid.getAllItemIds();
+         var ttt = tt.split(',');
+         var lentt = ttt.length;         
+         if (lentt<tot) {
+            alert('Precisa navegar pelas páginas do grid para carregar os '+tot+' registros. Por enquanto apenas ' + lentt + ' registros foram carregados');
+         } else {
          var conta = 0;
          var tot = mygrid.getRowsNum();
          var divbar = document.getElementById('pgbar');
@@ -129,6 +136,7 @@ function fecharwin() {
         res = txt + '  '+ res;
         alert(res);
          }, 0);
+         }
     }
     function desmarcartodos(gridobject) {
          var tot = gridobject.getRowsNum();

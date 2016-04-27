@@ -29,15 +29,9 @@ $gget = cleangetpost($_GET,$conn);
 
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-//"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
-//"<link rel='stylesheet' href='javascript/magiczoomplus/magiczoomplus/magiczoomplus.css' type='text/css' media='screen' />"
 "<link rel=\"stylesheet\" href=\"javascript/jqzoom_ev-2.3/css/jquery.jqzoom.css\" type=\"text/css\">",
 "<style type=\"text/css\">
 a img,:link img,:visited img { border: none; }
@@ -139,6 +133,7 @@ if ($detid>0 || $sampleid>0) {
       0 as EspecimenID,
       pltb.PlantaID,
       trv.TraitVariation,
+      trv.TraitID,
       trids.TraitName
       FROM Plantas as pltb
       LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
@@ -164,6 +159,7 @@ if ($detid>0 || $sampleid>0) {
       pltb.EspecimenID,
       pltb.PlantaID,
       trv.TraitVariation,
+      trv.TraitID,
       trids.TraitName
       FROM Especimenes as pltb
       LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
@@ -177,7 +173,7 @@ if ($detid>0 || $sampleid>0) {
       ".$qindet2." AND trids.TraitTipo LIKE '%Image%')";
     }
     $qq .= ") AS mytable ".$qorder;
-	//echo $qq."<br >";
+	//echo "<span style='color: red; font-size: 2em;'>".$qq."</span><br >";
 	$res = mysql_query($qq,$conn);
 	$txt = '';
 	$i=0;
@@ -205,7 +201,8 @@ while ($rsw = mysql_fetch_assoc($res)) {
 	$pltid = $rsw['PlantaID'];
 	$currdetid = $rsw['DetID'];
 	$simplenome = $rsw['NOME'];
-	if ($specid>0) {
+	$otraitid = $rsw['TraitID'];
+	if ($specimenid>0) {
 		$oidtxt = "<span style='font-size: 0.8em; color: yellow;' >".$simplenome."</span><br/><a style='font-size: 0.8em; color: #99FFFF; cursor: pointer;' onclick=\"javascript:small_window('".$url."/showspecimen.php?especimenid=".$specimenid."',400,500,'Mostrar Notas Espécimen');\" onmouseover=\"Tip('Mostrar Notas da Amostra ".$oiden."');\" ><u>".$oiden."</u></a>
 		";
 		$specref = "especimenid=".$specimenid;
@@ -238,7 +235,9 @@ else {
 			elseif ($famid>0) {
 				$tt2 = $fams;
 			} else {
-				$tt2 = '';
+				if ($specimenid>0 || $pltid>0) {
+					$tt2 =  $onome." [".$fams."]";
+				}
 			}
 		}
 	}
@@ -283,7 +282,8 @@ Imagens para ".$tt2."</td></tr>
 		//}
 		if ($menushow) {
 		$imgnota = "<img src=\"icons/nota-icon.png\" ".$iconheight." style=\"".$stilo."\" onclick = \"javascript:small_window('".$url."/image_measure.php?".$specref."&imgid=".$vimg."',1000,600,'Extraindo dados de imagens');\" onmouseover=\"Tip('Para coletar dados das imagens');\" />";
-		$menu = "&nbsp;".$detimg."&nbsp;".$imgnota;
+		$imgerros = "<img src=\"icons/imagechange.png\" ".$iconheight." style=\"".$stilo."\" onclick = \"javascript:small_window('".$url."/image_change.php?".$specref."&imgid=".$vimg."&otraitid=".$otraitid."',1000,500,'A imagem não é dessa espécie');\" onmouseover=\"Tip('Clicar se a imagem não for dessa espécie ou da amostra ".$oiden."');\" />";
+		$menu = "&nbsp;".$detimg."&nbsp;".$imgnota."&nbsp;".$imgerros;
 		} else {
 		$menu='';
 		}

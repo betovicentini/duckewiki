@@ -28,28 +28,22 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
 
 //UPDATE USER TABLE
 $qq = "ALTER TABLE `Users`  ADD `Email` CHAR(150) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL AFTER `PessoaID`";
 @mysql_query($qq,$conn);
 
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Usuário';
 $body = '';
+$menu = FALSE;
 FazHeader($title,$body,$which_css,$which_java,$menu);
+
+$qq = "ALTER TABLE `Users`  ADD `Valid` TINYINT(1) NOT NULL DEFAULT '1' AFTER `Email`";
+$res = @mysql_query($qq,$conn);
+
 
 echo "
 <table align='center' class='myformtable' cellpadding='7'>";
@@ -108,6 +102,7 @@ if ($submitted=='editando') {
 	$segnome = $ww['Segundonome'];
 	$sobrenome = $ww['LastName'];
 	$login = $ww['Login'];
+	$valid = $ww['Valid'];
 	//$senha = $ww['Passwd'];
 	$acessonivel = $ww['AccessLevel'];
 	$email = $ww['Email'];
@@ -183,6 +178,19 @@ echo "
       <tr bgcolor = '".$bgcolor."'>
         <td class='tdsmallbold' align='right'>".GetLangVar('nameemail')."</td>
         <td class='tdformleft' colspan='2'><input type='text' name='email' size='60' value='".$email."' /></td>
+      </tr>
+";
+if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
+echo "
+      <tr bgcolor = '".$bgcolor."'>
+        <td class='tdsmallbold' align='right'>Válido</td>";
+        if ($valid==1) {
+        	$txt  = 'checked';
+        } else {
+        	$txt = '';
+        }
+        echo "
+        <td class='tdformleft' colspan='2'><input type='checkbox'  name='valid' size='60' ".$txt." value='1' /></td>
       </tr>
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else{$bgcolor = $linecolor1 ;} $bgi++; 

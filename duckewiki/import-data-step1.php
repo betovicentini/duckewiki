@@ -178,7 +178,7 @@ echo "
 				}
 				$rii = mysql_query($spinsert,$conn);
 				if (!$rii) {
-					echo $spinsert."<br />";
+					//echo $spinsert."<br />";
 				}
 			}
 			$i++;

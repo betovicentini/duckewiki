@@ -28,21 +28,9 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
-$which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+$menu = FALSE;
+$which_css = array("<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Checar/Gerar Imagens por Arquivos de Baixa Resolução';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -55,6 +43,12 @@ $path = "img/originais/";
 $pthumb = "img/thumbnails/";
 $imgbres = "img/copias_baixa_resolucao/";
 $lowres = "img/lowres/";
+
+if (isset($arquivos)) {
+	$_SESSION['newfilestothumb'] = $_SESSION[$arquivos];
+	$imgdone= 'returnvar';
+}
+
 if (!isset($imgdone)) {
 	unset($_SESSION['newfilestothumb']);
 	//check if files have all needed sizes exists

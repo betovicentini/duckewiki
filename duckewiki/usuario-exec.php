@@ -28,30 +28,27 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
 );
-$title = 'Listar espécies';
+$title = 'Cadastro Usuários';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
 //echo "aqui".$_SESSION['editando'];
+//echopre($ppost);
 $nome = trim($nome);
 $nome = ucfirst(strtolower($nome));
 $sn = trim($ppost['sobrenome']);
 $sobrenome = ucfirst(strtolower($sn));
 $login = trim($ppost['login']);
+
+if (!isset($valid) || empty($valid)) {
+	$valid = 0;
+}
+
 
 if (empty($nome) || empty($sobrenome) || empty($login) || (empty($senha) && $_SESSION['editando']!=1)) {
 		echo "
@@ -96,6 +93,7 @@ if (empty($nome) || empty($sobrenome) || empty($login) || (empty($senha) && $_SE
 				'LastName' => $sobrenome,
 				'Login' => $login,
 				'AccessLevel' => $acessonivel,
+				'Valid'  => $valid,
 				'Email' => $email);
 		} else {
 			$senha = md5($senha);
@@ -105,9 +103,11 @@ if (empty($nome) || empty($sobrenome) || empty($login) || (empty($senha) && $_SE
 				'Login' => $login,
 				'Passwd' => $senha,
 				'AccessLevel' => $acessonivel,
+				'Valid'  => $valid,
 				'Email' => $email
 				);
 		}
+		//echopre($arrayofvalues);
 		if ($_SESSION['editando']) {
 				//compara valores antigos
 				$changed = CompareOldWithNewValues('Users','UserID',$usuarioid,$arrayofvalues,$conn);
@@ -118,11 +118,14 @@ if (empty($nome) || empty($sobrenome) || empty($login) || (empty($senha) && $_SE
 					if (!$updatespecid) {
 						$erro++;
 					} else {
-						echo "<p class='success'>".GetLangVar('sucesso4')."</p>";
+						echo "<p class='success' style='width: 50%;'>".GetLangVar('sucesso4')."</p>";
 						unset($_SESSION['editando']);
+						echo "<form action=usuario-form.php method='post' ><input type='submit' class='bblue' value='Outro usuário' /></form>";
 					}
 				} else { //nao mudou nada
 					unset($_SESSION['editando']);
+					echo "<p class='erro' style='width: 50%;'>Não mudou nada</p>";
+					echo "<form action=usuario-form.php method='post' ><input type='submit' class='bblue' value='Outro usuário' /></form>";
 				}
 		} else { //se novo
 			$newspec = InsertIntoTable($arrayofvalues,'UserID','Users',$conn);
@@ -134,14 +137,15 @@ if (empty($nome) || empty($sobrenome) || empty($login) || (empty($senha) && $_SE
 				";
 				$erro++;
 			} else {
-				echo "<p class='success'>".GetLangVar('sucesso1')."</p>";
+				echo "<p width='50%' class='success'>".GetLangVar('sucesso1')."</p>";
 				unset($_SESSION['editando']);
+				echo "<form action=usuario-form.php method='post' ><input type='submit' class='bblue' value='Outro usuário' /></form>";
 			}
 		}
 	}
 } 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
 "<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 

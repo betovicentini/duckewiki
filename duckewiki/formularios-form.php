@@ -28,11 +28,7 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />"
 );
@@ -73,7 +69,11 @@ echo "
             <option value=''>".GetLangVar('nameselect')."</option>";
 	}
 	//formularios usuario
+		if ($acclevel=='admin') {
+	$qq = "SELECT * FROM Formularios ORDER BY Formularios.FormName ASC";
+	} else {
 	$qq = "SELECT * FROM Formularios WHERE AddedBy=".$_SESSION['userid']." OR Shared=1 ORDER BY Formularios.FormName ASC";
+	}
 	$rr = mysql_query($qq,$conn);
 	while ($row= mysql_fetch_assoc($rr)) {
 		echo "

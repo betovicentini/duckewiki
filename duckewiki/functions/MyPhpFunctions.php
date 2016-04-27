@@ -33,7 +33,7 @@ onmouseover=\"Tip('Editar ou cadastrar Taxonomia');\" onclick = \"javascript:sma
 'buscas' => "<img src=\"icons/search.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Criar um filtro para uma busca específica');\" onclick = \"javascript:small_window('filtros-form.php?ispopup=1',800,500,'Filtro');\" />",
 'filtros' => "<img src=\"icons/search_plus_blue.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Ferramentas de Filtro');\" onclick = \"javascript:small_window('filtros-tools.php?ispopup=1',450,400,'Ferramentas de Filtro');\" />",
 'exportar' => "<img src=\"icons/download.png\" ".$hgt." style=\"".$stilo."\"   onmouseover=\"Tip('Exportar e baixar dados');\" onclick = \"javascript:small_window('export_menu.php?ispopup=1',400,400,'Exportar e baixar dados');\" />",
-'importar' => "<img src=\"icons/import.png\" ".$hgt." style=\"".$stilo."\"  onclick = \"javascript:small_window('importar_menu.php?ispopup=1',500,300,'Importar');\" onmouseover=\"Tip('Importar Dados');\"/>",
+'importar' => "<img src=\"icons/import.png\" ".$hgt." style=\"".$stilo."\"  onclick = \"javascript:small_window('importar_menu.php?ispopup=1',500,600,'Importar');\" onmouseover=\"Tip('Importar Dados');\"/>",
 'imprimir' => "<img src=\"icons/document-print.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Imprime em PDF');\" onclick = \"javascript:small_window('print_menu.php?ispopup=1',400,400,'Imprime em PDF');\" />",
 'admim' => "<img src=\"icons/admin.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Ferramentas Administrativas');\" onclick = \"javascript:small_window('administrative_tools.php?ispopup=1',650,500,'Ferramentas Administrativas');\" />",
 'teste' => "<img src=\"icons/workingscript.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Roda o script em StripTeste.php');\" onclick = \"javascript:small_window('ScriptTeste.php?ispopup=0',700,600,'Roda o script em StripTeste.php');\" />",
@@ -57,6 +57,8 @@ foreach ($quais as $vv) {
 	$toprint .= $separador.$tp;
 }
 $toprint .= "</div><br /><br />";
+$atencao = "</br><span style='padding: 8px; line-height: 150%; background-color: yellow; font-size: 1em;  color: 'red';' ><b>ATENÇÃO</b>: Apenas para consulta!!! Edições de dados não serão validadas e serão apagadas! Edições apenas no localhost no momento! Não modifique, crie ou importe dados. Tudo será apagado! A base do PDBFF  está offline. Esta versão está sendo usada como TESTDRIVE para a melhoria do sistema!</span></br>";
+//$toprint .= $atencao;
 }
 
 } 
@@ -83,17 +85,16 @@ function formatgaznome($nome) {
 				$vv = trim($vv);
 				if (!empty($vv)) {
 					$nstr = strlen($vv);
-					if ($nstr>3 || $i==0 || preg_match('/[0-9]+/', $vv)) {
+					if ($nstr>3 || $i==0) {
 							$vv = ucfirst($vv);
 					}
 					$res[] = $vv;
-				$i++;
+				$ii++;
 				}
 		}
 		$res = implode(" ",$res);
 		return($res);
 }
-
 
 function gettaxatxt($nomeid,$conn) {
 	$nn = explode("_",$nomeid);
@@ -3502,12 +3503,16 @@ function CompareOldWithNewValues($tablename,$idcol,$id,$arrayofvalues,$conn) {
 	foreach ($arrayofvalues as $key => $val) {
 		$oldval = trim($row[$key]);
 		if (!empty($oldval)) {
-			$VV = $val;
+			$VV = trim($val);
 		} else {
 			$VV = trim($val);
 		}
+		if (empty($VV) && !$VV==0) {
+			unset($VV);
+		}
 		//echo $key."\tOld".$oldval."\tNew".$val."<br>";
-		if ($oldval!=$VV && (!empty($VV) || $VV>0)) {
+		// && (!empty($VV) || $VV>0)
+		if ($oldval!=$VV || !isset($VV)) {
 			$changed++;
 		}
 	}
@@ -3878,24 +3883,6 @@ function gettaxaids($nomeid,$conn) {
 	$infraspid = $row['InfraEspecieID'];
 	$results = array($famid,$genusid,$speciesid,$infraspid);
 	return $results;
-}
-
-function reversetaxaid($famid,$genid,$specid,$infraspecid) {
-	$res = '';
-	if ($infraspecid>0) {
-		$res = 'infspid_'.$infraspecid;
-	} else {
-		if ($specid>0) {
-			$res = 'speciesid_'.$specid;
-		} else {
-			if ($genid>0) {
-				$res = 'genusid_'.$genid;
-			} else {
-				if ($famid>0) { $res = 'famid_'.$famid; }
-			}
-		}
-	}
-	return $res;
 }
 
 function TaxonomySimple($all=true,$conn) {
@@ -5297,19 +5284,21 @@ return preg_replace(array_keys($a), array_values($a), $Msg);
 }
 
 function strtloweracentos($Msg) {
-$Msg = strtolower($Msg);
-$arupper = array('/Â/', '/À/', '/Á/', '/Ä/', '/Ã/', '/Ê/', '/È/', '/É/', '/Ë/', '/Î/', '/I/', '/I/', '/I/', '/Ô/', '/Õ/', '/Ò/', '/Ó/', '/Ö/', '/Û/', '/Ù/', '/Ú/', '/Ü/', '/Ç/','Ñ');
-$arlower = array('â', 'à', 'á', 'ä','ã', 'ê', 'è', 'é', 'ë', 'î', 'í', 'ì', 'ï', 'ô', 'õ', 'ò', 'ó', 'ö', 'û',  'ù', 'ú','ü', 'ç','/ñ/');
+$arupper = array('/Â/', '/À/', '/Á/', '/Ä/', '/Ã/', '/Ê/', '/È/', '/É/', '/Ë/', '/Î/', '/I/', '/I/', '/I/', '/Ô/', '/Õ/', '/Ò/', '/Ó/', '/Ö/', '/Û/', '/Ù/', '/Ú/', '/Ü/', '/Ç/','/Ñ/');
+$arlower = array('â', 'à', 'á', 'ä','ã', 'ê', 'è', 'é', 'ë', 'î', 'í', 'ì', 'ï', 'ô', 'õ', 'ò', 'ó', 'ö', 'û',  'ù', 'ú','ü', 'ç','ñ');
 $a = array_combine($arupper,$arlower);
-return preg_replace(array_keys($a), array_values($a), $Msg);
+$mmm = preg_replace(array_keys($a), array_values($a), $Msg);
+$mmm = strtolower($mmm);
+return($mmm);
 }
 
 function strtupperacentos($Msg) {
-$Msg = strtoupper($Msg);
 $arupper = array('Â', 'À', 'Á', 'Ä', 'Ã', 'Ê', 'È', 'É', 'Ë', 'Î', 'I', 'I', 'I', 'Ô', 'Õ', 'Ò', 'Ó', 'Ö', 'Û', 'Ù', 'Ú', 'Ü', 'Ç','Ñ');
 $arlower = array('/â/', '/à/', '/á/', '/ä/','/ã/', '/ê/', '/è/', '/é/', '/ë/', '/î/', '/í/', '/ì/', '/ï/', '/ô/', '/õ/', '/ò/', '/ó/', '/ö/', '/û/',  '/ù/', '/ú/','/ü/', '/ç/','/ñ/');
 $a = array_combine($arlower,$arupper);
-return preg_replace(array_keys($a), array_values($a), $Msg);
+$mmm = preg_replace(array_keys($a), array_values($a), $Msg);
+$mmm = strtoupper($mmm);
+return($mmm);
 }
 
 
@@ -8770,28 +8759,28 @@ function cleanQuery($string, $conn)
 function cleangetpost($array,$conn) {
 	$cleanedarr = array();
 	foreach ($array as $kk => $vv) {
-		$kk = cleanQuery($kk,$conn);
+		$kk = @cleanQuery($kk,$conn);
 		if (!is_array($vv)) {
-			$vv = cleanQuery($vv,$conn);
+			$vv = @cleanQuery($vv,$conn);
 		} 
 		else {
 			$runarr = array();
 			foreach ($vv as $kkk => $vvv) {
-				$kkk = cleanQuery($kkk,$conn);
+				$kkk = @cleanQuery($kkk,$conn);
 				if (!is_array($vvv)) {
-					$vvv = cleanQuery($vvv,$conn);
+					$vvv = @cleanQuery($vvv,$conn);
 				} else {
 					$runarr2 = array();
 					foreach ($vvv as $kk2 => $vv2) {
-						$kk2 = cleanQuery($kk2,$conn);
+						$kk2 = @cleanQuery($kk2,$conn);
 						if (!is_array($vv2)) {
-							$vv2 = cleanQuery($vv2,$conn);
+							$vv2 = @cleanQuery($vv2,$conn);
 						} else {
 							$runarr3 = array();
 							foreach ($vv2 as $kk3 => $vv3) {
-								$kk3 = cleanQuery($kk3,$conn);
+								$kk3 = @cleanQuery($kk3,$conn);
 								if (!is_array($vv3)) {
-									$vv3 = cleanQuery($vv3,$conn);
+									$vv3 = @cleanQuery($vv3,$conn);
 								} else {
 									$vv3 = 'ERRO cleangetpost';
 								}

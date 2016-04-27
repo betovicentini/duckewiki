@@ -29,13 +29,13 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+
+//echopre($ppost);
+//echopre($gget);
+
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
@@ -188,8 +188,11 @@ echo "
           <input type='hidden' name='".$kk."' value='".$vv."' />"; 
 		}
 	}
-echo "<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
+echo "
+<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>            
   </form>";
+
+//<input style='cursor: pointer'  type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit'  />
 }
 $which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
 //,"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",

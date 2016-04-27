@@ -28,28 +28,17 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $title = '';
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $body = '';
 $title = 'Create MysqlFunctions';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
 $uuuuserid = $_SESSION['userid'];
 $tbn = "tempipni_".$uuuuserid;
-
 
 $myDirectory = opendir("functions/mysql_functions");
 $dirArray = array();
@@ -64,10 +53,12 @@ while($entryName = readdir($myDirectory)) {
 		}
 		//echo $funcname."<br />";
 		$qq = "DROP ".$type." IF EXISTS ".$funcname;
+		//echo $enn."</br>".$qq;
 		mysql_query($qq,$conn) or die( mysql_error() );
 		$qq = file_get_contents("functions/mysql_functions/".$entryName);
 		$rr = mysql_query($qq,$conn) or die( mysql_error() );
 		if ($rr) {
+			//echo " -  created again !<br />";
 			$dirArray[] = $entryName;
 		}
 	}
@@ -76,9 +67,7 @@ while($entryName = readdir($myDirectory)) {
 $nz = count($dirArray);
 echo "<p class='success' style='width: 200px;'>$nz funções criadas</p><br />";
 		
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

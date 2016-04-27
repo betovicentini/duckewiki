@@ -30,11 +30,7 @@ $gget = cleangetpost($_GET,$conn);
 //echopre($gget);
 //CABECALHO
 $ispopup = 1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />"
 );
@@ -105,6 +101,8 @@ while ($row = mysql_fetch_assoc($res)) {
 	$pess = $row[$orgcol];
 	//echo $pess." aqui ho<br >";
 	$qu = "SELECT checkpessoas('".$pess."') as peop";
+
+	
 	$ru = mysql_query($qu,$conn);
 	$rw = mysql_fetch_assoc($ru);
 	if ($rw['peop']=='ERRO') {

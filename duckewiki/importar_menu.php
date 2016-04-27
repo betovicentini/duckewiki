@@ -28,21 +28,12 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' href='css/colorbuttons.css' />"
 );
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+$which_java = array();
 $title = 'Importar Dados';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -59,6 +50,10 @@ echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_branco\" 
 echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_azul\" onclick = \"javascript:small_window('import-locais-form.php?ispopup=1',800,400,'Importar localidades');\">Importar localidades</a>";
 echo "<br>";
+if ($acclevel=='admin') {
+echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_azul\" onclick = \"javascript:small_window('import-pessoas-form.php?ispopup=1',800,400,'Importar Pessoas');\">Importar Pessoas</a>";
+echo "<br>";
+}
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_roxo\" onclick = \"javascript:small_window('import-table.php?ispopup=1',800,400,'Importar para uma tabela MySQL');\">Importar arquivo para uma tabela MySQL nova</a>";
 echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_branco\" onclick = \"javascript:small_window('import-nir.php?ispopup=1',800,400,'Importar NIR-Spectra');\">Importar NIR-Spectra</a>";
@@ -67,9 +62,8 @@ echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_cinza\" o
 echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_azul1\" onclick = \"javascript:small_window('import-molecular-form.php?ispopup=1',800,400,'Importar Moleculas');\">Importar Sequencias Moleculares</a>
 </div>";
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

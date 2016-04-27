@@ -106,9 +106,9 @@ $numericfilters = array();
 $numericfilters[]  = 'PlantaTag'; 
 $numericfilters[]  = $herbariumsigla; 
 $numericfilters[]  = 'NUMERO'; 
-$headd = array("Marcado", "EspecimenID","DetID","EDIT","COLETOR", "NUMERO", "PlantaTag","PlantaID","DATA", $herbariumsigla, "FAMILIA", "NOME", "NOME_AUTOR","MORFOTIPO", "PAIS", "ESTADO", "MUNICIPIO", "LOCAL", "LOCALSIMPLES");
-$headexplan = array("Marcar ou desmarcar o registro", "Identificador do ESPECIME em Especimenes","Identificador da determinação em Identidade","Links para edição do registro e dados associados","Nome do coletor","Número de coleta","Código da placa da árvore","Identificador da planta associada à amostra","Data de coleta do ESPECIMENE", "Numero de registro do herbário ".$herbariumsigla, "Familia","Nome da identificação da planta sem autor","Nome da identificação da planta com autor", "Se o nome é um morfotipo spp indica no nivel de espécie e infspp no nível de infraespécie", "Pais  do local", "Estado do local", "Municipio do local", "Localidade completa","Localidade mais especifica");
-$exportcols = array("false","true","false","false","true","true","true", "true","true", "true","true","true","true","true","true","true","true","true","true");
+$headd = array("Marcado", "EspecimenID","DetID","EDIT","COLETOR", "NUMERO", "PlantaTag","PlantaID","DATA", $herbariumsigla, "HERBARIA", "FAMILIA", "NOME", "NOME_AUTOR","DETBY","DETYY","MORFOTIPO", "PAIS", "ESTADO", "MUNICIPIO", "LOCAL", "LOCALSIMPLES");
+$headexplan = array("Marcar ou desmarcar o registro", "Identificador do ESPECIME em Especimenes","Identificador da determinação em Identidade","Links para edição do registro e dados associados","Nome do coletor","Número de coleta","Código da placa da árvore","Identificador da planta associada à amostra","Data de coleta do ESPECIMENE", "Numero de registro do herbário ".$herbariumsigla, "Sigla dos herbários onde a amostra está depositada","Familia","Nome da identificação da planta sem autor","Nome da identificação da planta com autor","Quem identificou","Ano de identificação", "Se o nome é um morfotipo spp indica no nivel de espécie e infspp no nível de infraespécie", "Pais  do local", "Estado do local", "Municipio do local", "Localidade completa","Localidade mais especifica");
+$exportcols = array("false","true","false","false","true","true","true", "true","true", "true","true","true","true","true","true","true","true","true","true","true","true","true");
 $colw = array(
 "Marcado" => 70,
 "EspecimenID" => 0,
@@ -120,9 +120,12 @@ $colw = array(
 "PlantaID" => 0,
 "DATA" => 70,
 $herbariumsigla => 50,
+"HERBARIA" => 50,
 "FAMILIA" => 80,
 "NOME" => 150,
 "NOME_AUTOR" => 150,
+"DETBY" => 0,
+"DETYY" => 0,
 "MORFOTIPO" => 100,
 "PAIS" => 50,
 "ESTADO" => 70,
@@ -157,10 +160,10 @@ $herbariumsigla => 50,
 		$exportcols[] = "true";
 		$headexplan[] = 'O estado de fertilidade da amostra coletada';
 	}
-$headd = array_merge((array)$headd,(array)array("LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","MAP","OBS","HABT","IMG","NIRSpectra","PRJ","PROJETOstr"));
+$headd = array_merge((array)$headd,(array)array("LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","MAP","OBS","HABT","HABT_CLASSE","IMG","NIRSpectra","PRJ","PROJETOstr"));
 $numericfilters[]  = 'NIRSpectra'; 
-$headexplan = array_merge((array)$headexplan,(array)array("Longitude em décimos de grau","Latitude em décimos de grau", "Altitude em metros","Número de duplicatas","Visualizar o ESPECIMENE num mapa","Visualizar ou baixar em PDF etiqueta para o ESPECIMENE incluindo todas as observações associadas a ele","Descreve o hábitat da amostra","Visualiza imagens associadas à amostra","Visualiza dados NIR associados ao especímene","Link para projeto de Pesquisa à qual a planta está associada","Nome do projeto de Pesquisa à qual a planta está associada"));
-$exportcols = array_merge((array)$exportcols,(array)array("true", "true", "true", "false","false","false","false","false","true","false","true"));
+$headexplan = array_merge((array)$headexplan,(array)array("Longitude em décimos de grau","Latitude em décimos de grau", "Altitude em metros","Número de duplicatas","Visualizar o ESPECIMENE num mapa","Visualizar ou baixar em PDF etiqueta para o ESPECIMENE incluindo todas as observações associadas a ele","Descreve o hábitat da amostra","Classe de hábitat da amostra","Visualiza imagens associadas à amostra","Visualiza dados NIR associados ao especímene","Link para projeto de Pesquisa à qual a planta está associada","Nome do projeto de Pesquisa à qual a planta está associada"));
+$exportcols = array_merge((array)$exportcols,(array)array("true", "true", "true", "false","false","false","false","true","false","true","false","true"));
 $colw = array_merge((array)$colw,(array)array("LONGITUDE" => 40,
 "LATITUDE" => 0,
 "ALTITUDE" => 0,
@@ -168,6 +171,7 @@ $colw = array_merge((array)$colw,(array)array("LONGITUDE" => 40,
 "MAP" => 45,
 "OBS" => 60,
 "HABT" => 60,
+"HABT_CLASSE" => 100,
 "IMG" => 40,
 "NIRSpectra" => 70,
 "PRJ" => 40,
@@ -181,9 +185,11 @@ $colw = array_merge((array)$colw,(array)array("LONGITUDE" => 40,
 	$imgfields = array("OBS", "IMG", "PRJ", "EDIT", "HABT","MAP","NIRSpectra");
 	//$numericfilter = array("DAPmm","ALTURA");
 	if(!isset($uuid) || (trim($uuid)=='') || $acceslevel=='visitor' || $uuid==0) {
-		$hidefields = array("EspecimenID","PRJ", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","EDIT","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","MORFOTIPO",'FERTILIDADE',"NIRSpectra");
+		$hidefields = array("EspecimenID","PRJ", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","EDIT","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","DETBY",
+"DETYY","MORFOTIPO",'FERTILIDADE',"NIRSpectra","HERBARIA");
 	} else {
-		$hidefields = array("EspecimenID", "PRJ", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","MORFOTIPO", "FERTILIDADE","NIRSpectra");
+		$hidefields = array("EspecimenID", "PRJ", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","DETBY",
+"DETYY","MORFOTIPO", "FERTILIDADE","NIRSpectra","HABT_CLASSE","HERBARIA");
 	}
 	$i=1;
 	$ncl = count($headd)-count($imgfields)-count($hidefields);
@@ -370,7 +376,7 @@ $stringData .= "
      '%;\".\$silicavar.\"%' )\");
      \$nrnn = mysql_numrows(\$rnn);
      if (\$nrnn==0) {
-     \$imgg5 =\"<img style='cursor:pointer;' src='icons/dna.png' height='20' onclick=\\\"javascript:amostrasilica(\".\$data->get_value(\"EspecimenID\").\");\\\"  onmouseover=\\\"Tip('Marca que tem amostra em silica');\\\" >\";
+     \$imgg5 =\"<img style='cursor:pointer;' src='icons/dna.png' height='20' onclick=\\\"javascript:amostrasilica(\".\$data->get_value(\"EspecimenID\").\",0);\\\"  onmouseover=\\\"Tip('Marca que tem amostra em silica');\\\" >\";
     } else {
      \$imgg5 =\"<img style='cursor:pointer;' src='icons/dna_ok.png' height='20' onclick=\\\"javascript:alert('Já tem amostra de sílica marcada para esta coleta');\\\"  onmouseover=\\\"Tip('Já tem amostra de sílica marcada para esta coleta');\\\" >\";
     }

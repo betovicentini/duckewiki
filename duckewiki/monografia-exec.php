@@ -200,7 +200,7 @@ if ($saving==1) {
 //				}
 //		}
 //
-//		$addpkk = array('sinonimos', 'descricao', 'habitat', 'fenologia', 'materiaexaminado','comentarios');
+$addpkk = array('sinonimos', 'descricao', 'habitat', 'fenologia', 'materiaexaminado','comentarios');
 
 $addparts = array($sinonimos, $descricao, $habitat, $fenologia, $materiaexaminado,$comentarios);
 $addparts = array_combine($addpkk,$addparts);
@@ -291,7 +291,7 @@ $arrayofvalues = array(
 		}
 } 
 else {
-$qt = "SELECT DISTINCT EspecimenID FROM MonografiaEspecs WHERE MonografiaID=".$monografiaid;
+$qt = "SELECT DISTINCT EspecimenID FROM MonografiaEspecs WHERE MonografiaID=".$monografiaid." AND Incluido=1";
 $rt = mysql_query($qt,$conn);
 $nrt = mysql_numrows($rt);
 $especimenestxt = $nrt." registros incluidos na monografia";

@@ -36,22 +36,15 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+//echopre($ppost);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' >"
 );
 $which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
 "<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
 );
 $title = 'Planta Marcada';
@@ -393,6 +386,8 @@ STRIP_NON_DIGIT(pltb.PlantaTag) as TAG,
 famtb.Familia as FAMILIA, 
 acentosPorHTML(gettaxonname(pltb.DetID,1,0)) as NOME,
 acentosPorHTML(gettaxonname(pltb.DetID,1,1)) as NOME_AUTOR,
+detpessoa.Abreviacao as DETBY, 
+IF(YEAR(iddet.DetDate)>0,YEAR(iddet.DetDate),IF(iddet.DetDateYY>0,iddet.DetDateYY,'')) as DETYY,
 emorfotipo(pltb.DetID,0,0) as MORFOTIPO,
 acentosPorHTML(IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS,  
 acentosPorHTML(IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO,  
@@ -417,10 +412,11 @@ IF(pltb.HabitatID>0,'environment_icon.png','') as HABT,
 IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ, 
 acentosPorHTML(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) AS PROJETOstr, 
 if (checkimgs(0, pltb.PlantaID)>0,'camera.png','') as IMG, traitvalueplantas(".$duplicatesTraitID.", pltb.PlantaID, '', 0, 0) as DUPS,
-checknir(0,pltb.PlantaID) as NIRSpectra,
-pltb.GazetteerID,
+checknir(0,pltb.PlantaID) as NIRSpectra,";
+//$sql .= "checkoleo(0,pltb.PlantaID,".$traitsilica.",'oleo') AS OLEO,
+$sql .= "pltb.GazetteerID,
 pltb.GPSPointID 
-FROM Plantas as pltb LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID  LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID  LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID  LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID   LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID  LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID   LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID   LEFT JOIN Province as provgaz ON muni.ProvinceID=provgaz.ProvinceID   LEFT JOIN Country  as countrygaz ON provgaz.CountryID=countrygaz.CountryID   LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID   LEFT JOIN Gazetteer as gazgps ON gpspt.GazetteerID=gazgps.GazetteerID   LEFT JOIN Municipio as munigps ON gazgps.MunicipioID=munigps.MunicipioID  LEFT JOIN Province as provigps ON munigps.ProvinceID=provigps.ProvinceID   LEFT JOIN Country  as countrygps ON provigps.CountryID=countrygps.CountryID WHERE pltb.PlantaID='".$plantaid."')";
+FROM Plantas as pltb LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID  LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID  LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID  LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID   LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID  LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID   LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID   LEFT JOIN Province as provgaz ON muni.ProvinceID=provgaz.ProvinceID   LEFT JOIN Country  as countrygaz ON provgaz.CountryID=countrygaz.CountryID   LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID   LEFT JOIN Gazetteer as gazgps ON gpspt.GazetteerID=gazgps.GazetteerID   LEFT JOIN Municipio as munigps ON gazgps.MunicipioID=munigps.MunicipioID  LEFT JOIN Province as provigps ON munigps.ProvinceID=provigps.ProvinceID   LEFT JOIN Country  as countrygps ON provigps.CountryID=countrygps.CountryID WHERE pltb.PlantaID='".$plantaid."')";
 
 //echo $sql."<br />";
 mysql_query($sql,$conn);
@@ -463,10 +459,18 @@ mysql_query($sql,$conn);
 	unset($_SESSION['oldspecids']);
 echo "
   <tr><td class='tdsmallbold' align='center' >
-  <form name='coletaform' action='plantas_dataform.php' method='post'>
-<input type='hidden' value='no' name='nosample' />";
+<form name='coletaform' action='plantas_dataform.php' method='post'>
+";
+//<input type='hidden' value='no' name='nosample' />
+$tokeep = array("addcoltxt","addcolvalue","datacol","gazetteerid","locality","gpspointid","gpspt","habitatid","nosample");
 foreach ($ppost as $kk => $vv) {
-echo "<input type='hidden' value='".$vv."' name='".$kk."' />";
+	if (in_array($kk,$tokeep)) {
+		echo "<input type='hidden' value='".$vv."' name='".$kk."' />";
+	}
+}
+echo  "<input type='hidden' value='".$plantnum." foi o número cadastrado anterior' name='fromprevious' />";
+if (($plantnum+1)>0) {
+	echo  "<input type='hidden' value='".($plantnum+1)."' name='plantnum' />";
 }
 echo "<input type='submit' class='bsumit' value='Adicionar outra planta do mesmo local' />
 </form>  
@@ -615,8 +619,8 @@ if ((empty($vernaculartxt) || !isset($vernaculartxt)) && !empty($vernacularvalue
 			$j++;
 	}
 }
-if ((($gpspointid+0)>0 || $gazetteerid>0)) {
-	$qq = "SELECT localidadestring(".$gazetteerid.",".($gpspointid+0).",0,0,0,".($latdec+0).", ".($longdec+0).", ".($altitude+0).") as locality";
+if ((($gpspointid+0)>0 || ($gazetteerid+0)>0)) {
+	$qq = "SELECT localidadestring(".($gazetteerid+0).",".($gpspointid+0).",0,0,0,".($latdec+0).", ".($longdec+0).", ".($altitude+0).") as locality";
 	//echo $qq."<br />";
 	$riq = mysql_query($qq,$conn);
 	$riw = mysql_fetch_assoc($riq);
@@ -713,7 +717,7 @@ echo "
 <br />
 <table class='myformtable' align='center' cellpadding='6' width='90%'>
 <thead>
-  <tr><td colspan='100%' >".$ed." ".strtolower(GetLangVar('nametaggedplant'))."</td>
+  <tr><td colspan='2' >".$ed." ".strtolower(GetLangVar('nametaggedplant'))."</td>
 </tr>
 </thead>
 <tbody>
@@ -739,16 +743,16 @@ echo "
         <td><input id='tagplantnum'  type='text' name='plantnum' value='$plantnum' /></td>";
 
 ////// in situ ex situ, jardim botanico de manaus option, inicio
-if (empty($_SESSION['editando'])) {
-echo "
-        <td class='tdsmallboldcenter' colspan='2'>
-          <table>
-           <tr><td><input type='radio' name='inexsitu' value='Insitu' onselect=\"javascript:changevaluebyid('JB-N-','tagplantnum');\" />&nbsp;<i>In Situ</i></td></tr>
-           <tr><td><input type='radio' name='inexsitu' value='Exsitu' onselect=\"javascript:changevaluebyid('JB-X-','tagplantnum');\" />&nbsp;<i>Ex Situ</i></td></tr>
-           </table>
-        </td>";
-} 
-/////////// in situ ex situ, jardim botanico de manaus option, fim
+//if (empty($_SESSION['editando'])) {
+//echo "
+//        <td class='tdsmallboldcenter' colspan='2'>
+//          <table>
+//           <tr><td><input type='radio' name='inexsitu' value='Insitu' onselect=\"javascript:changevaluebyid('JB-N-','tagplantnum');\" />&nbsp;<i>In Situ</i></td></tr>
+//           <tr><td><input type='radio' name='inexsitu' value='Exsitu' onselect=\"javascript:changevaluebyid('JB-X-','tagplantnum');\" />&nbsp;<i>Ex Situ</i></td></tr>
+//           </table>
+//        </td>";
+//} 
+///////////// in situ ex situ, jardim botanico de manaus option, fim
 echo "
       </tr>
     </table>
@@ -756,6 +760,7 @@ echo "
 </tr>";
 
 //seleciona coletas desta planta marcada se houver
+if (!isset($fromprevious)) {
 if (!empty($especimensids)) {
 		$ids = explode(";",$especimensids);
 		$qq = "SELECT CONCAT(addcolldescr(espc.ColetorID),' ',espc.Number) as colref FROM Especimenes as espc WHERE ";
@@ -814,7 +819,22 @@ echo "
       </tr>
     </table>
   </td>
-</tr>
+</tr>";
+} else {
+	//<input type='hidden' value='no' name='nosample' />
+	$tokeep = array("fromprevious");
+	foreach ($ppost as $kk => $vv) {
+		if (!in_array($kk,$tokeep)) {
+			echo "<input type='hidden' value='".$vv."' name='".$kk."' />";
+		}
+	}
+if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else {$bgcolor = $linecolor1 ;} $bgi++;
+echo "
+<tr bgcolor = '".$bgcolor."'>
+  <td colspan='2' ><input type='submit' value='Continuar' ></td>
+</tr>";
+}
+echo "
 </form>
 ";
 } elseif (!empty($plantnum)) {
@@ -824,8 +844,12 @@ echo "
   <input type='hidden' name='inexsitu' value='$inexsitu' />
   <input type='hidden' name='plantaid' value='$plantaid' />
   <input type='hidden' name='ispopup' value='$ispopup' />
-      <input type='hidden' name='submeteu' value='$submeteu' />
+  <input type='hidden' name='submeteu' value='$submeteu' />
 ";
+if (isset($fromprevious)) {
+	$estilo = "style='font-size: 2em; color: red; font-weight: bold;' ";
+	$estilo2 = "<td align='left'><span style='font-size: 1em; color: blue; ' >".$fromprevious."</span></td>";
+}
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else {$bgcolor = $linecolor1 ;} $bgi++;
 echo "
 <tr bgcolor = '".$bgcolor."'>
@@ -833,7 +857,8 @@ echo "
   <td >
     <table>
       <tr>
-        <td><input id='tagplantnum'  type='text' name='plantnum' value='$plantnum' /></td>
+        <td><input $estilo id='tagplantnum'  type='text' name='plantnum' value='$plantnum' /></td>
+        <td>".$estilo2."</td>
       </tr>
     </table>
   </td>
@@ -904,11 +929,11 @@ echo "
     <td >
       <table>
         <tr>
-          <td class='tdformnotes' ><input type='text' size='30%' name='addcoltxt' value='$addcoltxt' readonly /></td>
+          <td class='tdformnotes' ><input type='text' style='font-size:10px; width:200px;  color:#999999; padding:5px; border:solid 1px #999999;' name='addcoltxt' value='$addcoltxt' readonly /></td>
           <input type='hidden' name='addcolvalue' value='$addcolvalue' />
           <td><input  style='cursor:pointer' type=button value=\"+\" class='bsubmit' ";
 			$myurl ="addcollpopup.php?getaddcollids=$addcolvalue&formname=coletaform"; 
-			echo " onclick = \"javascript:small_window('$myurl',350,280,'Coletores Adicionais');\" /></td>
+			echo " onclick = \"javascript:small_window('$myurl',600,400,'Coletores Adicionais');\" /></td>
           </td>
           <td class='tdsmallboldright'>".GetLangVar('namedata')."</td>";
 		if ((empty($datacol) && empty($_SESSION['editando'])) || $final==2 || $datacol==0) {
@@ -945,12 +970,12 @@ echo "
           <td>&nbsp;&nbsp;&nbsp;</td>
           <td><input  style='cursor:pointer' type=button value='$butname' class='bsubmit' ";
 			$myurl ="taxonomia-popup.php?ispopup=1&detid=$detid&dettextid=dettexto&detsetid=detsetcode"; 
-			echo " onclick = \"javascript:small_window('$myurl',800,300,'Taxonomia Popup');\" /></td>";
+			echo " onclick = \"javascript:small_window('$myurl',900,400,'Taxonomia Popup');\" /></td>";
 		if ($_SESSION['editando']=='edit_'.$plantaid) {
 			echo "
           <td><input  style='cursor:pointer' type=button value='DetHistory' class='bblue' ";
 			$myurl ="detchangespopup.php?plantaid=$plantaid"; 
-			echo " onclick = \"javascript:small_window('$myurl',800,300,'Det History');\" /></td>";
+			echo " onclick = \"javascript:small_window('$myurl',900,400,'Det History');\" /></td>";
 		}
 		echo "
         </tr>
@@ -1260,9 +1285,8 @@ echo "
 </table>";
 }
 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=TRUE,$footer=$menu);
 
 ?>

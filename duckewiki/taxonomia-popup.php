@@ -212,6 +212,8 @@ STRIP_NON_DIGIT(pltb.PlantaTag) as TAG,
 famtb.Familia as FAMILIA, 
 acentosPorHTML(gettaxonname(pltb.DetID,1,0)) as NOME,
 acentosPorHTML(gettaxonname(pltb.DetID,1,1)) as NOME_AUTOR,
+detpessoa.Abreviacao as DETBY, 
+IF(YEAR(iddet.DetDate)>0,YEAR(iddet.DetDate),IF(iddet.DetDateYY>0,iddet.DetDateYY,'')) as DETYY,
 emorfotipo(pltb.DetID,0,0) as MORFOTIPO,
 (IF(pltb.GPSPointID>0,countrygps.Country,IF(pltb.GazetteerID>0,countrygaz.Country,' '))) as PAIS, 
 (IF(pltb.GPSPointID>0,provigps.Province,IF(pltb.GazetteerID>0,provgaz.Province,' '))) as ESTADO, 
@@ -239,7 +241,7 @@ if ($statustraitid>0) {
 	$sql .= "
 traitvalueplantas(".$statustraitid.",pltb.PlantaID, '', 0,0 ) AS STATUS,";
 }
-$sql .= " 'mapping.png' AS MAP, 
+$sql .= " 'mapping.png' AS MAP,
 IF((gaz.DimX+gaz.DimY)>0,pltb.GazetteerID,'') AS PLOT, checkplantaspecimens(pltb.PlantaID) AS ESPECIMENES, 
 '' as OBS, 
 IF(pltb.HabitatID>0,'environment_icon.png','') as HABT,
@@ -247,11 +249,13 @@ IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ,
 acentosPorHTML(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) AS PROJETOstr, 
 IF (checkimgs(0, pltb.PlantaID)>0,'camera.png','') as IMG, 
 traitvalueplantas(".$duplicatesTraitID.", pltb.PlantaID, '', 0, 0) as DUPS,
-checknir(0,pltb.PlantaID) as NIRSpectra,
-pltb.GazetteerID,
+checknir(0,pltb.PlantaID) as NIRSpectra,";
+//$sql .= "checkoleo(0,pltb.PlantaID,".$traitsilica.",'oleo') AS OLEO,
+$sql .= "pltb.GazetteerID,
 pltb.GPSPointID
 FROM Plantas as pltb 
-LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID  
+LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
+LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID 
 LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID  
 LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID  
 LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID   
@@ -297,9 +301,12 @@ pltb.DetID,
 pltb.Number as NUMERO,
 if(CONCAT(pltb.Ano,'-',pltb.Mes,'-',pltb.Day)<>'0000-00-00',CONCAT(pltb.Ano,'-',pltb.Mes,'-',pltb.Day),'FALTA') as DATA,
 if(pltb.INPA_ID>0,pltb.INPA_ID+0,NULL) as ".$herbariumsigla.",
+pltb.Herbaria as HERBARIA,
 famtb.Familia as FAMILIA,
 acentosPorHTML(gettaxonname(pltb.DetID,1,0)) as NOME,
 acentosPorHTML(gettaxonname(pltb.DetID,1,1)) as NOME_AUTOR,
+detpessoa.Abreviacao as DETBY, 
+IF(YEAR(iddet.DetDate)>0,YEAR(iddet.DetDate),IF(iddet.DetDateYY>0,iddet.DetDateYY,'')) as DETYY,
 emorfotipo(pltb.DetID,0,0) as MORFOTIPO,
 localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'COUNTRY') as PAIS,  
 localidadefields(pltb.GazetteerID, pltb.GPSPointID, pltb.MunicipioID, pltb.ProvinceID, pltb.CountryID, 'MAJORAREA') as ESTADO,
@@ -310,9 +317,11 @@ getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0,
 getlatlong(pltb.Latitude , pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 0, 0, 0, 1) as LATITUDE,
 IF(ABS(pltb.Longitude)>0,pltb.Altitude+0,IF(pltb.GPSPointID>0,gpspt.Altitude+0,IF(ABS(gaz.Longitude)>0,gaz.Altitude+0,NULL))) as ALTITUDE,
 'edit-icon.png' AS EDIT,
-'mapping.png' AS MAP,
-'' as OBS,
+'mapping.png' AS MAP,";
+//checkoleo(pltb.EspecimenID,pltb.PlantaID,".$traitsilica.",'oleo') AS OLEO,
+$sql  .= "'' as OBS,
 IF(pltb.HabitatID>0,'environment_icon.png','') as HABT,
+habitaclasse(pltb.HabitatID) AS HABT_CLASSE,
 if (checkimgs(pltb.EspecimenID, pltb.PlantaID)>0,'camera.png','') as IMG,
 checknir(pltb.EspecimenID,pltb.PlantaID) as NIRSpectra";
 if ($duplicatesTraitID>0) {
@@ -342,6 +351,7 @@ $sql .= " FROM Especimenes as pltb
 LEFT JOIN Plantas as thepl ON thepl.PlantaID=pltb.PlantaID
 LEFT JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID
 LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID 
+LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID
 LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID 
 LEFT JOIN Tax_Especies as sptb ON iddet.EspecieID=sptb.EspecieID 
 LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID  

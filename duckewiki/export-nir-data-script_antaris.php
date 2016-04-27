@@ -31,9 +31,13 @@ session_write_close();
 if ($checklist==1) {
 	$vars = unserialize($_SESSION['exportnir'.substr(session_id(),0,10)] );
 //echopre($vars);
-	$wheresql = ' tagtaxanir('.($vars['famid']+0).' ,'.($vars['genid']+0).' ,'.($vars['specid']+0).' ,'.($vars['infspecid']+0).' , idd.FamiliaID ,idd.GeneroID ,idd.EspecieID ,idd.InfraEspecieID)>0 ';
+	$wheresql = ' WHERE tagtaxanir('.($vars['famid']+0).' ,'.($vars['genid']+0).' ,'.($vars['specid']+0).' ,'.($vars['infspecid']+0).' , idd.FamiliaID ,idd.GeneroID ,idd.EspecieID ,idd.InfraEspecieID)>0 ';
 } else {
-	$wheresql = " pltb.FiltrosIDS LIKE '%filtroid_".$filtroid.";%'  OR pltb.FiltrosIDS LIKE '%filtroid_".$filtroid."' ";
+	if (($filtroid+0)==0 && $_SESSION['accesslevel']=="admin") {
+		$wheresql = "";
+	} else {
+		$wheresql = " WHERE pltb.FiltrosIDS LIKE '%filtroid_".$filtroid.";%'  OR pltb.FiltrosIDS LIKE '%filtroid_".$filtroid."' ";
+	}
 }
 
 $sql1 = "(SELECT 
@@ -56,7 +60,7 @@ spec.Folha,
 spec.Face,
 spec.FileName
 FROM NirSpectra AS spec JOIN Plantas as pltb ON pltb.PlantaID= spec.PlantaID LEFT JOIN Identidade AS idd ON idd.DetID=pltb.DetID
-WHERE ".$wheresql .")";
+ ".$wheresql .")";
 
 //echo $sql1."<br >";
 
@@ -83,7 +87,7 @@ spec.Folha,
 spec.Face,
 spec.FileName
 FROM NirSpectra AS spec JOIN Especimenes as pltb ON pltb.EspecimenID=spec.EspecimenID JOIN Pessoas as colpessoa ON pltb.ColetorID=colpessoa.PessoaID JOIN Identidade AS idd ON idd.DetID=pltb.DetID
-WHERE ".$wheresql .")";
+".$wheresql .")";
 
 //echo $sql1."<br >";
 

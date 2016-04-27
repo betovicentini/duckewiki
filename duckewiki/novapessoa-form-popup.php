@@ -35,14 +35,8 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Pessoas';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -151,6 +145,8 @@ echo "
 	$qq = "SELECT * FROM Pessoas WHERE LOWER(Prenome)='".strtolower($nome)."' ";
 	if (!empty($segnome)) {
 		$qq .= " AND LOWER(SegundoNome)='".strtolower($segnome)."'";
+	} else {
+		$qq .= " AND ((SegundoNome IS NULL) OR SegundNome='')";
 	}
 	$qq .= " AND LOWER(Sobrenome)='".strtolower($sobrenome)."'";
 	$res = mysql_query($qq,$conn);
