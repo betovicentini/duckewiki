@@ -590,7 +590,7 @@ else {
 		$kk = str_replace("'", "", $kk);
 		$kk = str_replace("\\", "", $kk);
 		$stringData .= "
-\$listsarepublic['".$kk."'] = ".$vv.";";
+\$listsarepublic['".$kk."'] = \"".$vv."\";";
 	}
 
 	$stringData .= "

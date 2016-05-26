@@ -1,4 +1,4 @@
-<?php
+ <?php
 function omenudeicons($quais, $vertical=FALSE, $position='right', $iconwidth='35', $iconheight='35' ) { 
 if ($vertical) {
 	$separador= '<br />';
@@ -89,7 +89,7 @@ function formatgaznome($nome) {
 							$vv = ucfirst($vv);
 					}
 					$res[] = $vv;
-				$ii++;
+				$i++;
 				}
 		}
 		$res = implode(" ",$res);

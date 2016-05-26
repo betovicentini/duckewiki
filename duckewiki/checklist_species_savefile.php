@@ -451,8 +451,8 @@ $stringData .= "
 	if (\$specid>0 || \$infspecid>0) {
 	\$imagen3 = \"<img style='cursor:pointer;' src='icons/changename.png' height='18' onclick=\\\"javascript:small_window('".$url."/identifybyname_all.php?nomesearch=\".\$nameedit.\"&speciesid=\".\$specid.\"&infraspid=\".\$infspecid.\"&tempid=\".\$recid.\"&tbname=".$tbname."',700,500,'Substituindo o nome \".\$nameedit.\" por outro');\\\" onmouseover=\\\"Tip('Substituindo o nome \".\$nameedit.\" por outro');\\\" alt='' />\";
 	}";
-	} 
-$stringData .= "   \$imgg33 =\"<img style='cursor:pointer;' src='icons/nota-icon.png' height='16' onclick=\\\"javascript:small_window('".$url."/traits_coletorvariacao.php?nomesciid=\".\$nomesciid.\"&taxavariacao=1',800,800,'Editando notas');\\\"  onmouseover=\\\"Tip('Edita notas da amostra # \".\$pltag.\"');\\\" >\";";
+	}
+$stringData .= "   \$imgg33 =\"<img style='cursor:pointer;' src='icons/nota-icon.png' height='16' onclick=\\\"javascript:small_window('".$url."/traits_coletorvariacao.php?nomesciid=\".\$nomesciid.\"&taxavariacao=1',800,800,'Editando notas');\\\"  onmouseover=\\\"Tip('Edita notas do taxon # \".\$tropicos.\"');\\\" >\";";
 $stringData .= "
 	\$imagen = \$imagen2.\"&nbsp;\".\$imagen.\"&nbsp;\".\$imagen3.\"&nbsp;\".\$imgg33;
 	";
