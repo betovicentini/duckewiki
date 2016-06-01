@@ -91,26 +91,44 @@ echo "
 
 } else {
 	$filtrocode = "filtroid_".$filtroid;
-	$qt = "SELECT EspecimenID FROM Especimenes WHERE FiltrosIDS LIKE '%".$filtrocode."' OR FiltrosIDS LIKE '%".$filtrocode.";%'";
-	$rup = mysql_query($qt,$conn);
-	$rwu = mysql_numrows($rup);
-	if ($rwu>0) {
-		$inserido=0;
-		while ($row = mysql_fetch_assoc($rup)) {
-			$qs = "SELECT * FROM ProjetosEspecs WHERE EspecimenID=".$row['EspecimenID']." AND ProjetoID=".$projetoid;
-			$rsp = mysql_query($qs,$conn);
-			$nsp = mysql_numrows($rsp);
-			if ($nsp==0) {
-			    $qins = "INSERT INTO  `ProjetosEspecs` (`EspecimenID`,`ProjetoID`,`AddedBy`,`AddedDate`) VALUES (".$row['EspecimenID'].",".$projetoid.", ".$uuid.", CURRENT_DATE())";
+	echo $saoplantas."  aqui 1";
+	if (!isset($saoplantas) || $saoplantas!=1) {
+		echo $saoplantas."  aqui 2";
+		$qt = "SELECT EspecimenID FROM Especimenes WHERE FiltrosIDS LIKE '%".$filtrocode."' OR FiltrosIDS LIKE '%".$filtrocode.";%'";
+		$rup = mysql_query($qt,$conn);
+		$rwu = mysql_numrows($rup);
+		if ($rwu>0) {
+			$inserido=0;
+			while ($row = mysql_fetch_assoc($rup)) {
+				$qs = "SELECT * FROM ProjetosEspecs WHERE EspecimenID=".$row['EspecimenID']." AND ProjetoID=".$projetoid;
+				$rsp = mysql_query($qs,$conn);
+				$nsp = mysql_numrows($rsp);
+				if ($nsp==0) {
+				    $qins = "INSERT INTO  `ProjetosEspecs` (`EspecimenID`,`ProjetoID`,`AddedBy`,`AddedDate`) VALUES (".$row['EspecimenID'].",".$projetoid.", ".$uuid.", CURRENT_DATE())";
 			    //echo $qins."<br />";
-			    $rp = mysql_query($qins);
-			    if ($rp) {
-			    	$inserido++;
-			    }
+				    $rp = mysql_query($qins);
+				    if ($rp) {
+			    		$inserido++;
+				    }
+				}
+			}
+		}
+	} elseif ($saoplantas==1) {
+		$qt = "SELECT pltb.PlantaID,".$projetoid.", ".$uuid.", CURRENT_DATE() FROM Plantas as pltb LEFT JOIN ProjetosEspecs as prj ON pltb.PlantaID=prj.PlantaID WHERE (pltb.FiltrosIDS LIKE '%".$filtrocode."' OR pltb.FiltrosIDS LIKE '%".$filtrocode.";%') AND (prj.PlantaID IS NULL)";
+		//echo $qt."<br >";
+		$rup = mysql_query($qt);
+		$rwu = mysql_numrows($rup);
+		if ($rwu>0) {
+			$qins = "INSERT INTO  `ProjetosEspecs` (`PlantaID`,`ProjetoID`,`AddedBy`,`AddedDate`)  (".$qt.")";
+			//echo $qins."<br>";
+			$rp = mysql_query($qins);
+			if ($rp) {
+				$inserido = $rwu;
 			}
 		}
 	}
-						echo "
+
+echo "
 <br />
   <table class='success' align='center' cellpadding=\"5\" >
     <tr><td>$inserido registros foram importados para o projeto com sucesso</td></tr>

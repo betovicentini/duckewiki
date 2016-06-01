@@ -72,13 +72,13 @@ if ($submitted=='editando') {
 	$agencia = explode(";",$rww['Financiamento']);
 	$processo = explode(";",$rww['Processos']);
 
-	$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."'";
+	$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."' AND EspecimeID>0";
 	$rr = mysql_query($qq,$conn);
 	$nrr = mysql_numrows($rr);
 	if ($nrr==0) {
-		$qq = "INSERT INTO ProjetosEspecs (EspecimenID, ProjetoID, AddedBy, AddedDate) SELECT EspecimenID,ProjetoID, ".$uuid.", '".$sessiondate."' FROM Especimenes WHERE ProjetoID='".$projetoid."'";
+		$qq = "INSERT INTO ProjetosEspecs (EspecimenID, PlantaID, ProjetoID, AddedBy, AddedDate) SELECT EspecimenID, PlantaID, ProjetoID, ".$uuid.", '".$sessiondate."' FROM Especimenes WHERE ProjetoID='".$projetoid."'";
 		@mysql_query($qq,$conn);
-		$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."'";
+		$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."' AND EspecimeID>0";
 		$rr = mysql_query($qq,$conn);
 		$nrr = mysql_numrows($rr);
 	}
@@ -86,13 +86,20 @@ if ($submitted=='editando') {
 		$nspecs = $nrr;
     	$especimenestxt = $nrr." ".strtolower(GetLangVar('nameregistro'))."s";
 	}
-
-	//PRECISA CORRIGIR    
-    $qq = "SELECT count(*) as nrecs FROM Plantas WHERE ProjetoID='".$projetoid."'";
+	$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."' AND PlantaID>0";
 	$rr = mysql_query($qq,$conn);
-	$row = mysql_fetch_assoc($rr);
-    $plantastxt = $row['nrecs']." ".strtolower(GetLangVar('nameregistro'))."s";
-
+	$nrr = mysql_numrows($rr);
+	if ($nrr==0) {
+		$qq = "INSERT INTO ProjetosEspecs (PlantaID, ProjetoID, AddedBy, AddedDate) SELECT PlantaID, ProjetoID, ".$uuid.", '".$sessiondate."' FROM Plantas WHERE ProjetoID='".$projetoid."'";
+		@mysql_query($qq,$conn);
+		$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."' AND PlantaID>0";
+		$rr = mysql_query($qq,$conn);
+		$nrr = mysql_numrows($rr);
+	}
+	if ($nrr>0) {
+		$nplantas = $nrr;
+    	$plantastxt = $nrr." ".strtolower(GetLangVar('nameregistro'))."s";
+	}
 	$txthead =  GetLangVar('nameeditando')." ".strtolower(GetLangVar('nameprojeto'))." ".$quem;
 } 
 elseif ($submitted=='novo') {
@@ -214,9 +221,15 @@ echo "
   <td >
     <table>
     <tr>
-      <td class='tdsmallbold'>".GetLangVar('nametaggedplant')."s</td>
-      <td >$plantastxt</td>
-    </tr>
+   <td class='tdsmallbold' >".GetLangVar('nametaggedplant')."s&nbsp;<img height=15 src=\"icons/icon_question.gif\" ";
+	$help = "Plantas que pertencem ao Projeto";
+	echo "onclick=\"javascript:alert('$help');\" /></td>
+        <td ><span id='plantastxt'>".$plantastxt."</span></td>
+        <td><input type=button style=\"color:#4E889C; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  value='Plantas'  onmouseover=\"Tip('Adiciona ou Edita as Plantas do Projeto');\" ";
+		$myurl = "projeto-plantas.php?projetoid=".$projetoid;
+		echo " onclick = \"javascript:small_window('".$myurl."',800,500,'Amostras Projetos');\" /></td>";
+echo "
+      </tr>
     </table>
   </td>
 </tr>";

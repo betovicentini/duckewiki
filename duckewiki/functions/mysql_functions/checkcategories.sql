@@ -1,7 +1,7 @@
-CREATE FUNCTION checkcategories(valoresCol varchar(100),trid int(10)) RETURNS text CHARSET utf8
+CREATE FUNCTION checkcategories(valoresCol varchar(300),trid int(10)) RETURNS varchar(300) CHARSET utf8
 BEGIN
-DECLARE valoresres TEXT DEFAULT '';
-DECLARE colname TEXT DEFAULT '';
+DECLARE valoresres varchar(300)  DEFAULT '';
+DECLARE colname varchar(300)  DEFAULT '';
 DECLARE ncat INT(10) DEFAULT 0;
 DECLARE statetrid INT(10) DEFAULT 0;
 DECLARE ncatstep INT(10) DEFAULT 1;
