@@ -76,21 +76,12 @@ if(($species+$specimens+$plantas+$plots)==0) {
 	$acclevel = $_SESSION['accesslevel'];
 }
 
-$ispopup=1;
-//CABECALHO
-if ($ispopup==1) {
-} else {
-	$menu = TRUE;
-}
-
 //EXTRAI A URL 
-	$url = $_SERVER['HTTP_REFERER'];
-	$uu = explode("/",$url);
-	$nu = count($uu)-1;
-	unset($uu[$nu]);
-	$url = implode("/",$uu);
-	
-
+$url = $_SERVER['HTTP_REFERER'];
+$uu = explode("/",$url);
+$nu = count($uu)-1;
+unset($uu[$nu]);
+$url = implode("/",$uu);
 
 $title = $sitetitle;
 $which_css = array(
@@ -257,14 +248,13 @@ function desmarcartodos(gridobject, tablename) {
 "<script type='text/javascript' src='dhtmlxconnector/dhtmlxConnector_php/codebase/connector.js'></script>"
 );
 FazHeader($title,$body,$which_css,$which_java,TRUE);
-
 echo "<script type='text/javascript' src='javascript/wz_tooltip.js'></script>";
 $quais = ReturnAcessList($acclevel);
 $_SESSION['introtext'] = $introtext;
 omenudeicons($quais, $vertical=FALSE, $position='left' , $iconwidth='30', $iconheight='30' );
 //CAIXA DE DIALOGO PARA PEDIR NOME 
 //echo "<div id='passing_ids'></div>";
-	if (($blockacess+0)==0) {
+if (($blockacess+0)==0) {
 	//$checklistarray = unserialize($_SESSION['checklistarray']);
 	$divwith = 1000;
 	$divheight = 400;
@@ -272,9 +262,8 @@ omenudeicons($quais, $vertical=FALSE, $position='left' , $iconwidth='30', $iconh
 	$tbheight = 500;
 echo "
 <span id='counter' style=\"padding: 1px; color:  red; font-size: 1.8em;\"></span>
-<div style=\"position:absolute;top:0%;left:5%; width: 40%; padding: 20px; background-color:orange; color:  black; visibility: hidden;\" id=\"progressalert\"  ></div>
-<div id=\"a_tabbar\" style=\"width:".$tbwidth."px; height:".$tbheight."px;\">";
-
+<div style=\"position:absolute; top:0%; left:5%; width: 40%; padding: 20px; background-color:orange; color:  black; visibility: hidden;\" id=\"progressalert\"  ></div>
+<div id=\"a_tabbar\" style=\"position: absolute; top: 175px;  width:".$tbwidth."px; height:".$tbheight."px;\">";
 if ($species==1) {
    $taxonlist = unserialize($_SESSION['checklist_species']);
 echo "

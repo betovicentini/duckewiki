@@ -75,23 +75,24 @@ DEFINE('_ISO','charset=UTF-8');
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"pt-br\" xml:lang=\"en\">
 <head>
-  <meta name=\"title\" content=\"".$metatitle."\" />
-  <meta http-equiv=\"Content-Type\" content=\"text/html; charset='UTF-8'\" />
+<meta name=\"title\" content=\"".$metatitle."\" />
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset='UTF-8'\" />
 ";
 if (!empty($metagooglesite)) {  
 echo "  <meta name=\"google-site-verification\" content=\"".$metagooglesite."\" />
 ";
 }
-echo "  <meta name=\"url\" content=\"".$metaurl."\" />
-  <meta name=\"robots\" content=\"all\" />
-  <meta name=\"language\" content=\"pt-br\" />
-  <meta name=\"description\" content=\"".$metadesc."\" />
-  <meta name=\"keywords\" content=\"".$metakeyw."\" />
-  <meta name=\"autor\" content=\"Alberto Vicentini - INPA\" />
-  <meta name=\"company\" content=\"".$metacompany."\" /> 
-  <meta http-equiv=\"imagetoolbar\" content=\"no\" />
-  <title>".$title."</title>
-  ";
+echo "
+<meta name=\"url\" content=\"".$metaurl."\" />
+<meta name=\"robots\" content=\"all\" />
+<meta name=\"language\" content=\"pt-br\" />
+<meta name=\"description\" content=\"".$metadesc."\" />
+<meta name=\"keywords\" content=\"".$metakeyw."\" />
+<meta name=\"autor\" content=\"Alberto Vicentini - INPA\" />
+<meta name=\"company\" content=\"".$metacompany."\" /> 
+<meta http-equiv=\"imagetoolbar\" content=\"no\" />
+<title>".$title."</title>
+";
 foreach ($which_css as $vv) {
 echo "
   ".$vv;
@@ -101,26 +102,24 @@ echo "
   ".$vv;
 }  
 echo " 
-
 </head>
 <body ".$body.">";
-
 //funcao Menu definida em ../includes/nomedasuabase.php
 if ($menu) {
 $stilo =" border:1px solid #cccccc;  -webkit-box-shadow:inset 0 0 6px #cccccc; -moz-box-shadow: inset 0 0 6px #cccccc; cursor: pointer;";
-if (($_SESSION['userid']+0)==0) {
-echo "
+	if (($_SESSION['userid']+0)==0) {
+	echo "
 <div style='position: absolute; top: 5px; left: 5px; cursor: pointer;'  onclick = \"javascript: self.location='index.php?ispopup=1';\" >
-<img  src=\"icons/".$sitelogo."\"  height='100' />&nbsp;<span style='position: relative; top: 20px; vertical-align: top; font-size: 2em; color: #8B0000;' >
+<img  src=\"icons/".$sitelogo."\"  height='120' />&nbsp;<span style='position: relative; top: 20px; vertical-align: top; font-size: 2em; color: #8B0000;' >
 ".$sitetitle."</span>
 </div>";
-} else {
-echo "
+	} else {
+	echo "
 <div style='position: absolute; top: 5px; left: 5px; cursor: pointer;' onclick = \"javascript: self.location='index.php?ispopup=1';\" >
-<img  src=\"icons/".$sitelogo."\"  height='70' />&nbsp;<span style='position: relative; top: 5px; vertical-align: top; font-size: 1.5em; color: #8B0000;' >
+<img  src=\"icons/".$sitelogo."\"  height='100' />&nbsp;<span style='position: relative; top: 5px; vertical-align: top; font-size: 1.5em; color: #8B0000;' >
 ".$sitetitle."</span>
 </div>
-<div style=\"vertical-align: top; position:absolute; top: 10px; right: 10px; font-size: 0.8em;\">Usuário:&nbsp;".$_SESSION['userfirstname']."&nbsp;".$_SESSION['userlastname']."&nbsp;".$_SESSION['sessiondate']."&nbsp<img src=\"icons/logout.png\" height='35' style=\"".$stilo."\" onmouseover=\"Tip('Sai do sistema');\" onclick = \"javascript: self.location='logout.php';\" />&nbsp;&nbsp;<a href='index.php'><img src=\"icons/blue-home-icon.png\" height='35' style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
+<div style=\"vertical-align: top; position:absolute; top: 5px; right: 5px; font-size: 0.8em;\">Usuário:&nbsp;".$_SESSION['userfirstname']."&nbsp;".$_SESSION['userlastname']."&nbsp;".$_SESSION['sessiondate']."&nbsp<img src=\"icons/logout.png\" height='35' style=\"".$stilo."\" onmouseover=\"Tip('Sai do sistema');\" onclick = \"javascript: self.location='logout.php';\" />&nbsp;&nbsp;<a href='index.php'><img src=\"icons/blue-home-icon.png\" height='35' style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
 </div>
 ";
 }
@@ -138,7 +137,7 @@ echo "
 //Menu($title);
 //
 echo "
-<div id='container' style='position: relative; margin-top: 100px; padding-left: 5px;'>
+<div id='container'  style='position: absolute; top: 10px;  padding-left: 5px;'>
 ";
 
 
@@ -150,7 +149,7 @@ function FazFooter($which_java,$calendar=FALSE,$footer=TRUE) {
 if ($footer) {
 	echo "
 </div>
-<div>
+<div style='position: absolute; top: 700px; width: 100%; align: center;' >
 ";
 	if ($_SESSION['userid']>0) {
 	echo "

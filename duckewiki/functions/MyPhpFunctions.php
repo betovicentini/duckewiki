@@ -8,9 +8,11 @@ if ($vertical) {
 	$hgt = "height=\"".$iconheight."\"";
 }
 if ($position=='right') {
-	$poss = 'float: right;';
+	//$poss = 'float: right;';
+	$poss = "position: absolute; top: 115px; right: 10px; align='right';";
 } else {
-	$poss = 'float: left;';
+	//$poss = 'float: left;';
+	$poss = "position: absolute; top: 115px; left: 5px; align='left';";
 }
 $stilo =" border:1px solid #cccccc;  -webkit-box-shadow:inset 0 0 6px #cccccc; -moz-box-shadow: inset 0 0 6px #cccccc; cursor: pointer;";
 if ($_SESSION['userid']>0) {
@@ -46,7 +48,6 @@ onmouseover=\"Tip('Editar ou cadastrar Taxonomia');\" onclick = \"javascript:sma
 'variaveistable' => "<img src=\"icons/categories.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Edita variáveis');\" onclick = \"javascript:small_window('traits_definition_form.php?ispopup=0',1100,700,'Edita variáveis');\" />",
 );
 //'fitotable' => "<img src=\"icons/plantfito.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Script provisório para REGISTRO FITODEMOGRAFICO');\" onclick = \"javascript:small_window('fitobatchenter_traits_form.php?ispopup=0',700,600,'Script provisório para REGISTRO FITODEMOGRAFICO');\" />",
-
 if ((empty($quais) || count($quais)==0) && $_SESSION['accesslevel']!='visitor') {
 	$quais = array_keys($linkss);
 }
@@ -56,7 +57,7 @@ foreach ($quais as $vv) {
 	$tp = $linkss[$vv];
 	$toprint .= $separador.$tp;
 }
-$toprint .= "</div><br /><br />";
+$toprint .= "</div>";
 $atencao = "</br><span style='padding: 8px; line-height: 150%; background-color: yellow; font-size: 1em;  color: 'red';' ><b>ATENÇÃO</b>: Apenas para consulta!!! Edições de dados não serão validadas e serão apagadas! Edições apenas no localhost no momento! Não modifique, crie ou importe dados. Tudo será apagado! A base do PDBFF  está offline. Esta versão está sendo usada como TESTDRIVE para a melhoria do sistema!</span></br>";
 //$toprint .= $atencao;
 }
@@ -64,9 +65,8 @@ $atencao = "</br><span style='padding: 8px; line-height: 150%; background-color:
 } 
 else {
 $toprint = "
-<div style=\"vertical-align:top; position: absolute;  top:0px; right: 0px;  font-size: 0.8em;\">&nbsp;<img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\" onclick = \"javascript: self.location='login-form.php';\" />&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
-</div><div 
-style='padding: 100px; font-family:\"Verdana\", Arial, sans-serif;  font-size: 1.2em; font-color: #800000;'>".$_SESSION['introtext']."</div>";
+<div style=\"vertical-align:top; position: absolute;  top: 0px; right: 0px;  font-size: 0.8em;\">&nbsp;<img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\" onclick = \"javascript: self.location='login-form.php';\" />&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a></div>
+<div style='padding: 100px; font-family:\"Verdana\", Arial, sans-serif;  font-size: 1.2em; font-color: #800000;'>".$_SESSION['introtext']."</div>";
 }
 //style='padding-left: 5%; padding-top: 5%; font-size: 1.1em; text-align: left; line-height: 150%;
 
