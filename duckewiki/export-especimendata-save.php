@@ -27,6 +27,13 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+
+//echopre($gget);
+//echopre($_SESSION);
+
+$restb = explode(";",$resultado);
+$nrecs = $restb[0]+0;
+$nfields = $restb[1]+0;
 //CABECALHO
 $menu = FALSE;
 $which_css = array(
@@ -43,8 +50,7 @@ $export_filename_metadados = "especimenes_export_".$_SESSION['userlastname']."_"
 if (!isset($export_filename)) {
 $export_filename = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate'].".csv";
 }
-$nrecs = $_SESSION['exportnresult']+0;
-$nfields = $_SESSION['exportnfields']+0;
+
 echo "
 <br />
 <table class='myformtable' cellpadding='5' align='center' width=70%>

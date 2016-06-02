@@ -458,31 +458,41 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 		
 		
 //A QUERY ESTA PRONTA, AGORA PRECISA GERAR O ARQUIVO
-		$qz = "SELECT * FROM Plantas WHERE FiltrosIDS LIKE '%filtroid_".$filtro."%'";
-		$rz = mysql_query($qz,$conn);
-		$nrz = mysql_numrows($rz);
-		$_SESSION['exportnresult'] = $nrz;
+$qz = "SELECT * FROM Plantas WHERE FiltrosIDS LIKE '%filtroid_".$filtro."%'";
+$rz = mysql_query($qz,$conn);
+$nrz = mysql_numrows($rz);
+$_SESSION['exportnresult'] = $nrz;
 		
-		$nsteps = ceil($nrz/$stepsize);
-		//$_SESSION['metadados'] = serialize($metadados);
-		//$_SESSION['qq'] = $qq;
 
+unlink("temp/".$export_filename);
+unlink("temp/".$export_filename_metadados);
+
+$qnu = "UPDATE `".$progesstable."` SET percentage=1"; 
+mysql_query($qnu);
+session_write_close();
 
 //echo $qq." LIMIT $st1,$stepsize<br />";
 
 //if ($lixao==6789) {
 $stepsize = 100;
-//$step=0;
-for ($st1 = 0; $st1 <= $nrz;$st1=$st1+$stepsize+1) {
+//$nsteps = ceil($nrz/$stepsize);
+
+//$breaks = range(0,$nrz,$stepsize);
+//echopre($breaks);
+$lixao=999934;
+if ($lixao==999934) {
+$counter = 0;
+while($counter<=$nrz)  {
+//for ($st1=0; $st1<= $nrz; $st1=($st1+$stepsize+1)) {
 //	while($st1<=$nrz) {
-		$qqq = $qq." LIMIT $st1,$stepsize";
+		$qqq = $qq." LIMIT $counter,$stepsize";
 		$res = mysql_query($qqq,$conn);
 		if ($res) {
-			if ($st1==0) {
-				
+			if ($counter==0) {
 				$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
 				$count = mysql_num_fields($res);
 				$_SESSION['exportnfields'] = $count;
+				$message=  $nrz.";".$count;
 				$header = '';
 				for ($i = 0; $i < $count; $i++){
 					if ($i<($count-1)) {
@@ -515,12 +525,17 @@ for ($st1 = 0; $st1 <= $nrz;$st1=$st1+$stepsize+1) {
 			}
 			fclose($fh);
 		}
-		$perc = ceil(($st1/$nrz)*99);
+		$porc = ($counter/$nrz)*99;
+		$perc = floor($porc);
 		$qnu = "UPDATE `temp_exportplantas".substr(session_id(),0,10)."` SET percentage=".$perc; 
 		mysql_query($qnu);
 		session_write_close();
-		//$st1 = $st1+$stepsize+1;
+		//$mm = ($counter+$stepsize+1);
+		//$m2 = $nrz-$mm;
+		//if ($m2<$stepsize) { $step = $m2+1;} else {$step=$stepsize;}
+		$counter = $counter+$stepsize+1;
 		//$step++;
+		usleep(500);
 	}
 
 ###GERA METADADOS
@@ -532,11 +547,12 @@ foreach ($metadados as $kk => $vv) {
 fwrite($fh, $stringData);
 fclose($fh);
 
+echo $message;
+
 $qnu = "UPDATE `temp_exportplantas".substr(session_id(),0,10)."` SET percentage=100"; 
 mysql_query($qnu);
-$message=  "CONCLUÍDO";
-echo $message;
 session_write_close();
+}
 //}
 
 ?>

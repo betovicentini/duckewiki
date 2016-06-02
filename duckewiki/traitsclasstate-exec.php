@@ -141,7 +141,7 @@ echo "
 				$filtro = "SELECT * FROM Traits WHERE TraitTipo='Classe' ORDER BY PathName";
 			} 
 			if ($traitkind=='Estado') {
-				$filtro = "SELECT * FROM Traits WHERE TraitTipo='Variavel|Categoria' OR TraitTipo='Classe' ORDER BY PathName";
+				$filtro = "SELECT * FROM Traits WHERE TraitTipo='Variavel|Categoria' OR TraitTipo='Classe' ORDER BY TraitName";
 			} 
 			$res = mysql_query($filtro,$conn);
 			while ($aa = mysql_fetch_assoc($res)){

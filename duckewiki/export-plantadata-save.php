@@ -27,6 +27,19 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+
+//echopre($gget);
+//echopre($_SESSION);
+if (isset($_SESSION['exportnfields']) && isset($_SESSION['exportnfields'])) { 
+	$nrecs = $_SESSION['exportnfields'];
+	$nfields = $_SESSION['exportnfields'];
+} else {
+	$restb = explode(";",$resultado);
+	$nrecs = $restb[0]+0;
+	$nfields = $restb[1]+0;
+}
+
+
 //CABECALHO
 $menu = FALSE;
 $which_css = array(
@@ -34,7 +47,7 @@ $which_css = array(
 );
 $which_java = array(
 );
-$title = 'Export especímenes';
+$title = 'Export Plantas';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 if (!isset($export_filename_metadados)) {
@@ -43,8 +56,7 @@ $export_filename_metadados = "plantas_export_".$_SESSION['userlastname']."_".$_S
 if (!isset($export_filename)) {
 $export_filename = "plantas_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate'].".csv";
 }
-$nrecs = $_SESSION['exportnresult']+0;
-$nfields = $_SESSION['exportnfields']+0;
+
 echo "
 <br />
 <table class='myformtable' cellpadding='5' align='center' width=70%>
@@ -56,17 +68,22 @@ if ($qu) {
 echo "
 <tr><td><b>Nenhum registro foi encontrado!</b></td></tr>";
 } else {
+if ($nrecs>0) {
+	$txt = "<b>".$nrecs."</b>";
+} else { $txt = "";}
 echo "
 <tr>
-  <td><b>$nrecs</b> registros foram preparados</td>
+  <td>".$txt." registros foram preparados</td>
     <td><a href=\"download.php?file=temp/".$export_filename."\">Baixar dados</a></td>
 </tr>";
-if ($forbrahms!=1) {
+if ($forbrahms!=1 ) {
+if (file_exists( "temp/".$export_filename_metadados )) {
 echo "<tr>
    <td>A tabela gerada contém <b>$nfields</b> colunas</td>
    <td><a href=\"download.php?file=temp/".$export_filename_metadados."\">Baixar definição colunas dados</a></td>
 </tr>
 ";
+}
 echo "
 <tr>
   <td colspan='2'><hr></td>

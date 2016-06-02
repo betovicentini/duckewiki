@@ -28,6 +28,9 @@ $export_filename = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION
 $export_filename_metadados = "especimenes_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate']."_definicoesDAScolunas.csv";
 
 
+$progesstable = "temp_exportespecimenes".$_SESSION['userid']."_".substr(session_id(),0,10);
+
+
 
 //EXTRAI VARIAVEIS DO POST
 $dd = @unserialize($_SESSION['destvararray']);
@@ -556,24 +559,17 @@ LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 	$qqbrahms .= $qqff;
 	$qq .= $qqff;
 
-	$qz = "SELECT * FROM Especimenes as pltb ".$qqff0." ".$qqff;
-	$rz = mysql_query($qz,$conn);
-	$nrz = mysql_numrows($rz);
-	$_SESSION['exportnresult'] = $nrz;
-	//$_SESSION['metadados'] = serialize($metadados);
-	if ($forbrahms==1) {
+//$qz = "SELECT * FROM Especimenes as pltb ".$qqff0." ".$qqff;
+//$rz = mysql_query($qz,$conn);
+//$nrz = mysql_numrows($rz);
+//
+//$_SESSION['metadados'] = serialize($metadados);
+
+if ($forbrahms==1) {
 		$qq = $qqbrahms;
-	}
-	unlink("temp/".$export_filename);
-	unlink("temp/".$export_filename_metadados);
-
-//echo $qq;
-
-
-$step=0;
-$st1 = 0;
-$stepsize = 100;
-$nsteps = ceil($nrz/$stepsize);
+}
+unlink("temp/".$export_filename);
+unlink("temp/".$export_filename_metadados);
 
 if ($forbrahms==1) {
 		mysql_set_charset('latin1', $conn);
@@ -583,32 +579,40 @@ if ($forbrahms==1) {
 		$qblin = "\n";
 }
 
-while($st1<=$nrz) {
-	$qqq = $qq." LIMIT ".$st1.",".$stepsize;
-	//$_SESSION['qz'] = $_SESSION['qz']."<br /><br />".$qqq;
-	//echo $qqq."<br />";
-	$res = mysql_query($qqq,$conn);
-	if ($res) {
-		if ($step==0) {
-			$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
-			$count = mysql_num_fields($res);
-			$header = '';
-			for ($i = 0; $i < $count; $i++){
-					if ($i<($count-1)) {
-						$header .=  '"'. mysql_field_name($res, $i).'"'."\t";
-					} else {
-						$header .=  '"'. mysql_field_name($res, $i).'"';
-					}
-			}
-			$header .= $qblin;
-			//$tmp = chr(255).chr(254).mb_convert_encoding( $header, 'UTF-16LE', 'UTF-8'); 
-			fwrite($fh, $header);
-			$_SESSION['exportnfields'] = $count;
+
+$qnu = "UPDATE `".$progesstable."` SET percentage=1"; 
+mysql_query($qnu);
+session_write_close();
+
+//EXECUTA A QUERY E SALVA O ARQUIVO
+$qqq = $qq; #." LIMIT ".$st1.",".$stepsize;
+//$_SESSION['qz'] = $_SESSION['qz']."<br /><br />".$qqq;
+echo $qqq."<br />";
+$res = mysql_query($qqq,$conn);
+$step=0;
+if ($res) {
+	$nnres = mysql_numrows($res);
+	$fieldscount = mysql_num_fields($res);
+	//$_SESSION['exportnfields'] = $count;
+	//$_SESSION['exportnresult'] = $nnres;
+	if ($step==0) {
+		$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
+		$count = mysql_num_fields($res);
+		$header = '';
+		for ($i = 0; $i < $count; $i++){
+				if ($i<($count-1)) {
+					$header .=  '"'. mysql_field_name($res, $i).'"'."\t";
+				} else {
+					$header .=  '"'. mysql_field_name($res, $i).'"';
+				}
 		}
-		else {
-			$fh = fopen("temp/".$export_filename, 'a') or die("nao foi possivel abrir o arquivo");
-		}
-		while($rsw = mysql_fetch_row($res)){
+		$header .= $qblin;
+		fwrite($fh, $header);
+	}
+	while($rsw = mysql_fetch_row($res)){
+			//else {
+			//	$fh = fopen("temp/".$export_filename, 'a') or die("nao foi possivel abrir o arquivo");
+			//}
 			$line = '';
 			$nff  = count($rsw);
 			$nii = 1;
@@ -637,36 +641,34 @@ while($st1<=$nrz) {
 			}
 			$lin = trim($line).$qblin;
 			fwrite($fh, $lin);
+			
+			//SAVE LOG
+			$perc = ceil(($step/$nnres)*99);
+			$qnu = "UPDATE `".$progesstable."` SET percentage=".$perc; 
+			mysql_query($qnu);
+			session_write_close();
+			$step++;
 		}
-		fclose($fh);
-	} 
-	else {
-		break;
-	}
-	$perc = ceil(($st1/$nrz)*99);
-	$qnu = "UPDATE `temp_exportespecimenes".substr(session_id(),0,10)."` SET percentage=".$perc; 
-	mysql_query($qnu);
-	session_write_close();
-	$st1 = $st1+$stepsize+1;
-	$step++;
-}
+	
+	fclose($fh);
 
-//$metadados = unserialize($_SESSION['metadados']);
-$fh = fopen("temp/".$export_filename_metadados, 'w') or die("nao foi possivel gerar o arquivo");
-$stringData = "COLUNA\tDEFINICAO"; 
-if (!$forbrahms==1) {
-	foreach ($metadados as $kk => $vv) {
-		$stringData = $stringData."\n".$vv[0]."\t".$vv[1];
-	}
-} else {
+	//$metadados = unserialize($_SESSION['metadados']);
+	$fh = fopen("temp/".$export_filename_metadados, 'w') or die("nao foi possivel gerar o arquivo");
+	$stringData = "COLUNA\tDEFINICAO"; 
+	if (!$forbrahms==1) {
+		foreach ($metadados as $kk => $vv) {
+			$stringData = $stringData."\n".$vv[0]."\t".$vv[1];
+		}
+	} else {
 		$stringData .= "\n\nPlanilha para o Brahms, não tem metadados ainda"; 
+	}
+	fwrite($fh, $stringData);
+	fclose($fh);
 }
-fwrite($fh, $stringData);
-fclose($fh);
 
-$qnu = "UPDATE `temp_exportespecimenes".substr(session_id(),0,10)."` SET percentage=100"; 
+$qnu = "UPDATE `".$progesstable."` SET percentage=100"; 
 mysql_query($qnu);
-$message=  "100% CONCLUÍDO";
+$message=  $nnres.";".$fieldscount;
 echo $message;
 session_write_close();
 

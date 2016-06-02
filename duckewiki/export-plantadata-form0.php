@@ -28,15 +28,21 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
+
 $menu = FALSE;
-$which_css = array("<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_css = array(
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />"
+);
 $which_java = array();
 $title = 'Exportar dados de plantas marcadas';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
+unset($_SESSION['metadados']);
 unset($_SESSION['destvararray']);
 unset($_SESSION['qq']);
+unset($_SESSION['exportnresult']);
+
 echo "
 <br />
 <table class='myformtable' align='center' cellpadding=\"5\">

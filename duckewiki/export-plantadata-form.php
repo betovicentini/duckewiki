@@ -58,16 +58,16 @@ $which_java = array(
 "<script>
     function CheckProgress() {
       var time = new Date().getTime();
-      $.get('export-plantadata-progress.php', { t: time }, function (data) {
+      $.get('export-plantadata-progress.php', { t: time }, function (progress) {
           var progress = parseInt(data, 10);
           document.getElementById('probar').value = progress;
         if (progress < 100) {
           document.getElementById('probarperc').innerHTML = 'Processando ' + progress + '%';
-          setTimeout(function() { CheckProgress();}, 1);
+          setTimeout(function() { CheckProgress();}, 1000);
     	} else {
           document.getElementById('probarperc').innerHTML = progress + '%' +' CONCLUIDO';
           document.getElementById('loaderimg').style.visibility= 'hidden';
-          window.location = 'export-plantadata-save.php';
+          //window.location = 'export-plantadata-save.php';
     	}
       });
 	}
@@ -79,10 +79,10 @@ $which_java = array(
                 async: true,
                 success:
                     function (data) {
-                        document.getElementById('probarperc').innerHTML = data ;
-                        document.getElementById('loaderimg').style.visibility= 'hidden';
-                        document.getElementById('coffeeid').style.visibility= 'hidden';
-                        window.location = 'export-plantadata-save.php';
+                        //document.getElementById('probarperc').innerHTML = data ;
+                        //document.getElementById('loaderimg').style.visibility= 'hidden';
+                        //document.getElementById('coffeeid').style.visibility= 'hidden';
+                        window.location = 'export-plantadata-save.php?resultado='+data;
                     }
             });
    CheckProgress();         
@@ -116,5 +116,4 @@ echo "
 </div>
 ";
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
-//}
 ?>

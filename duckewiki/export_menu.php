@@ -45,6 +45,8 @@ echo "
 echo "<br>";
 echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_amarelo\" onclick = \"javascript:small_window('export-plantadata-form0.php?ispopup=1',900,600,'Exportar dados de Plantas Marcadas');\">Exportar Dados de Plantas Marcadas</a>";
 echo "<br>";
+echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_azul\" onclick = \"javascript:small_window('export-plantadataquick-form0.php',900,600,'Exportar dados Censos');\">Exportar Dados de Censos</a>";
+echo "<br>";
 //echo "<br>";
 //echo "<a style=\"width: ".$minwidth .";\" href=\"#\" class=\"menuicons_amarelo\" onclick = \"javascript:small_window('export-monitoramento-form.php?ispopup=1',800,500,'Exportar dados de Monitoramento');\">Exportar Dados de Monitoramento</a>";
 //echo "<br>";

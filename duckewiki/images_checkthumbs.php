@@ -129,28 +129,35 @@ if (count($newfilestothumb)>0) {
 	$newfilestothumb = array_values($newfilestothumb);
 	$fname = $newfilestothumb[0];
 	$ff = array($fname);
+	//echopre($ff);
 	unset($newfilestothumb[0]);
 	$_SESSION['newfilestothumb'] = serialize($newfilestothumb);
 	$_SESSION['newimagfiles'] = serialize($ff);
+	//echopre($_SESSION);
 	$zz = explode("/",$_SERVER['SCRIPT_NAME']);
 	$serv = $_SERVER['SERVER_NAME'];
 	$returnto = $serv."/".$zz[1]."/images_checkthumbs.php";
+	//echo $returnto."<br />";
+	//echo $zz[1]."<br />";
+	//echo "imagick_function.php?returnto=$returnto&folder=$zz[1]&imgdone=returnvar&filename=$fname";
 	echo "
 <table><tr><td>Atualizando o arquivo $fname... aguarde!</td></tr></table>
 <form  name='myform' action='../cgi-local/imagick_function.php' method='get'>
   <input type='hidden' value='".$returnto."' name='returnto' />
   <input type='hidden' value='".$zz[1]."' name='folder' />
+  <input type='hidden' value='".$fname."' name='filename' />
   <input type='hidden' value='imgdone' name='returnvar' />
   <script language=\"JavaScript\">setTimeout('document.myform.submit()',1);</script>
 </form>";
+  //
+
+
 } 
 else {
 	echo "Não foram encontrados arquivos de imagens sem thumbnails<br />";
 }
 //	echo "Missing file sizes for<br />	Thumbnails:".$notub."	<br />Lowres:".$noloweres." <br />Copias baixa res:".$nocopiabr."<br />";
 //echo "<br />Foram atualizados os nomes de ".$updated." arquivos<br />";	
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>
