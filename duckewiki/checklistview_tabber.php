@@ -261,9 +261,9 @@ if (($blockacess+0)==0) {
 	$tbwidth = $divwith+10;
 	$tbheight = 500;
 echo "
-<span id='counter' style=\"padding: 1px; color:  red; font-size: 1.8em;\"></span>
-<div style=\"position:absolute; top:0%; left:5%; width: 40%; padding: 20px; background-color:orange; color:  black; visibility: hidden;\" id=\"progressalert\"  ></div>
-<div id=\"a_tabbar\" style=\"position: absolute; top: 175px;  width:".$tbwidth."px; height:".$tbheight."px;\">";
+<span id='counter' style=\"position: relative; padding: 1px; color:  red; font-size: 1.8em;\"></span>
+<div style=\"position: relative;  left: 5px; width: 40%; padding: 10px; background-color:orange; color:  black; visibility: hidden; \" id=\"progressalert\" ></div>
+<div id=\"a_tabbar\" style=\"position: relative; top: 5px;  width:".$tbwidth."px; height:".$tbheight."px;\">";
 if ($species==1) {
    $taxonlist = unserialize($_SESSION['checklist_species']);
 echo "

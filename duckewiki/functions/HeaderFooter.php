@@ -137,7 +137,7 @@ $stilo =" border:1px solid #cccccc;  -webkit-box-shadow:inset 0 0 6px #cccccc; -
 //Menu($title);
 //
 echo "
-<div id='container'  style='position: absolute; top: 10px;  padding-left: 5px;'>
+<div id='container'  style='position: absolute; top: 120px;  padding-left: 5px;'>
 ";
 
 

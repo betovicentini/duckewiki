@@ -29,11 +29,8 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />");
 $which_java = array();
@@ -388,8 +385,8 @@ echo "
 	}
 	echo "
      <input type='hidden' name='arraysubmited' value='".serialize($arrayoffields)."' />
-<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
-<!---<input type='submit' value='Continuar' class='bsubmit' />--->
+<!---<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>--->
+<input type='submit' value='Continuar' class='bsubmit' />
 </form>
   ";
   flush();
@@ -458,45 +455,45 @@ echo "
 echo "
 <br /><table cellpadding='5' class='myformtable' align='center'>
 <thead>
- <tr><td colspan='100%'>Atenção!</td></tr>
+ <tr><td >Atenção!</td></tr>
 </thead>
 <tbody>";
 if ($arrayoffields['plins']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Foram inseridos ".$arrayoffields['plins']." registros de plantas marcadas</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Foram inseridos ".$arrayoffields['plins']." registros de plantas marcadas</td></tr>";
 }
 if ($arrayoffields['plup']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Foram atualizados ".$arrayoffields['plup']." registros de plantas marcadas</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Foram atualizados ".$arrayoffields['plup']." registros de plantas marcadas</td></tr>";
 }
 if ($arrayoffields['spins']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Foram inseridos ".$arrayoffields['spins']." registros de coletas (especimenes)</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Foram inseridos ".$arrayoffields['spins']." registros de coletas (especimenes)</td></tr>";
 }
 if ($arrayoffields['spup']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Foram atualizados ".$arrayoffields['spup']." registros de coletas (especimenes)</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Foram atualizados ".$arrayoffields['spup']." registros de coletas (especimenes)</td></tr>";
 }
 if ($arrayoffields['idsins']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Foram inseridas ".$arrayoffields['idsins']." novas identificações</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Foram inseridas ".$arrayoffields['idsins']." novas identificações</td></tr>";
   $qq = "UPDATE `Identidade` SET DetDate=CONCAT(DetDateYY,'-',DetDateMM,'-',DetDateDD) WHERE DetDate is null  AND DetDateYY>0 AND DetDateDD>0";
   mysql_query($qq,$conn);
 }
 if ($arrayoffields['idsnochange']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Para ".$arrayoffields['idsnochange']." registros não houve mudança de identificação</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Para ".$arrayoffields['idsnochange']." registros não houve mudança de identificação</td></tr>";
 }
 if ($arrayoffields['idsups']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Foram atualizadas ".$arrayoffields['idsups']." novas identificações</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Foram atualizadas ".$arrayoffields['idsups']." novas identificações</td></tr>";
   $qq = "UPDATE `Identidade` SET DetDate=CONCAT(DetDateYY,'-',DetDateMM,'-',DetDateDD) WHERE DetDate is null  AND DetDateYY>0 AND DetDateDD>0";
   mysql_query($qq,$conn);
 
@@ -504,32 +501,32 @@ if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bg
 if ($arrayoffields['moni']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Foram atualizadas/inseridas ".$arrayoffields['moni']." registros para variáveis de monitoramento</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Foram atualizadas/inseridas ".$arrayoffields['moni']." registros para variáveis de monitoramento</td></tr>";
 }
 if ($arrayoffields['esta']>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Foram atualizadas/inseridas ".$arrayoffields['esta']." registros para variáveis estáticas</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Foram atualizadas/inseridas ".$arrayoffields['esta']." registros para variáveis estáticas</td></tr>";
 }
 $nrecs = $arrayoffields['plins']+$arrayoffields['plup']+$arrayoffields['spins']+$arrayoffields['spup'];
 if ($nrecs>0) {
 	if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 	echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>Os registros atualizados/inseridos estão marcados como filtro <b>$filtronome</b></td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >Os registros atualizados/inseridos estão marcados como filtro <b>$filtronome</b></td></tr>";
 }
 if (count($arrayoffields['traitidsestatic'])>0) {
 	$trs = array_unique($arrayoffields['traitidsestatic']);
 	$ntr = count($trs);
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 	echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>$ntr variáveis estáticas foram importadas e estão agrupadas no formulário <b>$fomrestatic</b></td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >$ntr variáveis estáticas foram importadas e estão agrupadas no formulário <b>$fomrestatic</b></td></tr>";
 }
 if (count($arrayoffields['traitidsmoni'])>0) {
 	$trs = array_unique($arrayoffields['traitidsmoni']);
 	$ntr = count($trs);
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 	echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>$ntr variáveis de monitoramento foram importadas e estão agrupadas no formulário <b>$formmonitor</b></td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  >$ntr variáveis de monitoramento foram importadas e estão agrupadas no formulário <b>$formmonitor</b></td></tr>";
 }
 
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
@@ -540,6 +537,7 @@ echo "
 </tbody>
 </table>";
 session_write_close();
+
 //TaxonomySimple($all=true,$conn);
 //TaxonomySimple($all=false,$conn);
 //LocalitySimpleBrasil($gspoints=false,$conn);

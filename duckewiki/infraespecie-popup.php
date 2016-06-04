@@ -796,10 +796,7 @@ echo "
 }
 
 $which_java = array(
-"<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>"
-);
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

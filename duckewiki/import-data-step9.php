@@ -112,7 +112,7 @@ if (count($taxafields)>0) {
 			echo "<br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
-  <tr><td colspan='100%'>Gêneros não encontrados no Wiki</td></tr>
+  <tr><td colspan='4'>Gêneros não encontrados no Wiki</td></tr>
   <tr class='subhead'>
     <td>Nome</td>
     <td>Pode ser um desses</td>
@@ -123,7 +123,7 @@ if (count($taxafields)>0) {
 <tbody>";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td class='tdformnotes' colspan='100%'>
+<tr bgcolor = '".$bgcolor."'><td class='tdformnotes' colspan='4'>
 Se algum registro não tiver identificação no nível de gênero digite \"Indet\" no campo de substituição. Não cadastre um novo valor se não for de fato um nome publicado ou um nome que represente um morfotipo!</td></tr>
 <form action='import-data-step9.php' method='post'>";
 					foreach ($_POST as $kk => $vv) {
@@ -198,7 +198,7 @@ echo "
 
 									}
 					echo "
-  <tr><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+  <tr><td align='center' colspan='4'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
 </form>
 </tbody>
 </table>
@@ -258,7 +258,7 @@ echo "
 			echo "<br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
- <tr><td colspan='100%'>Famílias não encontradas no Wiki</td></tr>
+ <tr><td colspan='4'>Famílias não encontradas no Wiki</td></tr>
  <tr class='subhead'>
    <td>Nome</td>
    <td>Pode ser uma dessas</td>
@@ -269,7 +269,7 @@ echo "
 <tbody>";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td class='tdformnotes' colspan='100%'>
+<tr bgcolor = '".$bgcolor."'><td class='tdformnotes' colspan='4'>
 Se algum registro não tiver identificação no nível de família digite \"Indet\" no campo de substituição.</td></tr>
   <form action='import-data-step9.php' method='post'>";
 					foreach ($_POST as $kk => $vv) {
@@ -365,7 +365,7 @@ Se algum registro não tiver identificação no nível de família digite \"Inde
 				}
 					if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 					echo "
-      <tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+      <tr bgcolor = '".$bgcolor."'><td align='center' colspan='4'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
     </form>
 </tbody>
 </table>";
@@ -434,7 +434,7 @@ Se algum registro não tiver identificação no nível de família digite \"Inde
 <br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
-  <tr><td colspan='100%'>Os seguintes gêneros não foram encontrados no Wiki</td></tr>
+  <tr><td colspan='4'>Os seguintes gêneros não foram encontrados no Wiki</td></tr>
   <tr class='subhead'>
     <td>Nome</td>
     <td>Pode ser um desses?</td>
@@ -446,7 +446,7 @@ Se algum registro não tiver identificação no nível de família digite \"Inde
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td class='tdformnotes' colspan='100%'>
+<tr bgcolor = '".$bgcolor."'><td class='tdformnotes' colspan='4'>
 Se algum registro não tiver identificação no nível de gênero digite \"Indet\" no campo de substituição. Não cadastre um novo valor se não for de fato um nome publicado ou um nome que represente um morfotipo!</td></tr>
 <form action='import-data-step9.php' method='post'>";
 					foreach ($_POST as $kk => $vv) {
@@ -531,7 +531,7 @@ Se algum registro não tiver identificação no nível de gênero digite \"Indet
 
 				}
 					echo "
-<tr><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+<tr><td align='center' colspan='4'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
 </form>
 </tbody>
 </table>
@@ -621,7 +621,7 @@ Se algum registro não tiver identificação no nível de gênero digite \"Indet
 <br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
-  <tr><td colspan='100%'>Epítetos não encontrados no Wiki</td></tr>
+  <tr><td colspan='4'>Epítetos não encontrados no Wiki</td></tr>
   <tr class='subhead'>
     <td>Nome</td>
     <td>Pode ser um desses</td>
@@ -633,7 +633,7 @@ Se algum registro não tiver identificação no nível de gênero digite \"Indet
 ";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td class='tdformnotes' colspan='100%'>
+<tr bgcolor = '".$bgcolor."'><td class='tdformnotes' colspan='4'>
 Se algum registro não tiver identificação no nível de espécie digite \"Indet\" no campo de substituição.\nProcure não registrar valores sem significado como \"sp.\". Não cadastre um novo valor se não for de fato um nome publicado ou um nome que represente um morfotipo! Modificadores de nomes como cf. aff. vel aff. devem estar em campos separados no arquivo original.</td>
 </tr>
 <form action='import-data-step9.php' method='post'>";
@@ -728,7 +728,7 @@ echo "
 ";
 		}
 					echo "
-  <tr><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+  <tr><td align='center' colspan='4'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
 </form>
 </tbody>
 </table>
@@ -823,7 +823,7 @@ echo "
 <br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
-  <tr><td colspan='100%'>Epítetos infraespecíficos não encontrados no Wiki</td></tr>
+  <tr><td colspan='4'>Epítetos infraespecíficos não encontrados no Wiki</td></tr>
   <tr class='subhead'>
     <td>Nome</td>
     <td>Pode ser um desses</td>
@@ -947,8 +947,6 @@ echo "
   <script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
   </form>";
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

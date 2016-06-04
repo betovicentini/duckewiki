@@ -1,4 +1,4 @@
- <?php
+<?php
 function omenudeicons($quais, $vertical=FALSE, $position='right', $iconwidth='35', $iconheight='35' ) { 
 if ($vertical) {
 	$separador= '<br />';
@@ -8,11 +8,11 @@ if ($vertical) {
 	$hgt = "height=\"".$iconheight."\"";
 }
 if ($position=='right') {
+	$poss = "position: relative; align: right;";
 	//$poss = 'float: right;';
-	$poss = "position: absolute; top: 115px; right: 10px; align='right';";
 } else {
+	$poss = "position: relative; align: left;";
 	//$poss = 'float: left;';
-	$poss = "position: absolute; top: 115px; left: 5px; align='left';";
 }
 $stilo =" border:1px solid #cccccc;  -webkit-box-shadow:inset 0 0 6px #cccccc; -moz-box-shadow: inset 0 0 6px #cccccc; cursor: pointer;";
 if ($_SESSION['userid']>0) {
@@ -48,6 +48,7 @@ onmouseover=\"Tip('Editar ou cadastrar Taxonomia');\" onclick = \"javascript:sma
 'variaveistable' => "<img src=\"icons/categories.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Edita variáveis');\" onclick = \"javascript:small_window('traits_definition_form.php?ispopup=0',1100,700,'Edita variáveis');\" />",
 );
 //'fitotable' => "<img src=\"icons/plantfito.png\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Script provisório para REGISTRO FITODEMOGRAFICO');\" onclick = \"javascript:small_window('fitobatchenter_traits_form.php?ispopup=0',700,600,'Script provisório para REGISTRO FITODEMOGRAFICO');\" />",
+
 if ((empty($quais) || count($quais)==0) && $_SESSION['accesslevel']!='visitor') {
 	$quais = array_keys($linkss);
 }
@@ -65,8 +66,9 @@ $atencao = "</br><span style='padding: 8px; line-height: 150%; background-color:
 } 
 else {
 $toprint = "
-<div style=\"vertical-align:top; position: absolute;  top: 0px; right: 0px;  font-size: 0.8em;\">&nbsp;<img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\" onclick = \"javascript: self.location='login-form.php';\" />&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a></div>
-<div style='padding: 100px; font-family:\"Verdana\", Arial, sans-serif;  font-size: 1.2em; font-color: #800000;'>".$_SESSION['introtext']."</div>";
+<div style=\"vertical-align:top; position: absolute;  top:0px; right: 0px;  font-size: 0.8em;\">&nbsp;<img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\" onclick = \"javascript: self.location='login-form.php';\" />&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
+</div><div 
+style='padding: 100px; font-family:\"Verdana\", Arial, sans-serif;  font-size: 1.2em; font-color: #800000;'>".$_SESSION['introtext']."</div>";
 }
 //style='padding-left: 5%; padding-top: 5%; font-size: 1.1em; text-align: left; line-height: 150%;
 
@@ -89,7 +91,7 @@ function formatgaznome($nome) {
 							$vv = ucfirst($vv);
 					}
 					$res[] = $vv;
-				$i++;
+				$ii++;
 				}
 		}
 		$res = implode(" ",$res);
@@ -1512,6 +1514,7 @@ function UpdateTable($id,$fieldsaskeyofvaluearray,$idcolname,$table,$conn) {
 		}
 		$qqq = $qqq." AddedBy='$userid', AddedDate='$sessiondate' WHERE $idcolname='$id'";
 	$res = mysql_query($qqq,$conn);
+	//ECHO "AQUIIIIIIIIIIIIIII";
 	//echo $qqq."<br><br>";
 	$forkeyonn = "SET FOREIGN_KEY_CHECKS=1";
 		mysql_query($forkeyoff,$conn);
@@ -8408,6 +8411,7 @@ foreach ($arraydevalores as $key => $value) {
 		$orgcoln = $arraykey[0];
 		if ($varorunit=='traitvar') {
 			$dataobs = $arraydevalores[$orgcoln.'_dataobs_'.$charid];
+			$thebibkey = $arraydevalores[$orgcoln.'_bibkey_'.$charid];
 			$qq = "SELECT * FROM Traits WHERE TraitID='$charid'";
 			$nch = mysql_query($qq,$conn);
 			$rwch = mysql_fetch_assoc($nch);
@@ -8419,11 +8423,13 @@ foreach ($arraydevalores as $key => $value) {
 			} else {
 				$ttunidade = '';
 			}
+			
+			
 			if (!empty($value)) {
-				$qq = "SELECT * FROM Monitoramento WHERE TraitID='$charid' AND PlantaID='$linkid' AND DataObs='$dataobs'";
+				$qq = "SELECT * FROM Monitoramento WHERE TraitID='$charid' AND PlantaID='$linkid' AND DataObs='$dataobs' AND BibID=".$thebibkey;
 				$teste = mysql_query($qq,$conn);
 				$update = @mysql_numrows($teste);
-				$fieldsaskeyofvaluearray= array('PlantaID' => $linkid, 'TraitID' => $charid, 'TraitVariation' => $value, 'TraitUnit' => $ttunidade, 'DataObs' => $dataobs);
+				$fieldsaskeyofvaluearray= array('PlantaID' => $linkid, 'TraitID' => $charid, 'TraitVariation' => $value, 'TraitUnit' => $ttunidade, 'DataObs' => $dataobs, 'BibID' => $thebibkey);
 				if ($update==0) {
 					$newtrait = InsertIntoTable($fieldsaskeyofvaluearray,
 					'MonitoramentoID','Monitoramento',$conn);
@@ -8478,6 +8484,7 @@ foreach ($arraydevalores as $key => $value) {
 		$varorunit = $arraykey[1];
 		$orgcoln = $arraykey[0];
 		if ($varorunit=='traitvar') {
+			$thebibkey = $arraydevalores[$orgcoln.'_bibkey_'.$charid];
 			$qq = "SELECT * FROM Traits WHERE TraitID='$charid'";
 			$nch = mysql_query($qq,$conn);
 			$rwch = mysql_fetch_assoc($nch);
@@ -8490,10 +8497,10 @@ foreach ($arraydevalores as $key => $value) {
 				$ttunidade = '';
 			}
 			if (!empty($value)) {
-				$qq = "SELECT * FROM Traits_variation WHERE TraitID='$charid' AND ".$linktype."='$linkid'";
+				$qq = "SELECT * FROM Traits_variation WHERE TraitID='".$charid."' AND ".$linktype."='$linkid'";
 				$teste = mysql_query($qq,$conn);
 				$update = @mysql_numrows($teste);
-				$fieldsaskeyofvaluearray= array($linktype => $linkid, 'TraitID' => $charid, 'TraitVariation' => $value, 'TraitUnit' => $ttunidade);
+				$fieldsaskeyofvaluearray= array($linktype => $linkid, 'TraitID' => $charid, 'TraitVariation' => $value, 'TraitUnit' => $ttunidade, 'BibtexIDS' => $thebibkey);
 				if ($update==0) {
 					$newtrait = InsertIntoTable($fieldsaskeyofvaluearray,
 					'TraitVariationID','Traits_variation',$conn);
@@ -8503,13 +8510,15 @@ foreach ($arraydevalores as $key => $value) {
 							$traitsused[] = $charid;
 						}
 				} else {
+					//echo "1. UPDATE = ".$update;
+					//echopre($fieldsaskeyofvaluearray);
 					$rrr = @mysql_fetch_assoc($teste);
 					$oldval = trim($rrr['TraitVariation']);
 					$tvv = $value;
 					$oldid  = $rrr['TraitVariationID'];
 					//update if newvalue is different from old value
-					if ($tvv!=$oldval) {
-						if (empty($updaterecs) || $updaterecs=='adicionar') {
+					if (empty($updaterecs)) { $updaterecs='adicionar';}
+					if ($tvv!=$oldval || $updaterecs=='adicionar') {
 							if ($traittipo=='Variavel|Quantitativo' || $traittipo=='Variavel|Categoria') {
 								$oldarr = explode(";",$oldval);
 								$newarr = explode(";",$tvv);
@@ -8523,15 +8532,26 @@ foreach ($arraydevalores as $key => $value) {
 								$vari = $oldval.". ".$tvv;
 							}
 							$fieldsaskeyofvaluearray['TraitVariation'] = $vari;
+							$arrbib = explode(";",$rrr['BibtexIDS']);
+							if (count($arrbib)>0) {
+								if (!empty($thebibkey) && !in_array($thebibkey,$arrbib)) {
+										$arrbib[] = $thebibkey;
+								}
+								$arrbib = array_unique($arrbib);
+								$newbibkey = implode(";",$arrbib);
+								$fieldsaskeyofvaluearray['BibtexIDS'] = $newbibkey;
+							}
 						}
 						CreateorUpdateTableofChanges($oldid,'TraitVariationID','Traits_variation',$conn);
 						$newupdate = UpdateTable($oldid,$fieldsaskeyofvaluearray,'TraitVariationID','Traits_variation',$conn);
+					//echo "2. UPDATE = ".$update;
+					//echopre($fieldsaskeyofvaluearray);
 						if (!$newupdate) {
 							$erro++;
 						} else {
 							$traitsused[] = $charid;
 						}
-					}
+
 				}
 		 	}
 	} //endif dataobs

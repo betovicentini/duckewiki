@@ -28,27 +28,16 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
-$title = 'Nova categoria de variação';
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
+$title = 'Carateres Qualitativos';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
 
-$query = "SELECT DISTINCT `".$orgcol."` FROM `".$tbname."`  WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
+$query = "SELECT DISTINCT `".$orgcol."` FROM `".$tbname."`  WHERE `".$orgcol."`<>'' AND (`".$orgcol."` IS NOT NULL) AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
 $erro=0;
 if ($final==1) {
 	$res = mysql_query($query,$conn);
@@ -69,7 +58,7 @@ if ($final==1) {
 			}
 			$n++;
 		}
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=checkquantitativecolumn(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
+		$qq = "UPDATE `".$tbname."` SET `".$colname."`=checkquantitativecolumn(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND (`".$orgcol."` IS NOT NULL) AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
 		$erro=0;
 		mysql_query($qq,$conn);
 	}
@@ -82,7 +71,7 @@ if ($nres>0) {
 	echo "<br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
-	<tr><td colspan='100%'>Tem valores não numéricos na variável quantitativa $tname</td></tr>
+	<tr><td colspan='2'>Tem valores não numéricos na variável quantitativa $tname</td></tr>
 	<tr class='subhead'>
 		<td>Valor original no arquivo</td>
 		<td style='color:#990000'>Corrigir aqui*</td>
@@ -110,10 +99,10 @@ echo "
 		}
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>";
+<tr bgcolor = '".$bgcolor."'><td align='center' colspan='2'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td align='center' class='tdformnotes' colspan='100%'>*multiplas medições separadas por ponto e vírgula são válidas, mas os valores individualmente devem ser numéricos</td></tr>
+<tr bgcolor = '".$bgcolor."'><td align='center' class='tdformnotes' colspan='2'>*multiplas medições separadas por ponto e vírgula são válidas, mas os valores individualmente devem ser numéricos</td></tr>
 </tbody>
 </table>
 </form>";
@@ -140,8 +129,6 @@ echo "
     </script>
   </form>";
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

@@ -29,23 +29,12 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
-
 );
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-);
+$which_java = array("<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
 $title = 'Importar Dados Passo 11';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -74,6 +63,13 @@ if (in_array('ESTA_VAR',$fields) && !isset($var_estatic_ok)) {
 			$unit1 = $_POST[$kk];
 			$kk = "varunitess_".$monikk;
 			$unit2 = TRIM($_POST[$kk]);
+			
+			//pega referencia bibliográfica
+			$kk = "bibkeystaticfields_".$monikk;
+			if (!empty($_POST[$kk])) {
+				$bibref = $tbprefix.$_POST[$kk];
+			} 
+			
 			if ($ttid>0 && $traitid==0) { $traitid=$ttid;}
 			if ($traitid>0) {
 				$qq = "SELECT * FROM Traits WHERE TraitID='".$traitid."'";
@@ -92,7 +88,6 @@ if (in_array('ESTA_VAR',$fields) && !isset($var_estatic_ok)) {
 				} elseif ($ttipo=='Quantitativo') {
 					$unit2 = $row['TraitUnit'];
 				}
-				
 				$qn = "SELECT LENGTH(".$vv.") AS TEXTFieldSize FROM ".$tbname." ORDER BY LENGTH(".$vv.")  DESC LIMIT 0,1";
 				$qnz = mysql_query($qn,$conn);
 				$qnw = mysql_fetch_assoc($qnz);
@@ -108,9 +103,14 @@ if (in_array('ESTA_VAR',$fields) && !isset($var_estatic_ok)) {
 				} 
 
 				$colname = $tbprefix."ESTATIC_".$vv."_traitvar_".$traitid;
+
 				$qq = "ALTER TABLE ".$tbname." ADD COLUMN ".$colname." ".$tpvar." DEFAULT ''".$qtt;
-				//echo $qq."<br />";
 				@mysql_query($qq,$conn);
+				if (!empty($bibref)) {
+					$colname4 = $tbprefix."ESTATIC_".$vv."_bibkey_".$traitid;
+					$qq = "ALTER TABLE ".$tbname." ADD COLUMN ".$colname4." INT(10) DEFAULT NULL";
+					@mysql_query($qq,$conn);
+				} 
 				$qq = "SELECT * FROM Traits WHERE TraitID='".$traitid."'";
 				$rr = mysql_query($qq,$conn);
 				$row = mysql_fetch_assoc($rr);
@@ -120,7 +120,11 @@ if (in_array('ESTA_VAR',$fields) && !isset($var_estatic_ok)) {
 				$ttipo = $tt[1];
 				if ($ttipo=='Categoria') {
 						//faz o update da coluna, se tiver ok entao finaliza, se deu erro pergunte para corrigir os dados
-						$qq = "UPDATE `".$tbname."` SET `".$colname."`=checkcategories(".$vv.",".$traitid.") WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
+						$qq = "UPDATE `".$tbname."` SET `".$colname."`=checkcategories(".$vv.",".$traitid.")";
+						if (!empty($bibref)) {
+							$qq .= ", `".$colname4."`=`".$bibref."`";
+						}
+						$qq .= "WHERE `".$vv."`<>'' AND (`".$vv."` IS NOT NULL) AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
 						mysql_query($qq,$conn);
 						$qq = "SELECT DISTINCT `".$vv."` FROM `".$tbname."`  WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL AND (`".$colname."`='ERRO' OR `".$colname."`='')";
 						$res = mysql_query($qq,$conn);
@@ -131,7 +135,7 @@ if ($nused==0) {
 echo "<br />
 <table align='center' class='myformtable' cellpadding='3'>
 <thead>
-  <tr><td colspan='100%'>ATENÇÃO! Sobre as variáveis estáticas definidas</td></tr>
+  <tr><td colspan='3'>ATENÇÃO! Sobre as variáveis estáticas definidas</td></tr>
   <tr class='subhead'>
     <td>Nome da variável [Caminho]</td>
     <td>Problema encontrado</td>
@@ -165,6 +169,9 @@ echo " onclick = \"javascript:small_window('$myurl',800,400,'Novas categorias de
 						} else {
 							$qq .= ", `".$colname2."`='".$unit1."'";
 						}
+						if (!empty($bibref)) {
+							$qq .= ", `".$colname4."`=`".$bibref."`";
+						}
 					$qq .= "  WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
 					mysql_query($qq,$conn);
 					$qq = "SELECT DISTINCT `".$vv."` FROM `".$tbname."`  WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL AND (`".$colname."`='ERRO' OR `".$colname."`='')";
@@ -176,7 +183,7 @@ if ($nused==0) {
 echo "<br />
 <table align='center' class='myformtable' cellpadding='3'>
 <thead>
-  <tr><td colspan='100%'>ATENÇÃO! Sobre as variáveis estáticas definidas</td></tr>
+  <tr><td colspan='3'>ATENÇÃO! Sobre as variáveis estáticas definidas</td></tr>
   <tr class='subhead'>
     <td>Nome da variável [Caminho]</td>
     <td>Problema encontrado</td>
@@ -200,7 +207,11 @@ echo " onclick = \"javascript:small_window('$myurl',500,350,'Corrigir valores de
 					}
 				}
 				if ($ttipo=='Texto') {
-					$qq = "UPDATE `".$tbname."` SET `".$colname."`=".$vv." WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL";
+					$qq = "UPDATE `".$tbname."` SET `".$colname."`=".$vv;
+					if (!empty($bibref)) {
+							$qq .= ", `".$colname4."`=`".$bibref."`";
+					}
+					$qq .= "WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL";
 					$upr = mysql_query($qq,$conn);
 					//echo $qq."<br />";
 					if ($upr) {
@@ -225,7 +236,7 @@ foreach ($_POST as $kfs => $vfs) {
 	}
 echo "
   <input name='varestatic' value='".serialize($oldestaticvars)."' type='hidden' />
-  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='3'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
 </form>";
 			} else {
 				echo "
@@ -239,7 +250,7 @@ foreach ($_POST as $kfs => $vfs) {
 	}  
 echo "
   <input name='var_estatic_ok' value='1' type='hidden' />
-<tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+<tr bgcolor = '".$bgcolor."'><td align='center' colspan='3'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
 </form>";
 			}
 echo "
@@ -256,7 +267,7 @@ echo "
 <br />
 <table cellpadding='5' class='myformtable' align='center'>
 <thead>
-<tr><td colspan='100%'>Definir as variáveis estáticas</td></tr>
+<tr><td colspan='7'>Definir as variáveis estáticas</td></tr>
 <tr class='subhead'>
   <td>Coluna</td>
   <td>Valor&nbsp;mínimo</td>
@@ -266,6 +277,7 @@ echo "
   <td>Unidade&nbsp;de&nbsp;medida&nbsp;<img height=13 src='icons/icon_question.gif' ";
 	$help = " Se não informado para variáveis quantitativas o programa assume a unidade de medida padrão da variável";
 	echo " onclick=\"javascript:alert('$help');\" /></td>
+  <td>Bibref&nbsp;da&nbsp;medição</td>
 </tr>
 </thead>
 <tbody>
@@ -318,7 +330,7 @@ echo " onclick = \"javascript:small_window('".$myurl."',600,350,'Nova variável'
         <td>
           <select name='varunitestaticfields_".$moni."'>
             <option selected value=''>Colunas com unidades de medida</option>";
-			foreach ($data_moni as $fd) {
+			foreach ($unit_monit as $fd) {
 				echo "
             <option value='".$fd."'>".$fd."</option>";
 			}
@@ -329,6 +341,30 @@ echo " onclick = \"javascript:small_window('".$myurl."',600,350,'Nova variável'
 	}
 echo "
         <td><input id='varunitess_".$moni."' type='text' name=\"varunitess_".$moni."\" value='' size=\3\" /></td>
+ <td>
+    <table >
+      <tr>";
+		$bib_moni = array_keys($fields,"BIBKEY");
+		if (!empty($bib_moni)) {
+	echo "
+        <td>
+          <select name='bibkeystaticfields_".$moni."'>
+            <option selected value=''>Colunas com bibkey</option>";
+			foreach ($bib_moni as $fd) {
+				echo "
+            <option value='".$fd."'>".$fd."</option>";
+  			}
+	echo "
+          </select>
+        </td>";
+    } else {
+ 	echo "
+        <td>Ausente</tb>";     
+    }
+echo "
+      </tr>
+    </table>
+  </td>        
       </tr>
     </table>
   </td>
@@ -336,7 +372,7 @@ echo "
 			}
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>
+  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='7'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>
 </form>";
 echo "
 </tbody>
@@ -360,8 +396,7 @@ echo "
 </form>";
 
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array(
+"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

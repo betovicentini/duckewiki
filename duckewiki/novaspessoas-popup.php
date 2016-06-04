@@ -29,11 +29,11 @@ $gget = cleangetpost($_GET,$conn);
 //echopre($ppost);
 //echopre($gget);
 //CABECALHO
+
 $ispopup = 1;
 $menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
 $which_java = array();
 $title = 'Novas pessoas';
 $body = '';
@@ -74,7 +74,7 @@ echo "
 <br />
 <table align='center' class='myformtable' cellpadding='5' width=\"100%\">
 <thead>
-  <tr><td colspan='100%'>As seguintes pessoas na coluna $orgcol não estão cadastradas</td>
+  <tr><td colspan='2'>As seguintes pessoas na coluna $orgcol não estão cadastradas</td>
   </tr>
     <tr class='subhead'>
     <td width=\"25%\">Registro original no arquivo</td>
@@ -101,8 +101,6 @@ while ($row = mysql_fetch_assoc($res)) {
 	$pess = $row[$orgcol];
 	//echo $pess." aqui ho<br >";
 	$qu = "SELECT checkpessoas('".$pess."') as peop";
-
-	
 	$ru = mysql_query($qu,$conn);
 	$rw = mysql_fetch_assoc($ru);
 	if ($rw['peop']=='ERRO') {
@@ -192,7 +190,7 @@ echo "
 
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>
+<tr bgcolor = '".$bgcolor."'><td align='center' colspan='2'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>
 </tbody>
 </table>
 </form>";
@@ -208,8 +206,7 @@ else {
 </form>";
 }
 
-$which_java = array(
-"<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

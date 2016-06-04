@@ -37,15 +37,9 @@ if ($ispopup==1) {
 }
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' >"
 );
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-);
+$which_java = array("<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
 $title = 'Importar Dados Passo 08';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -133,7 +127,7 @@ if (in_array('GAZETTEER',$fields) && !isset($localidadesdone)) {
 <br />
     <table align='center' class='myformtable' cellpadding='7'>
   <thead>
-    <tr><td colspan='100%'>Localidades não encontrados no Wiki</td>
+    <tr><td colspan='3'>Localidades não encontrados no Wiki</td>
     </tr>
     <tr class='subhead'>
     <td>Nome</td>
@@ -194,7 +188,7 @@ if (in_array('GAZETTEER',$fields) && !isset($localidadesdone)) {
 						$i++;
 				}
 					echo "
-            <tr><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+            <tr><td align='center' colspan='3'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
         </form>
     </tbody>
 </table>
@@ -232,13 +226,11 @@ if ($localidadesdone==1) {
 	$_SESSION['importacaostep'] = serialize($stt);
 echo "
   <form name='myform' action='import-data-hub.php' method='post'>
-    <input type='hidden' name='ispopup' value='".$ispopup."' />    
-	<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
+    <input type='hidden' name='ispopup' value='".$ispopup."' />
+    <script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
   </form>";
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

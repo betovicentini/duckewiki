@@ -30,28 +30,15 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Importar Dados Passo 05';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
-
-
 $fields = unserialize($_SESSION['fieldsign']);
 $clnl = $tbprefix."CountryID";
-
 if (in_array('COUNTRY',$fields) && !isset($paisesdone)) {
 		$colcol = array_search('COUNTRY',$fields);
 		if (count($colcol)>1) {
@@ -84,7 +71,7 @@ if (in_array('COUNTRY',$fields) && !isset($paisesdone)) {
 <br />
     <table align='center' class='myformtable' cellpadding='3'>
         <thead>
-          <tr><td colspan='100%'>Países não encontrados no Wiki</td>
+          <tr><td colspan='3'>Países não encontrados no Wiki</td>
           </tr>
           <tr class='subhead'>
           <td>Nome</td>
@@ -149,7 +136,7 @@ if (in_array('COUNTRY',$fields) && !isset($paisesdone)) {
 
 				}
 					echo "
-            <tr><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+            <tr><td align='center' colspan='3'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
     </form>
 </tbody>
 </table>
@@ -172,12 +159,10 @@ if ($paisesdone==1) {
 echo "
   <form name='myform' action='import-data-hub.php' method='post'>
   <input type='hidden' name='ispopup' value='".$ispopup."' />  
-	<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
+  <script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
   </form>";
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

@@ -29,23 +29,12 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
-
 );
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>",
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-);
+$which_java = array("<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
 $title = 'Importar Dados Passo 10';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -78,6 +67,13 @@ if (in_array('MONI_VAR',$fields) && !isset($var_moni_ok)) {
 			}
 			$kk = "dataobs_".$monikk;
 			$date2 = trim($_POST[$kk]);
+
+			//pega referencia bibliográfica
+			$kk = "bibkeymonitorfields_".$monikk;
+			if (!empty($_POST[$kk])) {
+				$bibref = $tbprefix.$_POST[$kk];
+			} 
+			
 			$kk = "varunitmonitorfields_".$monikk;
 			$unit1 = $_POST[$kk];
 			$kk = "varunit_".$monikk;
@@ -109,7 +105,9 @@ if (in_array('MONI_VAR',$fields) && !isset($var_moni_ok)) {
 			if ($traitid>0 && $thereisnodate==0) {
 				$colname = $tbprefix."MONITORAMENTO_".$vv."_traitvar_".$traitid;
 				$colname2 = $tbprefix."MONITORAMENTO_".$vv."_dataobs_".$traitid;
-				
+				if (!empty($bibref)) {
+					$colname4 = $tbprefix."MONITORAMENTO_".$vv."_bibkey_".$traitid;
+				}
 				$qn = "SELECT LENGTH(".$vv.") AS TEXTFieldSize FROM ".$tbname." ORDER BY LENGTH(".$vv.")  DESC LIMIT 0,1";
 				$qnz = mysql_query($qn,$conn);
 				$qnw = mysql_fetch_assoc($qnz);
@@ -123,10 +121,13 @@ if (in_array('MONI_VAR',$fields) && !isset($var_moni_ok)) {
 						$tpvar = "TEXT";
 					}
 				} 
-				
-
 				$qq = "ALTER TABLE ".$tbname." ADD COLUMN ".$colname." ".$tpvar." DEFAULT '', ADD COLUMN ".$colname2." DATE DEFAULT NULL".$qtt;
 				@mysql_query($qq,$conn);
+				if (!empty($bibref)) {
+					$qq = "ALTER TABLE ".$tbname." ADD COLUMN ".$colname4." INT(10) DEFAULT NULL";
+					//echo $qq."<br>";
+					@mysql_query($qq,$conn);
+				} 
 				if ($ttipo=='Categoria') {
 						//faz o update da coluna, se tiver ok entao finaliza, se deu erro pergunte para corrigir os dados
 						$qq = "UPDATE `".$tbname."` SET `".$colname."`=checkcategories(".$vv.",".$traitid.")";
@@ -134,6 +135,9 @@ if (in_array('MONI_VAR',$fields) && !isset($var_moni_ok)) {
 							$qq .= ", `".$colname2."`='".$date2."'";
 						} else {
 							$qq .= ", `".$colname2."`=`".$date1."`";
+						}
+						if (!empty($bibref)) {
+							$qq .= ", `".$colname4."`=`".$bibref."`";
 						}
 						$qq .= " WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
 						mysql_query($qq,$conn);
@@ -146,7 +150,7 @@ echo "
 <br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
-  <tr><td colspan='100%'>ATENÇÃO! Sobre as variáveis de monitoramento definidas</td></tr>
+  <tr><td colspan='3'>ATENÇÃO! Sobre as variáveis de monitoramento definidas</td></tr>
   <tr class='subhead'>
     <td>Nome da variável [Caminho]</td>
     <td>Problema encontrado</td>
@@ -166,7 +170,8 @@ echo "
 	$myurl ="traitscategoria-popup.php?parentid=".$traitid."&tname=".$tname."&colname=".$colname."&orgcol=".$vv."&tbname=".$tbname."&buttonidx=idx_".$butidx; 
 echo " onclick = \"javascript:small_window('$myurl',800,400,'Novas categorias de variável categórica');\" /></td>
 </tr>";
-						} else {
+						} 
+						else {
 							//ja completou
 							unset($oldmonitorvars[$monikk]);
 						}
@@ -184,7 +189,11 @@ echo " onclick = \"javascript:small_window('$myurl',800,400,'Novas categorias de
 					} else {
 						$qq .= ", `".$colname3."`='".$unit1."'";
 					}
+					if (!empty($bibref)) {
+							$qq .= ", `".$colname4."`=`".$bibref."`";
+					}
 					$qq .= "  WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
+					//echo $qq."<br>";
 					mysql_query($qq,$conn);
 					$qq = "SELECT DISTINCT `".$vv."` FROM `".$tbname."`  WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL AND (`".$colname."` LIKE 'ERRO' OR `".$colname."` LIKE '')";
 					//echo $qq."<br>";
@@ -197,7 +206,7 @@ echo "
 <br />
 <table align='center' class='myformtable' cellpadding='3'>
 <thead>
-  <tr><td colspan='100%'>ATENÇÃO! Sobre as variáveis de monitoramento definidas</td></tr>
+  <tr><td colspan='3'>ATENÇÃO! Sobre as variáveis de monitoramento definidas</td></tr>
   <tr class='subhead'>
     <td>Nome da variável [Caminho]</td>
     <td>Problema encontrado</td>
@@ -216,7 +225,8 @@ echo "
 $myurl ="traitsquantitativo-popup.php?parentid=".$traitid."&tname=".$tname."&colname=".$colname."&orgcol=".$vv."&tbname=".$tbname."&buttonidx=idx_".$butidx;
 echo " onclick = \"javascript:small_window('$myurl',500,350,'Corrigir valores de variável quantitativa');\" /></td>
 </tr>";
-					} else {
+					} 
+					else {
 						unset($oldmonitorvars[$monikk]);
 					}
 				}
@@ -226,6 +236,9 @@ echo " onclick = \"javascript:small_window('$myurl',500,350,'Corrigir valores de
 							$qq .= ", `".$colname2."`='".$date2."'";
 						} else {
 							$qq .= ", `".$colname2."`=`".$date1."`";
+						}
+						if (!empty($bibref)) {
+							$qq .= ", `".$colname4."`=`".$bibref."`";
 						}
 						$qq .= "  WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL";
 					//echo $qq."<br />";
@@ -237,7 +250,7 @@ echo "
 <br />
 <table align='center' class='myformtable' cellpadding='3'>
 <thead>
-  <tr><td colspan='100%'>ATENÇÃO! Sobre as variáveis de monitoramento definidas</td></tr>
+  <tr><td colspan='2'>ATENÇÃO! Sobre as variáveis de monitoramento definidas</td></tr>
   <tr class='subhead'>
     <td>Nome da variável [Caminho]</td>
     <td>Problema encontrado</td>
@@ -272,7 +285,7 @@ foreach ($_POST as $kfs => $vfs) {
       echo "<input name='varmonitors' value='".serialize($oldmonitorvars)."' type='hidden' />";
 echo "
 <input name='tbname' value='".$tbname."' type='hidden' >
-  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='3'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
 </form>";
 			} else {
 				echo "
@@ -302,7 +315,7 @@ if (count($monitorvars)>0 && $nused==0 && !isset($var_moni_ok)) {
 echo "
 <br /><table cellpadding='5' class='myformtable' align='center'>
 <thead>
-<tr><td colspan='100%'>Definir as variáveis de monitoramento</td></tr>
+<tr><td colspan='8'>Definir as variáveis de monitoramento</td></tr>
 <tr class='subhead'>
   <td>Coluna</td>
   <td>Valor&nbsp;mínimo</td>
@@ -310,6 +323,7 @@ echo "
   <td>É&nbsp;uma&nbsp;variável&nbsp;cadastrada?</td>
   <td>Cadastre&nbsp;como&nbsp;nova&nbsp;</td>
   <td>Data&nbsp;da&nbsp;medição</td>
+  <td>Bibref&nbsp;da&nbsp;medição</td>
   <td>Unidade&nbsp;de&nbsp;medida&nbsp;<img height=13 src='icons/icon_question.gif' ";
 	$help = " Se não informado para variáveis quantitativas o programa assume a unidade de medida padrão da variável";
 	echo " onclick=\"javascript:alert('$help');\" /></td>
@@ -406,11 +420,35 @@ echo "
       </tr>
     </table>
   </td>
+  <td>
+    <table >
+      <tr>";
+		$bib_moni = array_keys($fields,"BIBKEY");
+		if (!empty($unit_monit)) {
+	echo "
+        <td>
+          <select name='bibkeymonitorfields_".$moni."'>
+            <option selected value=''>Colunas com bibkey</option>";
+			foreach ($bib_moni as $fd) {
+				echo "
+            <option value='".$fd."'>".$fd."</option>";
+  			}
+	echo "
+          </select>
+        </td>";
+    } else {
+ 	echo "
+        <td>Ausente</tb>";     
+    }
+echo "
+      </tr>
+    </table>
+  </td>
 </tr>";
 			}
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>
+<tr bgcolor = '".$bgcolor."'><td align='center' colspan='8'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>
 </form>
 </tbody>
 </table>";
@@ -433,8 +471,6 @@ echo "
   </form>";
 
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=TRUE,$footer=$menu);
 ?>

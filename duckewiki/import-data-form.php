@@ -28,20 +28,23 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
+$sql = "SELECT * FROM `Import_Fields`  WHERE `BRAHMS`='BIBKEY'";
+$res = mysql_query($sql,$conn);
+$nrs = mysql_numrows($res);
+if ($nrs==0) {
+	$sql = "INSERT INTO `Import_Fields` (`BRAHMS`, `CLASS`, `ORDEM`, `DEFINICAO`, `FieldsToPut`, `NamesToMatch`, `TabelaParaPor`, `LocalityFields`) VALUES ('BIBKEY', 'Genérico', '3.5', 'Bibkey da referência bibliográfica - para variáveis de usuário', NULL, NULL, 'Especimenes;Plantas', 0);";
+	@mysql_query($sql,$conn);
 }
-$which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+$sql = "ALTER TABLE `Monitoramento`  ADD `BibID` INT(10) NULL AFTER `CensoID`";
+@mysql_query($sql,$conn);
+
+$qtemp = "ALTER TABLE `Traits_variation`  ADD `BibtexIDS` CHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Bibliografia' AFTER `GrupoSppID`";
+@mysql_query($qtemp,$conn);
+
+
+$menu = FALSE;
+$which_css = array("<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Importar dados';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -50,7 +53,7 @@ echo "
 <table align='center' class='myformtable' cellpadding=\"7\">
 <thead>
 <tr>
-<td colspan='100%' class='tabhead' >".GetLangVar('nameimportar')." ".GetLangVar('namedados')."</td>
+<td colspan='2' class='tabhead' >".GetLangVar('nameimportar')." ".GetLangVar('namedados')."</td>
 </tr>
 </thead>
 <tbody>";
@@ -97,13 +100,11 @@ echo " onclick=\"javascript:alert('$help');\" /></td>
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
 echo "
 <tr bgcolor = '".$bgcolor."'>
-  <td colspan='100%' align='center'><input style='cursor: pointer' type='submit' value='".GetLangVar('nameenviar')."' class='bsubmit' /></td>
+  <td colspan='2' align='center'><input style='cursor: pointer' type='submit' value='".GetLangVar('nameenviar')."' class='bsubmit' /></td>
 </tr>
 </form>
 </tbody>
 </table>";
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

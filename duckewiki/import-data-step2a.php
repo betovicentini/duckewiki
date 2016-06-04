@@ -30,20 +30,10 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Importar Dados Passo 02a';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -82,23 +72,23 @@ echo "
 <br />
 <table cellpadding='5' class='myformtable' align='center'>
 <thead>
- <tr><td colspan='100%'>Atenção!</td></tr>
+ <tr><td colspan='2'>Atenção!</td></tr>
 </thead>
 <tbody>";
 if ($plupdate>0) {
 		if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>O arquivo a ser importado contém $ntotal registros</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  colspan='2'>O arquivo a ser importado contém $ntotal registros</td></tr>";
 }
 if ($plupdate>0) {
 		if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 			echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>$plupdate registros são plantas marcadas JÁ cadastradas no banco de dados</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  colspan='2'>$plupdate registros são plantas marcadas JÁ cadastradas no banco de dados</td></tr>";
 }
 if ($specupdate>0) {
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-  <tr bgcolor = '".$bgcolor."'><td  colspan='100%'>$specupdate registros são exsicatas JÁ cadastradas no banco de dados</td></tr>";
+  <tr bgcolor = '".$bgcolor."'><td  colspan='2'>$specupdate registros são exsicatas JÁ cadastradas no banco de dados</td></tr>";
 
 }
 $notregisters = $plinsert+$specinsert;
@@ -113,7 +103,7 @@ if ($coletas==1) {
 	$nrg = $plinsert." novas plantas marcadas serão cadastradas";
 }
 echo "
-<tr bgcolor = '".$bgcolor."'><td  colspan='100%'>$nrg</td></tr>";
+<tr bgcolor = '".$bgcolor."'><td  colspan='2'>$nrg</td></tr>";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
 <tr bgcolor = '".$bgcolor."'>
@@ -130,7 +120,7 @@ if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bg
 echo "
 </tbody>
 <thead>
-<tr class='subhead'><td  colspan='100%'>O que fazer com campos a serem importados que já estão cadastrados?</td></tr>
+<tr class='subhead'><td  colspan='2'>O que fazer com campos a serem importados que já estão cadastrados?</td></tr>
 </thead>
 <tbody>
 <tr>
@@ -146,15 +136,14 @@ echo "
 <tr bgcolor = '".$bgcolor."'>
 <td align='center'><input style='cursor: pointer' type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td>
 </form>
+  <td align='center'>
 <form action='import-data-form.php' method='post'>
-  <input type='hidden' name='ispopup' value='".$ispopup."' />
-  <td align='center'><input style='cursor: pointer' type='submit' value='".GetLangVar('namevoltar')."' class='bblue' /></td></tr>
-</form>
+<input type='hidden' name='ispopup' value='".$ispopup."' />
+<input style='cursor: pointer' type='submit' value='".GetLangVar('namevoltar')."' class='bblue' />
+</form></td></tr>
 </tbody>
 </table>";
 } 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

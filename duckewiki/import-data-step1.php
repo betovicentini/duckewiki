@@ -31,22 +31,13 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-//"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' >"
 );
 $which_java = array(
-//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-);
+"<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
 $title = 'Importar passo 01';
 $body = '';
 
@@ -96,7 +87,7 @@ echo "
   <input type='hidden' name='ispopup' value='".$ispopup."' />  
   <table cellpadding=\"5\" align='center' class='erro' />
    <tr>
-      <td align='center' colspan='100%' >O arquivo $fname já foi importado por você anteriormente!</td>
+      <td align='center' colspan='2' >O arquivo $fname já foi importado por você anteriormente!</td>
     </tr>
     <tr>
       <td align='center' >
@@ -121,6 +112,7 @@ echo "
 	//faz a importacao do arquivo numa tabela no mysql
 	$fop = @fopen($fileuploaded, 'r');
 	$i=0;
+	//echo "<div id='counter2' style=\"position: relative; top: 100px; padding: 1px; color:  red; font-size: 1em;\"></span>";
 	while (($data = fgetcsv($fop, 10000, "\t")) !== FALSE) {
 			if ($i==0) {
 				$header = $data;
@@ -183,7 +175,9 @@ echo "
 			}
 			$i++;
 			echo '&nbsp;';
+			//echo "<script type='text/javascript' >importacaoprogress(counter2,".$i.");</script>";
 			flush();
+			
 	}
 	$qq = "ALTER TABLE `".$tbname."` ADD `ImportID` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST";
 	mysql_query($qq,$conn);
@@ -192,20 +186,20 @@ echo "
 	$rr = @mysql_query($qq,$conn);
 	$nrr = @mysql_numrows($rr);
 
-	if ($nrr>0) {	
+	if ($nrr>0) {
 		$imported=1;
 	} else {
 echo "
-<table align='center' class='myformtable' cellpadding=\"5\">
+<table align='center' class='myformtable' cellpadding=\"7\" width='60%'>
 <thead>
-  <tr><td colspan='100%'>Houve um problema!</td></tr>
+  <tr><td >Houve um problema!</td></tr>
 </thead>
 <tbody>
     <tr><td>Verificar o nome das colunas, a terminação das quebras de linha e o encoding do arquivo</td></tr>
     <tr><td>Não pode ter simbolos estranhos nos nomes das colunas, a quebra precisa ser em formato unix e o encoding UTF-8, as colunas separadas por Tabulação</td></tr>
   <form action='import-data-form.php' method='post'>
   <input type='hidden' name='ispopup' value='".$ispopup."' />  
-    <tr><td colspan='100%' align='center'><input style='cursor: pointer'  type='submit' value='".GetLangVar('namevoltar')."' class='bsubmit' /></td></tr>
+    <tr><td align='center'><input style='cursor: pointer'  type='submit' value='".GetLangVar('namevoltar')."' class='bsubmit' /></td></tr>
   </form>
 </tbody>
 </table>
@@ -237,7 +231,7 @@ echo "
 	if ($coletas==1 || $coletas==3) {
 	echo "
 <thead>
-  <tr><td class='tdsmallbold' colspan='100%'>".GetLangVar('nametaggedplant')." - selecione identificadores</td></tr>
+  <tr><td class='tdsmallbold' colspan='3'>".GetLangVar('nametaggedplant')." - selecione identificadores</td></tr>
 </thead>
 <tbody>";
 //identify fields
@@ -404,7 +398,7 @@ echo "
 	if ($coletas>1) {
 		echo "
 <thead>
-  <tr><td class='tdsmallbold' colspan='100%'>".GetLangVar('nameamostra')." ".GetLangVar('namecoletada')." - selecione identificadores</td></tr>
+  <tr><td class='tdsmallbold' colspan='3'>".GetLangVar('nameamostra')." ".GetLangVar('namecoletada')." - selecione identificadores</td></tr>
 </thead>
 <tbody>";
 		if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;} else {$bgcolor = $linecolor1 ;} $bgi++;
@@ -444,7 +438,7 @@ echo "
 		echo "
     <tr bgcolor = '".$bgcolor."'>
       <td class='tdsmallbold'>OPÇÃO&nbsp;2</td>
-      <td colspan='100%'>
+      <td colspan='2'>
       <table><tr>
         <td class='tdsmallbold'>Coluna com nome do coletor</td>
         <td>
@@ -505,7 +499,7 @@ echo "
 	if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 	echo "
     <tr bgcolor = '".$bgcolor."'>
-        <td colspan='100%' align='center'>
+        <td colspan='3' align='center'>
             <input style='cursor: pointer'  type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' onclick=\"javascript:document.impprepform.refdefined.value=1\" />
         </td>
     </tr>
@@ -513,8 +507,6 @@ echo "
 </table>
 </form>";
 } //if imported
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js?lixo=1233'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

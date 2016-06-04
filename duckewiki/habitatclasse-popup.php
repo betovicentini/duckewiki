@@ -28,21 +28,10 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Classe de hábitat';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -55,7 +44,7 @@ echo "
 <table align='center' class='myformtable' cellpadding='3'>
 <thead>
 <tr >
-<td colspan='100%'>".GetLangVar('namenovo')." ".strtolower(GetLangVar('namecadastro'))."</td></tr>
+<td colspan='2'>".GetLangVar('namenovo')." ".strtolower(GetLangVar('namecadastro'))."</td></tr>
 </thead>
 <tbody>
 <tr>
@@ -97,7 +86,7 @@ echo "
     <td><textarea name='habitatdefinicao' cols='60%' rows='5'>".$habitatdefinicao."</textarea></td>
 </tr>
 <tr>
-      <td colspan='100%' align='center'><input type='submit' class='bsubmit' value=".GetLangVar('namesalvar')." /></td>
+      <td colspan='2' align='center'><input type='submit' class='bsubmit' value=".GetLangVar('namesalvar')." /></td>
     </tr>
 </form>
 </tbody>
@@ -208,8 +197,6 @@ echo "
 	}
 } 
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

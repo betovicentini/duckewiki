@@ -27,6 +27,9 @@ $arval = $ppost;
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
+
+
+
 //CABECALHO
 $ispopup=1;
 $menu = FALSE;
@@ -35,48 +38,23 @@ $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' >");
 $which_java = array();
 $body= '';
-$title = "Corrigindo valores no arquivo a ser importado";
+$title = "Corrigindo valores de bibtext no arquivo a ser importado";
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
 if ($final==1) {
 	foreach ($inputs as $orvaluefield => $novovalor) {
 		$nv = $novovalor;
-		$nvv = $orvaluefield;
+		$nvv = trim($orvaluefield);
 		if ($nv!==$nvv && !empty($nv)) {
 			$qq = "UPDATE `".$tbname."` SET `".$orgcol."`='".$novovalor."' WHERE `".$orgcol."`='".$orvaluefield."'";
+			//echo $qq."<br />";
 			mysql_query($qq,$conn);
 		}
 	}
-	if ($datatipo=='ano') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=date_check_ano(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."`=0";
-	}
-	if ($datatipo=='dia') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=date_check_dd(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."`=0";
-	}
-	if ($datatipo=='mes') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=date_check_mm(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."`=0";
-	}
-	if ($datatipo=='data') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=date_check(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."` IS NULL";
-	}
-	if ($datatipo=='angulo') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=checkangulo(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."` IS NULL";
-	}
-	if ($datatipo=='latlong') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=checkcoordenadas(`".$orgcol."`,'".$latlonglink."') WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."` IS NULL";
-	}
-	if ($datatipo=='numerico') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=checanumericos(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."` IS NULL";
-	}
-	if ($datatipo=='intervalo') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=IF(IsInteger(`".$orgcol."`),TRIM(`".$orgcol."`)+0,0) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."`=0";
-	}
-	if ($datatipo=='lado') {
-		$qq = "UPDATE `".$tbname."` SET `".$colname."`=checalado(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND `".$colname."`='ERRO'";
-	}
+	$qq = "UPDATE `".$tbname."` SET `".$colname."`=bib_check(`".$orgcol."`) WHERE `".$orgcol."`<>'' AND (`".$orgcol."` IS NOT NULL) AND (`".$colname."` IS NULL)";
 	mysql_query($qq,$conn);
 }
-$query = "SELECT `".$orgcol."`, COUNT(*) AS nn FROM `".$tbname."`  WHERE `".$orgcol."`<>'' AND `".$orgcol."` IS NOT NULL AND (`".$colname."`=0 OR `".$colname."` IS NULL) GROUP BY `".$orgcol."` LIMIT 0,30";
+$query = "SELECT `".$orgcol."`, COUNT(*) AS nn FROM `".$tbname."`  WHERE `".$orgcol."`<>'' AND (`".$orgcol."` IS NOT NULL) AND (`".$colname."` IS NULL) GROUP BY `".$orgcol."` LIMIT 0,30";
 $res = mysql_query($query,$conn);
 $nres = mysql_numrows($res);
 $erro=0;
@@ -95,36 +73,36 @@ echo "
   </tr>
 </thead>
 <tbody>
-<form action='checkdatas-popup.php' method='post'>
+<form action='checkbib-popup.php' method='post'>
   <input type='hidden' name='tbname' value='".$tbname."' />
   <input type='hidden' name='colname' value='".$colname."' />
   <input type='hidden' name='orgcol' value='".$orgcol."' />
   <input type='hidden' name='buttonidx' value='".$buttonidx."' />
-  <input type='hidden' name='datatipo' value='".$datatipo."' />
-  <input type='hidden' name='latlonglink' value='".$latlonglink."' />
   <input type='hidden' name='final' value='1' />";
 while ($row = mysql_fetch_assoc($res)) {
-	$data= $row[$orgcol];	
+	$data= $row[$orgcol];
 	if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 		echo "
 <tr bgcolor = '".$bgcolor."'>
   <td class='tdsmallbold' align='center'>".$row['nn']."</td>
   <td class='tdsmallbold' align='center'>".$data."</td>
   <td class='tdformnotes' >";
-if ($datatipo=='ano' || $datatipo=='dia' || $datatipo=='mes' || $datatipo=='angulo' || $datatipo=='numerico') {
-echo "<input type='text' name='inputs[$data]' value='".$data."' /><br />Númérico apenas</td></tr>";
+echo "
+    <select name='inputs[".$data."]' >";
+				echo "
+      <option value='' >Selecione</option>";
+			$qb = "SELECT * FROM BiblioRefs WHERE BibID ORDER BY FirstAuthor, Year";
+			$rb = mysql_query($qb,$conn);
+			while($rwb = mysql_fetch_assoc($rb)) {
+				echo "
+      <option value='".$rwb['BibKey']."' >".ucfirst($rwb['FirstAuthor'])." ".$rwb['Year']." - ".substr($rwb['Title'],0,40)."</option>";
+			}
+echo "
+    </select>
+  </td>
+  </tr>
+";
 }
-if ($datatipo=='data') {
-echo "<input type='text' name='inputs[$data]' value='".$data."' /><br />AAAA-MM-DD  e.g. 2011-07-01</td></tr>";
-
-}
-if ($datatipo=='latlong') {
-echo "<input type='text' name='inputs[$data]' value='".$data."' /><br />Em décimo de graus, S e W valores negativos</td></tr>";
-}
-if ($datatipo=='lado') {
-echo "<input type='text' name='inputs[$data]' value='".$data."' /><br />Letras E ou D apenas</td></tr>";
-}  
-	}
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
   <tr bgcolor = '".$bgcolor."'>

@@ -35,14 +35,8 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Importar Dados Passo 03a';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -132,7 +126,7 @@ echo "<form action='import-data-step3a.php' method='post'>
 <br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
- <tr><td colspan='100%'>Os seguintes erros em colunas com Datas foram encontrados!<td></tr>
+ <tr><td colspan='3'>Os seguintes erros em colunas com Datas foram encontrados!<td></tr>
   <tr class='subhead'>
   <td>Coluna</td>
   <td>Erro</td>
@@ -166,7 +160,7 @@ echo "</tr>";
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
 <tr bgcolor = '".$bgcolor."'>
-  <td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td>
+  <td align='center' colspan='3'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td>
 </tr>
 </tbody>
 </table>
@@ -176,19 +170,21 @@ echo "
 		$numericchecked= TRUE;
 	}
 if ($numericchecked==TRUE) {
+	$steps = unserialize($_SESSION['importacaostep']);
+	unset($steps[0]);
+	$stt = array_values($steps);
+	$_SESSION['importacaostep'] = serialize($stt);
 	echo "
-<form name='myform' action='import-data-hub.php' method='post'>";
+<form name='myform' action='import-data-step3b.php' method='post'>";
 //coloca as variaveis anteriores
 	foreach ($ppost as $kk => $vv) {
 	echo "
-  	<input type='hidden' name='".$kk."' value='".$vv."' />"; 
+  <input type='hidden' name='".$kk."' value='".$vv."' />"; 
 	}
 echo "<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
   </form>";
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

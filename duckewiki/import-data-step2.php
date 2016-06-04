@@ -428,8 +428,6 @@ echo"
    <!--- <input type='submit' value='Continuar' class='bsubmit' />--->
   </form>";
 }
-$which_java = array(
-"<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
-);
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

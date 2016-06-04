@@ -28,21 +28,10 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Nova categoria de variação';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -125,7 +114,7 @@ echo "
 <br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
-  <tr><td colspan='100%'>As seguintes categorias da variável <b>$tname</b> [coluna ".$orgcol."] não estão cadastradas</td></tr>
+  <tr><td colspan='2'>As seguintes categorias da variável <b>$tname</b> [coluna ".$orgcol."] não estão cadastradas</td></tr>
   <tr class='subhead'>
     <td>O valor original no arquivo</td>
     <td>
@@ -199,7 +188,7 @@ $n++;
 }
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>
+  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='2'><input type='submit' value='".GetLangVar('namesalvar')."' class='bsubmit' /></td></tr>
 </tbody>
 </table>
 </form>";
@@ -222,8 +211,6 @@ echo "
     </script>
   </form>";
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

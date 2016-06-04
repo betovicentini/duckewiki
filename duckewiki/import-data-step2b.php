@@ -1,5 +1,5 @@
 <?php
-//Este script checa se identificadores de plantas marcadas e/ou amostras coletadas foram selecionados e pede definição para todas as colunas no arquivo importando, buscando automaticamente campos que tenham os mesmos nome da coluna BRAHMS dat tabela Import_Fields (note que nem todas as colunas desta tabela estão sendo usadas, mas acrescentar novas linhas permite adicionar novas definições automátcias//Modificado por AV em 25 de jun 2011
+//Este script pede definição para todas as colunas no arquivo importando, buscando automaticamente campos que tenham os mesmos nome da coluna BRAHMS dat tabela Import_Fields (note que nem todas as colunas desta tabela estão sendo usadas, mas acrescentar novas linhas permite adicionar novas definições automátcias//Modificado por AV em 25 de jun 2011
 session_start();
 //INCLUI FUNCOES PHP E VARIAVEIS
 include "functions/HeaderFooter.php";
@@ -29,20 +29,9 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
-$which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+$menu = FALSE;
+$which_css = array("<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Importar Dados Passo 2b';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -69,7 +58,7 @@ echo "
 <br />
     <table cellpadding='7' class='myformtable' align='center'>
         <thead>
-            <tr><td colspan='100%'>Definir o significado das demais colunas</td></tr>
+            <tr><td colspan='4'>Definir o significado das demais colunas</td></tr>
             <tr class='subhead'>
                 <td>Coluna</td>
                 <td>Valor mínimo</td>
@@ -160,15 +149,13 @@ echo "
 	}
 	if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 		echo "
-            <tr bgcolor = '".$bgcolor."'><td colspan='100%' align='center'><input style='cursor: pointer' type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>";
+            <tr bgcolor = '".$bgcolor."'><td colspan='4' align='center'><input style='cursor: pointer' type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>";
 	if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 		echo "
-            <tr bgcolor = '".$bgcolor."'><td class='redtext' colspan='100%' align='left' >*Colunas não definidas serão ignoradas, mas o arquivo original será armazenado no servidor!</td></tr>
+            <tr bgcolor = '".$bgcolor."'><td class='redtext' colspan='4' align='left' >*Colunas não definidas serão ignoradas, mas o arquivo original será armazenado no servidor!</td></tr>
         </tbody>
     </table>
 </form>";
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

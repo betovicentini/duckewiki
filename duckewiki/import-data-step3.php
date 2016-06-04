@@ -30,20 +30,10 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Importar Dados Passo 03';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -54,7 +44,7 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 //apaga variaveis que ja foram extraidas e nao precisam ser passadas adiante
 //se existem colunas de datas nos campos indicados por voce, checa que seguem um formato esperado
 
-	$fields = unserialize($_SESSION['fieldsign']);
+$fields = unserialize($_SESSION['fieldsign']);
 
 if (!isset($newdata)) {
 	$datafields = array('COLLYY','COLLDD','COLLMM','DATACOL','DETDATE','DETYY','DETDD','DETMM','TAGGEDDATE','DATA_MONI','REFDETDATE');
@@ -140,7 +130,7 @@ echo "
 <form action='import-data-step3.php' method='post'>
 <table align='center' class='myformtable' cellpadding='7'>
 <thead>
- <tr><td align='center' colspan='100%'>Os seguintes erros em colunas com Datas foram encontrados</td></tr>
+ <tr><td align='center' colspan='3'>Os seguintes erros em colunas com Datas foram encontrados</td></tr>
  <tr class='subhead'>
   <td>Coluna</td>
   <td>Erro</td>
@@ -178,7 +168,7 @@ echo " onclick = \"javascript:small_window('$myurl',800,400,'Corrigir campos de 
 
 if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
-<tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+<tr bgcolor = '".$bgcolor."'><td align='center' colspan='3'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
 </tbody>
 </table>
 </form>";
@@ -203,9 +193,7 @@ echo "<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.00
   </form>";
 }
 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

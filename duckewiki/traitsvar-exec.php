@@ -29,17 +29,11 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
 
-$which_java = array(
-);
+$which_java = array();
 $title = 'Variável Definição';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -494,9 +488,7 @@ echo "
 </tbody>
 </table>";
 
-$which_java = array(
-"<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
-);
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>

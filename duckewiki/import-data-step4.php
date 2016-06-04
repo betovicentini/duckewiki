@@ -36,14 +36,8 @@ if ($ispopup==1) {
 	$menu = TRUE;
 }
 $which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
-$which_java = array(
-"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<link href='css/geral.css' rel='stylesheet' type='text/css' />");
+$which_java = array();
 $title = 'Importar Dados Passo 04';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -113,7 +107,7 @@ if (count($pessoasvars)>0) {
 echo "<br />
 <table align='center' class='myformtable' cellpadding='5'>
 <thead>
-  <tr><td colspan='100%'>ATENÇÃO! Sobre colunas com nomes de pessoas</td></tr>
+  <tr><td colspan='3'>ATENÇÃO! Sobre colunas com nomes de pessoas</td></tr>
   <tr class='subhead'>
     <td>Nome da coluna</td>
     <td>Problema encontrado</td>
@@ -158,7 +152,7 @@ echo "
 echo "
   <input name='tbname' value='".$tbname."' type='hidden' />
   <input type='hidden' name='tbprefix' value='".$tbprefix."'>
-  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'>
+  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='3'>
     <input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' />
   </td></tr>
 </form>";
@@ -169,7 +163,7 @@ echo "
   <input type='hidden' name='tbprefix' value='".$tbprefix."' />
   <input name='tbname' value='".$tbname."' type='hidden' />
   <input name='var_moni_ok' value='1' type='hidden' />
-  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='100%'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
+  <tr bgcolor = '".$bgcolor."'><td align='center' colspan='3'><input type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit' /></td></tr>
 </form>";
 			}
 echo "
@@ -190,12 +184,10 @@ if ($done) {
 echo "
   <form name='myform' action='import-data-hub.php' method='post'>
   <input type='hidden' name='ispopup' value='".$ispopup."' />    
-	<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
+  <script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
   </form>";
 }
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>",
-"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>");
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 
 ?>
