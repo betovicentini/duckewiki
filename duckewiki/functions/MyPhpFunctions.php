@@ -59,16 +59,24 @@ foreach ($quais as $vv) {
 	$toprint .= $separador.$tp;
 }
 $toprint .= "</div>";
-$atencao = "</br><span style='padding: 8px; line-height: 150%; background-color: yellow; font-size: 1em;  color: 'red';' ><b>ATENÇÃO</b>: Apenas para consulta!!! Edições de dados não serão validadas e serão apagadas! Edições apenas no localhost no momento! Não modifique, crie ou importe dados. Tudo será apagado! A base do PDBFF  está offline. Esta versão está sendo usada como TESTDRIVE para a melhoria do sistema!</span></br>";
+//$atencao = "</br><span style='padding: 8px; line-height: 150%; background-color: yellow; font-size: 1em;  color: 'red';' ><b>ATENÇÃO</b>: Apenas para consulta!!! Edições de dados não serão validadas e serão apagadas! Edições apenas no localhost no momento! Não modifique, crie ou importe dados. Tudo será apagado! A base do PDBFF  está offline. Esta versão está sendo usada como TESTDRIVE para a melhoria do sistema!</span></br>";
 //$toprint .= $atencao;
 }
 
 } 
 else {
+//onclick = \"javascript: self.location='login-form.php';\"
 $toprint = "
-<div style=\"vertical-align:top; position: absolute;  top:0px; right: 0px;  font-size: 0.8em;\">&nbsp;<img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\" onclick = \"javascript: self.location='login-form.php';\" />&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
-</div><div 
-style='padding: 100px; font-family:\"Verdana\", Arial, sans-serif;  font-size: 1.2em; font-color: #800000;'>".$_SESSION['introtext']."</div>";
+<div style=\"vertical-align:top; position: fixed; top:20px; right: 20px;  font-size: 0.8em;\">
+<a href='login-form.php'  style=\"font-size: 1.4em; align: right; vertical-align: top; \"><img src=\"icons/login.jpg\" ".$hgt." style=\"".$stilo."\" onmouseover=\"Tip('Autenticar-se');\"  /></a>
+&nbsp;&nbsp;<a href='index.php'>&nbsp;<img src=\"icons/blue-home-icon.png\" ".$hgt." style=\"".$stilo."\"  onmouseover=\"Tip('Ir para o Início');\" /></a>
+</div>";
+$iintrotext = trim($_SESSION['introtext']);
+$it = strip_tags($iintrotext);
+	if (!empty($it)) {
+	echo "<div 
+style='padding: 50px; font-family:\"Verdana\", Arial, sans-serif;  font-size: 1.2em; font-color: #800000;'>".$_SESSION['introtext']."</div>";
+	}
 }
 //style='padding-left: 5%; padding-top: 5%; font-size: 1.1em; text-align: left; line-height: 150%;
 

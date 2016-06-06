@@ -28,18 +28,13 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$ispopup==1;
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' >"
 );
-$which_java = array(
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-);
+$which_java = array("<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
 $title = 'Substituir um nome científico';
 $body = '';
 $menu=FALSE;
@@ -174,8 +169,8 @@ else {
 	$newdetid = 0;
 	//cadastro da nova identificacao se há plantas ou amostras para mudar o nome
 	if (($numplantas>0 || $numspecs>0) && !empty($detset)) {
-			$detarray = unserialize($detset);
-			echopre($detarray);
+		$detarray = unserialize($detset);
+		//echopre($detarray);
 		//insere nova determinacao que será usada pelo conjunto de amostras
 		///////HABILITAR AQUI PARA EXECUTAR MUDANÇA
 		$newdetid = InsertIntoTable($detarray,'DetID','Identidade',$conn);
@@ -189,21 +184,22 @@ $salvo=0;
 if ($newdetid>0) {
 	$udate = $_SESSION['sessiondate'];  //DATA DA ATUALIZACAO
 	$chgby = $_SESSION['userid']; //DATA
-	$qq = "DROP TABLE lixo_".$chgby; //PAGA TABELA TEMPORARIA SE HOUVER
+	$qq = "DROP TABLE temp_detall_".$chgby; //PAGA TABELA TEMPORARIA SE HOUVER
 	mysql_query($qq,$conn);
 	//SE HÁ ESPECIMENES MUDA PARA ESSES
 	if ($numspecs>0) {
 		//CRIA UMA TABELA TEMPORARIA COM OS DADOS ATUAIS
-		$qq = "CREATE TABLE lixo_".$chgby." (SELECT Especimenes.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Especimenes JOIN Identidade AS idd USING(DetID) ".$qwhere;
+		$qq = "CREATE TABLE temp_detall_".$chgby." (SELECT Especimenes.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Especimenes JOIN Identidade AS idd USING(DetID) ".$qwhere.")";
+		//echo $qq."<br />";
 		mysql_query($qq,$conn);
 		//ALGUMAS ALTERACOES
-		$Qq = "ALTER TABLE lixo_".$chgby." CHANGE EspecimenID EspecimenID INT( 10 ) NOT NULL";
+		$Qq = "ALTER TABLE temp_detall_".$chgby." CHANGE EspecimenID EspecimenID INT( 10 ) NOT NULL";
 		mysql_query($Qq,$conn);
-		$QQ = "ALTER TABLE lixo_".$chgby." DROP PRIMARY KEY";
+		$QQ = "ALTER TABLE temp_detall_".$chgby." DROP PRIMARY KEY";
 		mysql_query($QQ,$conn);
 		
 		//PREPARA UM INSERT STATEMENT PARA O LOG DA MUDANCA
-		$qcol = "SHOW COLUMNS FROM  lixo_".$chgby;
+		$qcol = "SHOW COLUMNS FROM  temp_detall_".$chgby;
 		$rr = mysql_query($qcol,$conn);
 		$cols = array();
 		while ($row = mysql_fetch_assoc($rr)) {
@@ -220,13 +216,13 @@ if ($newdetid>0) {
 			}
 			$i++;
 		}
-		$qq = $qq.") (SELECT * FROM lixo_".$chgby.")";
+		$qq = $qq.") (SELECT * FROM temp_detall_".$chgby.")";
 		mysql_query($qq,$conn);
 		
 		//AGORA MUDA DE FATO OS ESPECIMENES
-		$qu = "ALTER TABLE lixo_".$chgby."  ADD TempID INT(10) unsigned NOT NULL auto_increment PRIMARY KEY";
+		$qu = "ALTER TABLE temp_detall_".$chgby."  ADD TempID INT(10) unsigned NOT NULL auto_increment PRIMARY KEY";
 		mysql_query($qu,$conn);
-		$sql = "UPDATE Especimenes, lixo_".$chgby." as llixo SET Especimenes.DetID='".$newdetid."' WHERE Especimenes.EspecimenID=llixo.EspecimenID";
+		$sql = "UPDATE Especimenes, temp_detall_".$chgby." as llixo SET Especimenes.DetID='".$newdetid."' WHERE Especimenes.EspecimenID=llixo.EspecimenID";
 		$updatedpls = mysql_query($sql,$conn);
 		if ($updatedpls) {
 			$salvo++;
@@ -235,13 +231,15 @@ if ($newdetid>0) {
 		}
 	}
 	if ($numplantas>0) {
-		$qq = "CREATE TABLE lixo_".$chgby." (SELECT Plantas.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Plantas JOIN Identidade USING(DetID) ".$qwhere;
+		$qq = "CREATE TABLE temp_detall_".$chgby." (SELECT Plantas.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Plantas JOIN Identidade USING(DetID) ".$qwhere.")";
 		mysql_query($qq,$conn);
-		$Qq = "ALTER TABLE lixo_".$chgby." CHANGE PlantaID PlantaID INT( 10 ) NOT NULL";
+		//echo $qq."<br />";
+		
+		$Qq = "ALTER TABLE temp_detall_".$chgby." CHANGE PlantaID PlantaID INT( 10 ) NOT NULL";
 		mysql_query($Qq,$conn);
-		$QQ = "ALTER TABLE lixo_".$chgby." DROP PRIMARY KEY";
+		$QQ = "ALTER TABLE temp_detall_".$chgby." DROP PRIMARY KEY";
 		mysql_query($QQ,$conn);
-		$qcol = "SHOW COLUMNS FROM  lixo_".$chgby;
+		$qcol = "SHOW COLUMNS FROM  temp_detall_".$chgby;
 		$rr = mysql_query($qcol,$conn);
 		$cols = array();
 		while ($row = mysql_fetch_assoc($rr)) {
@@ -258,12 +256,13 @@ if ($newdetid>0) {
 			}
 			$i++;
 		}
-		$qq = $qq.") (SELECT * FROM lixo_".$chgby.")";
+		$qq = $qq.") (SELECT * FROM temp_detall_".$chgby.")";
 		mysql_query($qq,$conn);
 		
-		$qu = "ALTER TABLE lixo_".$chgby."  ADD TempID INT(10) unsigned NOT NULL auto_increment PRIMARY KEY";
+		$qu = "ALTER TABLE temp_detall_".$chgby."  ADD TempID INT(10) unsigned NOT NULL auto_increment PRIMARY KEY";
 		mysql_query($qu,$conn);
-		$sql = "UPDATE Plantas, lixo_".$chgby." as llixo SET Plantas.DetID='".$newdetid."' WHERE Plantas.PlantaID=llixo.PlantaID";
+		$sql = "UPDATE Plantas, temp_detall_".$chgby." as llixo SET Plantas.DetID='".$newdetid."' WHERE Plantas.PlantaID=llixo.PlantaID";
+		//echo $sql."<br >";
 		$updatedpls = mysql_query($sql,$conn);
 		if ($updatedpls) {
 			$salvo++;

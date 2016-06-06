@@ -77,16 +77,16 @@ $salvo=0;
 if ($newdetid>0) {
 	$udate = $_SESSION['sessiondate'];
 	$chgby = $_SESSION['userid'];
-	$qq = "DROP TABLE lixo_".$chgby;
+	$qq = "DROP TABLE temp_detall_".$chgby;
 	mysql_query($qq,$conn);
 	if ($numspecs>0) {
-		$qq = "CREATE TABLE lixo_".$chgby." (SELECT Especimenes.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Especimenes JOIN Identidade USING(DetID) WHERE ".$taxcol." AND FiltrosIDS LIKE '%filtroid_".$filtro."%')";
+		$qq = "CREATE TABLE temp_detall_".$chgby." (SELECT Especimenes.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Especimenes JOIN Identidade USING(DetID) WHERE ".$taxcol." AND FiltrosIDS LIKE '%filtroid_".$filtro."%')";
 		mysql_query($qq,$conn);
-		$Qq = "ALTER TABLE lixo_".$chgby." CHANGE EspecimenID EspecimenID INT( 10 ) NOT NULL";
+		$Qq = "ALTER TABLE temp_detall_".$chgby." CHANGE EspecimenID EspecimenID INT( 10 ) NOT NULL";
 		mysql_query($Qq,$conn);
-		$QQ = "ALTER TABLE lixo_".$chgby." DROP PRIMARY KEY";
+		$QQ = "ALTER TABLE temp_detall_".$chgby." DROP PRIMARY KEY";
 		mysql_query($QQ,$conn);
-		$qcol = "SHOW COLUMNS FROM  lixo_".$chgby;
+		$qcol = "SHOW COLUMNS FROM  temp_detall_".$chgby;
 		$rr = mysql_query($qcol,$conn);
 		$cols = array();
 		while ($row = mysql_fetch_assoc($rr)) {
@@ -103,11 +103,11 @@ if ($newdetid>0) {
 			}
 			$i++;
 		}
-		$qq = $qq.") (SELECT * FROM lixo_".$chgby.")";
+		$qq = $qq.") (SELECT * FROM temp_detall_".$chgby.")";
 		mysql_query($qq,$conn);
-		$qu = "ALTER TABLE lixo_".$chgby."  ADD TempID INT(10) unsigned NOT NULL auto_increment PRIMARY KEY";
+		$qu = "ALTER TABLE temp_detall_".$chgby."  ADD TempID INT(10) unsigned NOT NULL auto_increment PRIMARY KEY";
 		mysql_query($qu,$conn);
-		$sql = "UPDATE Especimenes INNER JOIN lixo_".$chgby." as llixo ON Especimenes.EspecimenID=llixo.EspecimenID SET Especimenes.DetID='".$newdetid."' WHERE llixo.ChangedBy='".$chgby."'";
+		$sql = "UPDATE Especimenes INNER JOIN temp_detall_".$chgby." as llixo ON Especimenes.EspecimenID=llixo.EspecimenID SET Especimenes.DetID='".$newdetid."' WHERE llixo.ChangedBy='".$chgby."'";
 		$updatedpls = mysql_query($sql,$conn);
 		if ($updatedpls) {
 			$salvo++;
@@ -116,13 +116,13 @@ if ($newdetid>0) {
 		}
 	}
 	if ($numplantas>0) {
-		$qq = "CREATE TABLE lixo_".$chgby." (SELECT Plantas.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Plantas JOIN Identidade USING(DetID) WHERE ".$taxcol." AND FiltrosIDS LIKE '%filtroid_".$filtro."%')";
+		$qq = "CREATE TABLE temp_detall_".$chgby." (SELECT Plantas.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Plantas JOIN Identidade USING(DetID) WHERE ".$taxcol." AND FiltrosIDS LIKE '%filtroid_".$filtro."%')";
 		mysql_query($qq,$conn);
-		$Qq = "ALTER TABLE lixo_".$chgby." CHANGE PlantaID PlantaID INT( 10 ) NOT NULL";
+		$Qq = "ALTER TABLE temp_detall_".$chgby." CHANGE PlantaID PlantaID INT( 10 ) NOT NULL";
 		mysql_query($Qq,$conn);
-		$QQ = "ALTER TABLE lixo_".$chgby." DROP PRIMARY KEY";
+		$QQ = "ALTER TABLE temp_detall_".$chgby." DROP PRIMARY KEY";
 		mysql_query($QQ,$conn);
-		$qcol = "SHOW COLUMNS FROM  lixo_".$chgby;
+		$qcol = "SHOW COLUMNS FROM  temp_detall_".$chgby;
 		$rr = mysql_query($qcol,$conn);
 		$cols = array();
 		while ($row = mysql_fetch_assoc($rr)) {
@@ -139,11 +139,11 @@ if ($newdetid>0) {
 			}
 			$i++;
 		}
-		$qq = $qq.") (SELECT * FROM lixo_".$chgby.")";
+		$qq = $qq.") (SELECT * FROM temp_detall_".$chgby.")";
 		mysql_query($qq,$conn);
-		$qu = "ALTER TABLE lixo_".$chgby."  ADD TempID INT(10) unsigned NOT NULL auto_increment PRIMARY KEY";
+		$qu = "ALTER TABLE temp_detall_".$chgby."  ADD TempID INT(10) unsigned NOT NULL auto_increment PRIMARY KEY";
 		mysql_query($qu,$conn);
-		$sql = "UPDATE Plantas INNER JOIN lixo_".$chgby." as llixo ON Plantas.PlantaID=llixo.PlantaID SET Plantas.DetID='".$newdetid."' WHERE llixo.ChangedBy='".$chgby."'";
+		$sql = "UPDATE Plantas INNER JOIN temp_detall_".$chgby." as llixo ON Plantas.PlantaID=llixo.PlantaID SET Plantas.DetID='".$newdetid."' WHERE llixo.ChangedBy='".$chgby."'";
 		$updatedpls = mysql_query($sql,$conn);
 		if ($updatedpls) {
 			$salvo++;
