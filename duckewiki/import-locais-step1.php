@@ -31,23 +31,12 @@ $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+ $ispopup=1; $menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
-//, "<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
+"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />");
 $which_java = array(
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
 $title = 'Importar locais passo 01';
 $body = '';
 
@@ -404,9 +393,6 @@ if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bg
 }
 
 
-$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>"
-//,"<!-- Create Menu Settings: (Menu ID, Is Vertical, Show Timer, Hide Timer, On Click ('all' or 'lev2'), Right to Left, Horizontal Subs, Flush Left, Flush Top) -->",
-//"<script type='text/javascript'>qm_create(0,false,0,500,false,false,false,false,false);</script>"
-);
+$which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
 ?>

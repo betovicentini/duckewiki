@@ -35,23 +35,12 @@ if (count($gget)>count($ppost)) {
 }
 
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+ $ispopup=1; $menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
-"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
-//, "<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
-);
+"<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />");
 $which_java = array(
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
+"<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
 $title = 'Importar locais passo 06';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
@@ -148,7 +137,8 @@ if (isset($localstep)) {
 				UpdateGazetteerPath($newgazid,$conn);
 				$qn= "UPDATE ".$tbname." SET `".$tbprefix."GazetteerID`='".$newgazid."' WHERE `".$colstep."`='".$kll."'    AND `".$tbprefix."ParentID`=".($vals['parentid']+0)."  AND ".$tbprefix."MunicipioID=". ($vals['municipioid']+0);
 				mysql_query($qn,$conn);
-		} else {
+		} 
+		else {
 			$vals2 = $localstep_dados[$kll];
 			if ($vals2==1) {
 				$fieldsaskeyofvaluearray = array(
@@ -172,7 +162,7 @@ if (isset($localstep)) {
 		}
 		unset($existem[$kll]);
 	}
-
+	//unset($localstep);
 }
 
 //echo "muid ".$muid."  parid ".$parid."<br >";
@@ -206,12 +196,15 @@ if (isset($muid) && isset($parid)) {
 		//VALORES DISTINTOS DA COLUNA $colstep QUE AINDA NAO TEM UM GazetteerID DEFINIDO
 		$qq = "SELECT DISTINCT ".$colstep."  as teste, checkgazetteer_import(".$colstep.",".$parid.",".$muid.",0,0)  as testecheck, ".$tbprefix."ParentID, ".$tbprefix."MunicipioID  FROM ".$tbname."  WHERE ".$colstep."<>'' ";
 //WHERE ".$tbprefix."GazetteerID=0
-		//echo $qq."<br />";
+		///echo $qq."<br />";
 		$rr = mysql_query($qq,$conn);
 		$nrr = mysql_numrows($rr);
 		//SE HOUVER ITERA, INSERINDO, OU CRIANDO UM ARRAY $existem PARA PERGUNTAR AO USUARIO
-		//echopre($$localstep);
+		//echo "aqui:";
+		//echopre($localstep);
+		//echo "até aqui:";
 		if ($nrr>0 && !isset($localstep)) {
+				//echo "entrei aqui, hahahaha<br >";
 				$existem = array();
 				while ($rww = mysql_fetch_assoc($rr)) {
 							$existe = $rww['testecheck'];
@@ -253,6 +246,7 @@ if (isset($muid) && isset($parid)) {
 							}
 							//SE JÁ EXISTE, ENTAO ADICIONA AO ARRY
 							if ($existe>0) {
+							  		echo "encontrei".$exite."<br >";
 									$foundmatch['gazmatch'] = $existe;
 									$foundmatch['parentid'] = $pparid;
 									$foundmatch['municipioid']  = $muid; 
@@ -284,6 +278,7 @@ if (isset($muid) && isset($parid)) {
 			} 
 			//iIF IS NOT SET LOCALSTEP
 				//SE ENCONTROU LOCALIDADES VALIDAS, ENTAO PERGUNTA SE É NOVA OU SE SUBSTITUI POR LOCALIDADE JA CADASTRADA
+		//echopre($existem);
 		if (count($existem)>0) {
 					echo "
 <form action='import-locais-step6.php' method='post' >";
@@ -336,7 +331,7 @@ echo "
   </thead>
   <tbody>";
 	//PARA CADA LOCALIDADE QUE APARENTEMENTE JA EXISTE, SELECIONA OS VALORES PARECIDOS
-					foreach ($existem as $kk => $vv) {
+	foreach ($existem as $kk => $vv) {
 	if ($bgi % 2 == 0){$bgcolor = $linecolor2 ;}  else{$bgcolor = $linecolor1 ;} $bgi++;
 echo "
 <tr bgcolor = '".$bgcolor."'>
@@ -402,7 +397,7 @@ echo "
 
 //echo "aqui xxx";
 //echopre($runzz);
-if (count($runzz)>1 && $nextsetp==1) {
+    if (count($runzz)>1 && $nextsetp==1) {
 				unset($localstep);
 				//PASSA PARA O NIVEL INFERIOR
 				
@@ -414,10 +409,14 @@ if (count($runzz)>1 && $nextsetp==1) {
 					$qn= "UPDATE ".$tbname." SET `".$tbprefix."ParentID`=`".$tbprefix."GazetteerID`";
 					//echo $qn."<br />";
 					mysql_query($qn,$conn);
+					$qn= "UPDATE ".$tbname." SET `".$tbprefix."ParentID`=`".$tbprefix."GazetteerID`";
+
 					$parid = $tbprefix."ParentID";
 					echo "
 <form action='import-locais-step6.php' method='post' name='myform'>";
 					unset($ppost['fieldsign']);
+					unset($ppost['localstep']);
+
 					foreach ($ppost as $kk => $vv) {
 						if (!empty($vv)) {
 							echo "
@@ -440,10 +439,9 @@ echo "
             <input type='hidden' name='muid' value='".$muid."' /> 
             <input type='hidden' name='parid' value='".$parid."' />
             <input type='hidden' name='nextsetp' value='".$nextsetp."' />
-    <script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
+<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
 </form>";
-//            <input type='submit' value='Próximo nível!' class='bsubmit' style='cursor: pointer'>";
-					
+//    <input type='submit' value='Próximo nível!' class='bsubmit' style='cursor: pointer'>
 			} 
 	elseif ($nextsetp==1) {
 		//echo "TERMINOU";

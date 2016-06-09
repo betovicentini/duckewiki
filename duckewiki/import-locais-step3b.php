@@ -34,24 +34,14 @@ $gget = cleangetpost($_GET,$conn);
 //echopre($gget);
 
 //CABECALHO
-$ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+ $ispopup=1; $menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
 "<link rel='stylesheet' type='text/css' media='screen' href='css/autosuggest.css' />"
-//, "<link rel='stylesheet' type='text/css' href='css/cssmenu.css' />"
 );
 $which_java = array(
-"<script type='text/javascript' src='javascript/ajax_framework.js'></script>"
-//"<script type='text/javascript' src='css/cssmenuCore.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOns.js'></script>",
-//"<script type='text/javascript' src='css/cssmenuAddOnsItemBullet.js'></script>"
-);
-$title = 'Importar Locais - Passo 3a - Checa major Area';
+"<script type='text/javascript' src='javascript/ajax_framework.js'></script>");
+$title = 'Importar Locais - Passo 3b - Checa Minor Area';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
 
@@ -59,6 +49,9 @@ $clnl = $tbprefix."CountryID";
 $clnl2 = $tbprefix."ProvinceID";
 $clnl3 = $tbprefix."MunicipioID";
 //echopre($ppost);
+
+
+
 if (!empty($municipio) && !empty($provincia) && !isset($municipiosdone)) 
 {
 			$colcol = $municipio;
@@ -195,7 +188,8 @@ echo "
 echo "
 <script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
   </form>";
-//            <input style='cursor: pointer'  type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit'  />
+//<input style='cursor: pointer'  type='submit' value='".GetLangVar('namecontinuar')."' class='bsubmit'  />
+
 
 }
 
