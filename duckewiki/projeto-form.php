@@ -37,9 +37,13 @@ $which_java = array();
 $title = 'Projeto';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
+//echo "<span style='color: red; font-size: 2em;'> Estou mexendo aqui. Não use!</span>";
+//$sql = "ALTER TABLE `Projetos`  ADD `MorfoFormID` INT(10) NOT NULL AFTER `Equipe`,  ADD `HabitatFormID` INT(10) NOT NULL AFTER `MorfoFormID`";
+//@mysql_query($sql,$conn);
 
-$sql = "ALTER TABLE `Projetos`  ADD `MorfoFormID` INT(10) NOT NULL AFTER `Equipe`,  ADD `HabitatFormID` INT(10) NOT NULL AFTER `MorfoFormID`";
+$sql = "ALTER TABLE `Projetos`  ADD `MorformsIDs` TEXT DEFAULT NULL AFTER `Equipe`";
 @mysql_query($sql,$conn);
+
 
 //PEGA DADOS VELHOS SE HOUVER
 if ($submitted=='editando') {
@@ -48,7 +52,8 @@ if ($submitted=='editando') {
 	$res = mysql_query($qq,$conn);
 	$rww = mysql_fetch_assoc($res);
 	$projetonome = $rww['ProjetoNome'];
-	$projformidmorfo = $rww['MorfoFormID'];
+	//$projformidmorfo = $rww['MorfoFormID'];
+	$projformidmorfo = explode(";",$rww['MorformsIDs']);
 	$projformidhab = $rww['HabitatFormID'];
 	$projetourl = $rww['ProjetoURL'];
 	$logofile = $rww['LogoFile'];
@@ -72,13 +77,14 @@ if ($submitted=='editando') {
 	$agencia = explode(";",$rww['Financiamento']);
 	$processo = explode(";",$rww['Processos']);
 
-	$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."' AND EspecimeID>0";
+	$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."' AND EspecimenID>0";
+	//echo $qq."<br />";
 	$rr = mysql_query($qq,$conn);
 	$nrr = mysql_numrows($rr);
 	if ($nrr==0) {
 		$qq = "INSERT INTO ProjetosEspecs (EspecimenID, PlantaID, ProjetoID, AddedBy, AddedDate) SELECT EspecimenID, PlantaID, ProjetoID, ".$uuid.", '".$sessiondate."' FROM Especimenes WHERE ProjetoID='".$projetoid."'";
 		@mysql_query($qq,$conn);
-		$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."' AND EspecimeID>0";
+		$qq = "SELECT * FROM ProjetosEspecs WHERE ProjetoID='".$projetoid."' AND EspecimenID>0";
 		$rr = mysql_query($qq,$conn);
 		$nrr = mysql_numrows($rr);
 	}
@@ -239,28 +245,24 @@ echo "
   <td >
     <table>
     <tr>
-  <td align='right' class='tdsmallbold'>Formulário morfológico
+  <td align='right' class='tdsmallbold'>Formulários de variáveis de usuários
 &nbsp;<img height='14' src=\"icons/icon_question.gif\" ";
-	$help = 'Formulário contendo variáveis morfológicas relacionadas as amostras para produção de planilha de dados. Precisa ser um formulário de uso pessoal, não compartilhado';
+	$help = 'Para cada formulário selecionado serão criadas planilhas de dados e metadados, relacionando dados das amostras com esse tipo de dados. Apenas Formulários de USO PESSOAL que não podem ser mudados por outros usuários';
 	echo " onclick=\"javascript:alert('$help');\" /></td>  
   <td class='tdformnotes'>
-    <select name='projformidmorfo' >";
-	if (!empty($projformidmorfo)) {
-		$qq = "SELECT * FROM Formularios WHERE FormID=".$projformidmorfo;
-		$rr = mysql_query($qq,$conn);
-		$row= mysql_fetch_assoc($rr);
-		echo "
-      <option selected value='".$row['FormID']."'>".$row['FormName']." (".$row['AddedDate'].")</option>";
-	} else {
-		echo "
-      <option selected value=''>".GetLangVar('nameselect')."</option>";
-	}
+    <select name='projformidmorfo[]'  size='10' multiple>";
 	//formularios usuario
-	$qq = "SELECT * FROM Formularios WHERE AddedBy=".$_SESSION['userid']." AND Shared=0 ORDER BY Formularios.FormName ASC";
+	//WHERE AddedBy=".$_SESSION['userid']." AND Shared=0 
+	$qq = "SELECT * FROM Formularios ORDER BY Formularios.FormName ASC";
 	$rr = mysql_query($qq,$conn);
 	while ($row= mysql_fetch_assoc($rr)) {
+		$seltxt = "";
+	    if (count($projformidmorfo)>0) {
+			$tem = in_array($row['FormID'],$projformidmorfo);
+			if ($tem) { $seltxt = "selected";}
+		}
 		echo "
-      <option  value='".$row['FormID']."'>".$row['FormName']." (".$row['AddedDate'].")</option>";
+      <option  ".$seltxt." value='".$row['FormID']."'>".$row['FormName']." (".$row['AddedDate'].")</option>";
 	}
 echo "
     </select>

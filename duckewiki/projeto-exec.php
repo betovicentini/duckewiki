@@ -87,9 +87,11 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 					'Processos' => $processos,
 					'LogoFile' => $myfile,
 					'Equipe'=> $addcolvalue,
-					'MorfoFormID'=> $projformidmorfo,
+					'MorformsIDs' => implode(";",$projformidmorfo),
 					'HabitatFormID'=> $projformidhab
 					);
+					//'MorfoFormID'=> $projformidmorfo,
+
 		/////////////////////
 			if ($projetoid>0) { //se editando
 				$changed = CompareOldWithNewValues('Projetos','ProjetoID',$projetoid,$arrayofvalues,$conn);

@@ -26,7 +26,10 @@ $qprj = "SELECT * FROM Projetos WHERE ProjetoID=".$projetoid;
 $rq = mysql_query($qprj,$conn);
 $rqw = mysql_fetch_assoc($rq);
 $nomeprj = $rqw['ProjetoNome'];
-$morfoformid = $rqw['MorfoFormID'];
+$morfoformid = explode(";",$rqw['MorformsIDs']);
+//echopre($morfoformid);
+
+//$morfoformid = $rqw['MorfoFormID'];
 $habitatformid = $rqw['HabitatFormID'];
 
 $qsamples = "SELECT * FROM ProjetosEspecs WHERE ProjetoID=".$projetoid." AND EspecimenID>0";
@@ -232,13 +235,18 @@ mysql_query($qnu);
 session_write_close();
 
 //////////////////////////////
-$export_filename = "dadosMorfo_".$projetoid.".csv";
-$metadados_file =   "dadosMorfo_".$projetoid."_metadados.csv";
+
+foreach($morfoformid as $mfid) {
+//$export_filename = "dadosMorfo_".$projetoid.".csv";
+//$metadados_file =   "dadosMorfo_".$projetoid."_metadados.csv";
+$export_filename  = "dados_form-".$mfid."_projeto-".$projetoid.".csv";
+$metadados_file = "dados_form-".$mfid."_projeto-".$projetoid."_metadados.csv";
 $fdate = @date ("Y-m-d", filemtime("temp/".$export_filename));
 $cdate = @date("Y-m-d");
-if ($morfoformid>0 && $fdate!==$cdate) {
+//&& $fdate!==$cdate
+if ($mfid>0 ) {
 $fmean=0;
-$qu = "SELECT tr.TraitID,tr.TraitTipo,tr.TraitName,tr.TraitUnit,tr.TraitDefinicao,prt.TraitName as ParentName FROM FormulariosTraitsList AS fr JOIN Traits as tr ON tr.TraitID=fr.TraitID INNER JOIN Traits as prt ON tr.ParentID=prt.TraitID WHERE  fr.FormID=".$morfoformid." ORDER BY fr.Ordem";
+$qu = "SELECT tr.TraitID,tr.TraitTipo,tr.TraitName,tr.TraitUnit,tr.TraitDefinicao,prt.TraitName as ParentName FROM FormulariosTraitsList AS fr JOIN Traits as tr ON tr.TraitID=fr.TraitID INNER JOIN Traits as prt ON tr.ParentID=prt.TraitID WHERE  fr.FormID=".$mfid." ORDER BY fr.Ordem";
 //echo $qu."<br />";
 $ruw = mysql_query($qu,$conn);
 $qq = "SELECT pltb.EspecimenID AS WikiEspecimenID ";
@@ -377,6 +385,10 @@ fclose($fh);
 }
 
 } 
+
+}
+
+
 $perc = 60;
 $qnu = "UPDATE `temp_projdadosmeta.".substr(session_id(),0,10)."` SET percentage=".$perc; 
 mysql_query($qnu);
@@ -541,7 +553,7 @@ if ($nrmol>0) {
 			$export_filename = "dadosMoleculares_".$mark."_".$projetoid.".fasta";
 			$metadados_file =   "dadosMoleculares_".$mark."_".$projetoid."_metadados.csv";
 			$sql = "SELECT DISTINCT ProjetosEspecs.EspecimenID FROM ProjetosEspecs JOIN MolecularData USING(EspecimenID) WHERE Marcador='".$rwmol['Marcador']."' AND ProjetoID=".$projetoid."";
-			echo $sql."<br />";
+			//echo $sql."<br />";
 			$rs = mysql_query($sql,$conn);
 			while($rsw = mysql_fetch_assoc($rs)) {
 				$sqlmol = "SELECT mol.EspecimenID AS WikiEspecimenID,
@@ -621,7 +633,8 @@ WHERE mol.Marcador LIKE '".$rwmol['Marcador']."' AND mol.EspecimenID=".$rsw['Esp
 	//session_write_close();
 	$idx++;
  }
-} else {
+} 
+else {
 	//$perc = $perc+((15*$idx)/$nrmol);
 	//$qnu = "UPDATE `temp_projdadosmeta.".substr(session_id(),0,10)."` SET percentage=".$perc; 
 	//mysql_query($qnu);

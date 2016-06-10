@@ -60,7 +60,7 @@ $which_java = array(
     	} else {
           document.getElementById('probarperc').innerHTML = progress + '%' +' CONCLUIDO';
           document.getElementById('loaderimg').style.visibility= 'hidden';
-          window.location = 'projeto-dados-metadados-save.php?projetoid=".$projetoid."';
+          //window.location = 'projeto-dados-metadados-save.php?projetoid=".$projetoid."';
     	}
       });
 	}

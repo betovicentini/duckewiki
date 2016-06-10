@@ -36,7 +36,8 @@ $qprj = "SELECT * FROM Projetos WHERE ProjetoID=".$projetoid;
 $rq = mysql_query($qprj,$conn);
 $rqw = mysql_fetch_assoc($rq);
 $nomeprj = $rqw['ProjetoNome'];
-$morfoformid = $rqw['MorfoFormID'];
+//$morfoformid = $rqw['MorfoFormID'];
+$morfoformid = explode(";",$rqw['MorformsIDs']);
 $habitatformid = $rqw['HabitatFormID'];
 
 $qsamples = "SELECT * FROM ProjetosEspecs WHERE ProjetoID=".$projetoid." AND EspecimenID>0";
@@ -46,9 +47,17 @@ $files = array();
 if ($nsamples>0) {
  $files['Especimenes'] = "dadosAmostras_".$projetoid.".csv";
  $files['Especimenes-Metadados'] =  "dadosAmostras_".$projetoid."_metadados.csv";
- if ($morfoformid>0) {
- $files['Morfologia'] = "dadosMorfo_".$projetoid.".csv";
- $files['Morfologia-Metadados'] =  "dadosMorfo_".$projetoid."_metadados.csv";
+ if (count($morfoformid)>0) {
+ 	foreach($morfoformid  as $vv) {
+		 	$qqr = "SELECT * FROM Formularios WHERE FormID=".$vv;
+			$runr = mysql_query($qqr,$conn);
+			$runw= mysql_fetch_assoc($runr);
+			//$fn = str_replace(" ","-",$runw['FormName']);
+			$kn1 = $runw['FormName'];
+			$kn2 = $runw['FormName']."_metadados";
+		 	$files[$kn1] = "dados_form-".$vv."_projeto-".$projetoid.".csv";
+			$files[$kn2] = "dados_form-".$vv."_projeto-".$projetoid."_metadados.csv";
+ 	}
  }
  if ($habitatformid>0) {
  $files['Habitat'] = "dadosAmbientais_".$projetoid.".csv";
@@ -113,7 +122,8 @@ echo "
 </table>";
 $which_java = array("<script type='text/javascript' src='javascript/myjavascripts.js'></script>");
 FazFooter($which_java,$calendar=FALSE,$footer=$menu);
-} else {
+} 
+else {
 		header("location: projeto-dados-metadados.php?projetoid=".$projetoid);
 }
 ?>

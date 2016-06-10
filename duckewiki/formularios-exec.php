@@ -219,6 +219,15 @@ if (!empty($formid) && is_numeric($formid)) {
 	$formulario = $row['FormName'];
 	$tipodeuso = $row['Shared'];
 	$traitids = $row['FormFieldsIDS'];
+	if (empty($traitids)) {
+		$qt = "SELECT * FROM FormulariosTraitsList WHERE `FormID`='".$formid."' ORDER BY Ordem";
+		$rrr = mysql_query($qT,$conn);
+		$trids = array();
+		while($rww = mysql_fetch_assoc($rrr)) {
+			$trids[] = $rww['TraitID'];
+		}
+		$traitids = implode(";",$trids);
+	}
 	$habitatform = $row['HabitatForm'];
 	$txt = GetLangVar('nameeditar')." ";
 } 

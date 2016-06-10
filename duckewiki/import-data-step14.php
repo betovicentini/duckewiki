@@ -385,8 +385,8 @@ echo "
 	}
 	echo "
      <input type='hidden' name='arraysubmited' value='".serialize($arrayoffields)."' />
-<!---<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>--->
-<input type='submit' value='Continuar' class='bsubmit' />
+<script language=\"JavaScript\">setTimeout('document.myform.submit()',0.0001);</script>
+<!---<input type='submit' value='Continuar' class='bsubmit' />--->
 </form>
   ";
   flush();

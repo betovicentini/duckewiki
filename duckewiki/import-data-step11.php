@@ -211,7 +211,7 @@ echo " onclick = \"javascript:small_window('$myurl',500,350,'Corrigir valores de
 					if (!empty($bibref)) {
 							$qq .= ", `".$colname4."`=`".$bibref."`";
 					}
-					$qq .= "WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL";
+					$qq .= " WHERE `".$vv."`<>'' AND `".$vv."` IS NOT NULL";
 					$upr = mysql_query($qq,$conn);
 					//echo $qq."<br />";
 					if ($upr) {
