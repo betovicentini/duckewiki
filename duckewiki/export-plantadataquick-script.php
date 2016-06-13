@@ -8,8 +8,8 @@ session_start();
 
 //INCLUI FUNCOES PHP E VARIAVEIS
 include "functions/HeaderFooter.php";
-include "functions/MyPhpFunctions.php";
-include_once("functions/class.Numerical.php") ;
+//include "functions/MyPhpFunctions.php";
+//include_once("functions/class.Numerical.php") ;
 
 //FAZ A CONEXAO COM O BANCO DE DADOS
 //$lang = $_SESSION['lang'];
@@ -28,11 +28,15 @@ $export_filename = "plantas_export_".$_SESSION['userlastname']."_".$_SESSION['se
 $tempsqltb = "temp_quickcenso".substr(session_id(),0,10);
 $export_filename_metadados = "plantas_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate']."_definicoesDAScolunas.csv";
 
+$progresstable = "temp_exportplantas".substr(session_id(),0,10);
+
+
 unset($_SESSION['metadados']);
 unset($metadados);
 unset($_SESSION['qq']);
 
 $sql = "SELECT 
+pltb.PlantaID as WikiPlantaID,
 pltb.PlantaTag as TreeTag, 
 getidentidade(pltb.DetID,1,0,1,0,0) AS Family, 
 getidentidade(pltb.DetID,1,0,0,1,0) AS Genus, 
@@ -51,9 +55,9 @@ moni.TraitUnit as DBH_unit,
 moni.TraitVariation as DBH,
 moni.DataObs as DBH_date,
 Censos.CensoNome
-FROM Monitoramento as moni JOIN Plantas AS pltb ON moni.PlantaID=pltb.PlantaID JOIN Censos ON Censos.CensoID=moni.CensoID WHERE moni.TraitID=".$daptraitid;
+FROM Monitoramento as moni JOIN Plantas AS pltb ON moni.PlantaID=pltb.PlantaID JOIN Censos ON Censos.CensoID=moni.CensoID ";
 
-$qwhere = " AND (moni.CensoID='".$censos[0]."' ";
+$qwhere = " WHERE moni.TraitID=".$daptraitid." AND (moni.CensoID='".$censos[0]."' ";
 unset($censos[0]);
 $censos = array_values($censos);
 foreach($censos as $ce) {
@@ -61,29 +65,49 @@ foreach($censos as $ce) {
 }
 $qwhere .= ")";
 
-
-
 unlink("temp/".$export_filename);
 unlink("temp/".$export_filename_metadados);
 
-$qnu = "UPDATE `".$progesstable."` SET percentage=1"; 
-mysql_query($qnu);
-session_write_close();
+//$qnu = "UPDATE `".$progresstable."` SET percentage=1"; 
+//mysql_query($qnu);
+//session_write_close();
 
 $sql2 = "DROP TABLE `".$tempsqltb."`";
 @mysql_query($sql2,$conn);
 
 
-$sql = "CREATE TABLE `".$tempsqltb."` ".$sql.$qwhere;
+//$sql = "CREATE TABLE `".$tempsqltb."` ".$sql.$qwhere;
 //echo $sql."<br />";
 //$lixao==9437265;
 //if ($lixao==9437265) {
-$ores = mysql_query($sql,$conn);
+//$ores = mysql_query($sql,$conn);
+
+$ql = "SELECT MonitoramentoID FROM Monitoramento as moni ".$qwhere;
+$resl = mysql_query($ql,$conn);
+$nrz = mysql_num_rows($resl);
+
+$stepsize = 1000;
+$counter = 0;
+while($counter<=$nrz)  {
+		if ($counter==0) {
+			$qqq = "CREATE TABLE IF NOT EXISTS ".$tempsqltb." (".$sql.$qwhere." LIMIT ".$counter.",".$stepsize.")";
+			//echo $qqq."<br >";
+			$res = mysql_query($qqq,$conn);
+		} else {
+			$qqq = "INSERT INTO ".$tempsqltb." (".$sql.$qwhere."  LIMIT ".$counter.",".$stepsize.")";
+			$res = mysql_query($qqq,$conn);
+		}
+		$porc = ($counter/$nrz)*99;
+		$perc = floor($porc);
+		$qnu = "UPDATE `".$progresstable."` SET percentage=".$perc; 
+		mysql_query($qnu,$conn);
+		session_write_close();
+		$counter = $counter+$stepsize+1;
+}
 
 //session_write_close();
-if ($ores) {
 $sql2 = "ALTER TABLE `".$tempsqltb."`  ADD `tempid` INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY  FIRST";
-mysql_query($sql2,$conn);
+@mysql_query($sql2,$conn);
 
 $qqq = "SELECT * FROM `".$tempsqltb."`";
 //echo $qqq."<br />";
@@ -94,10 +118,9 @@ if ($res>0) {
 	$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
 	$count = mysql_num_fields($res);
 	$osfields = $count;
-	$_SESSION['exportnfields'] = $count;
-	$_SESSION['exportnresult'] = $nres;
+	//$_SESSION['exportnfields'] = $count;
+	//$_SESSION['exportnresult'] = $nres;
 	$message=  $nres.";".$osfields;
-	echo $message;
 	$header = '';
 	$ctn = $count-1;
 	for ($i = 0; $i<=$ctn; $i++){
@@ -109,12 +132,14 @@ if ($res>0) {
 	}
 	$header .= "\n";
 	fwrite($fh, $header);
-	$counter = 1;
+	//$counter = 1;
 	while($rsw = mysql_fetch_assoc($res)){
 				$line = '';
 				foreach($rsw as $value){
 					if(!isset($value) || $value == ""){
-						$value = "\t";
+						$naval = "NA";
+					    $value = '"' . $naval . '"' . "\t";
+						//$value = "\t";
 					} else{
 						//important to escape any quotes to preserve them in the data.
 						$value = str_replace('"', '""', $value);
@@ -126,12 +151,12 @@ if ($res>0) {
 				}
 				$lin = trim($line)."\n";
 				fwrite($fh, $lin);
-				$porc = ($counter/$nres)*99;
-				$perc = floor($porc);
-				$qnu = "UPDATE `temp_exportplantas".substr(session_id(),0,10)."` SET percentage=".$perc; 
-				mysql_query($qnu);
-				session_write_close();
-				$counter++;
+				//$porc = ($counter/$nres)*9.9;
+				//$perc = floor($porc);
+				//$qnu = "UPDATE `".$progresstable."` SET percentage=".$perc; 
+				//mysql_query($qnu);
+				//session_write_close();
+				//$counter++;
 	}
 	fclose($fh);
 
@@ -147,12 +172,9 @@ if ($res>0) {
 
 
 }
-
-$qnu = "UPDATE `temp_exportplantas".substr(session_id(),0,10)."` SET percentage=100"; 
+echo $message;
+$qnu = "UPDATE `".$progresstable."` SET percentage=100"; 
 mysql_query($qnu);
 session_write_close();
-} else {
-	//echo "erro".$sql;
-}
 
 ?>

@@ -10,7 +10,8 @@ include "functions/HeaderFooter.php";
 $dbname = $_SESSION['dbname'];
 $conn = ConectaDB($dbname);
 
-$qqn = "SELECT * FROM `temp_exportplantas".substr(session_id(),0,10)."`";
+$progresstable = "temp_exportplantas".substr(session_id(),0,10);
+$qqn = "SELECT * FROM ".$progresstable;
 $rqn = mysql_query($qqn,$conn);
 $rzn = mysql_fetch_assoc($rqn);
 $progresso = $rzn['percentage'];

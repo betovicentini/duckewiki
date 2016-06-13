@@ -252,8 +252,8 @@ echo "
   <td class='tdformnotes'>
     <select name='projformidmorfo[]'  size='10' multiple>";
 	//formularios usuario
-	//WHERE AddedBy=".$_SESSION['userid']." AND Shared=0 
-	$qq = "SELECT * FROM Formularios ORDER BY Formularios.FormName ASC";
+	//
+	$qq = "SELECT * FROM Formularios  WHERE AddedBy=".$_SESSION['userid']." AND Shared=0 ORDER BY Formularios.FormName ASC";
 	$rr = mysql_query($qq,$conn);
 	while ($row= mysql_fetch_assoc($rr)) {
 		$seltxt = "";

@@ -39,12 +39,13 @@ $_SESSION['destvararray'] = serialize($ppost);
 
 //if ($lixao==779) {
 //PREPARA ARQUIVO PARA LOOP DE PROGRESSO
-$qqz = "DROP TABLE `temp_exportplantas".substr(session_id(),0,10)."`";
+$progresstable = "temp_exportplantas".substr(session_id(),0,10);
+$qqz = "DROP TABLE ".$progresstable;
 mysql_query($qqz,$conn);
-$qqz = "CREATE TABLE `temp_exportplantas".substr(session_id(),0,10)."`  (`percentage` INT(10) NOT NULL DEFAULT 0) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
+$qqz = "CREATE TABLE `".$progresstable."`  (`percentage` INT(10) NOT NULL DEFAULT 0)";
 mysql_query($qqz,$conn);
 //echo $qqz;
-$qqz = "INSERT INTO `temp_exportplantas".substr(session_id(),0,10)."` (`percentage`) VALUES ('0');";
+$qqz = "INSERT INTO `".$progresstable."` (`percentage`) VALUES ('0');";
 mysql_query($qqz,$conn);
 
 $title = '';
@@ -58,15 +59,15 @@ $which_java = array(
 "<script>
     function CheckProgress() {
       var time = new Date().getTime();
-      $.get('export-plantadata-progress.php', { t: time }, function (progress) {
+      $.get('export-plantadata-progress.php', { t: time }, function (data) {
           var progress = parseInt(data, 10);
           document.getElementById('probar').value = progress;
         if (progress < 100) {
           document.getElementById('probarperc').innerHTML = 'Processando ' + progress + '%';
-          setTimeout(function() { CheckProgress();}, 1000);
+          setTimeout(function() { CheckProgress();}, 100);
     	} else {
-          document.getElementById('probarperc').innerHTML = progress + '%' +' CONCLUIDO';
-          document.getElementById('loaderimg').style.visibility= 'hidden';
+          //document.getElementById('probarperc').innerHTML = progress + '%' +' CONCLUIDO';
+          //document.getElementById('loaderimg').style.visibility= 'hidden';
           //window.location = 'export-plantadata-save.php';
     	}
       });
@@ -79,7 +80,7 @@ $which_java = array(
                 async: true,
                 success:
                     function (data) {
-                        //document.getElementById('probarperc').innerHTML = data ;
+                        document.getElementById('probarperc').innerHTML = data ;
                         //document.getElementById('loaderimg').style.visibility= 'hidden';
                         //document.getElementById('coffeeid').style.visibility= 'hidden';
                         window.location = 'export-plantadata-save.php?resultado='+data;

@@ -9,7 +9,7 @@ session_start();
 //INCLUI FUNCOES PHP E VARIAVEIS
 include "functions/HeaderFooter.php";
 include "functions/MyPhpFunctions.php";
-include_once("functions/class.Numerical.php") ;
+//include_once("functions/class.Numerical.php") ;
 
 //FAZ A CONEXAO COM O BANCO DE DADOS
 //$lang = $_SESSION['lang'];
@@ -31,22 +31,23 @@ $dd = @unserialize($_SESSION['destvararray']);
 $export_filename = "plantas_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate'].".csv";
 $export_filename_metadados = "plantas_export_".$_SESSION['userlastname']."_".$_SESSION['sessiondate']."_definicoesDAScolunas.csv";
 
+$progresstable = "temp_exportplantas".substr(session_id(),0,10);
+$distincttbname = "temp_exportplantas2".substr(session_id(),0,10);
 
-
-	//$_SESSION['destvararray'] = serialize($ppost);
-	unset($_SESSION['metadados']);
-	unset($metadados);
-	unset($_SESSION['qq']);
-	if (empty($filtro)) { 
+//$_SESSION['destvararray'] = serialize($ppost);
+unset($_SESSION['metadados']);
+unset($metadados);
+unset($_SESSION['qq']);
+if (empty($filtro)) { 
 		//header("location: export-monitoramento-form.php");
+}
+$basvar = array();
+if (count($basicvariables)>0) {
+	foreach($basicvariables as $val) {
+		$var = array($val => $val);
+		$basvar = array_merge((array)$basvar,(array)$var);
 	}
-	$basvar = array();
-	if (count($basicvariables)>0) {
-		foreach($basicvariables as $val) {
-			$var = array($val => $val);
-			$basvar = array_merge((array)$basvar,(array)$var);
-		}
-	}
+}
 	
 //echopre($basvar);
 	
@@ -316,13 +317,13 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 							$tdef = str_replace(".)",")",$tdef);
 							$metadados['idx'.$idx][1] = $tdef;
 							$idx++;
-							$metadados['idx'.$idx][0] = $tascol."_UNIT";
-							$metadados['idx'.$idx][1] = "Unidade da medição da variável".$tascol;
+							$metadados['idx'.$idx][0] = $tascol."_UNIT".$cen." no censo ".$cen;
+							$metadados['idx'.$idx][1] = "Unidade da medição da variável".$tascol." no censo ".$cen;
 							$idx++;
-							$metadados['idx'.$idx][0] = $tascol."_DATA";
-							$metadados['idx'.$idx][1] = "Data da medição da variável.". $tascol;
+							$metadados['idx'.$idx][0] = $tascol."_DATA".$cen;
+							$metadados['idx'.$idx][1] = "Data da medição da variável.". $tascol." no censo ".$cen;
 							$idx++;
-							$qq = $qq.", censotrait($tid,pltb.PlantaID, ".$cen.", 0,0 ) AS ".$tascol.", censotrait($tid,pltb.PlantaID, ".$cen.", 0, 1) AS ".$tascol."_UNIT, censotrait($tid,pltb.PlantaID, ".$cen.", 1, 0) AS ".$tascol."_DATE";
+							$qq = $qq.", censotrait($tid,pltb.PlantaID, ".$cen.", 0,0 ) AS ".$tascol.$cen.", censotrait($tid,pltb.PlantaID, ".$cen.", 0, 1) AS ".$tascol."_UNIT".$cen.", censotrait($tid,pltb.PlantaID, ".$cen.", 1, 0) AS ".$tascol."_DATA".$cen;
 						} else {
 							$tti = explode("|",$ttipo);
 							$tdef = $ttname.". (".$tdefini."). Variável ".$tti[1].".";
@@ -330,11 +331,10 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 							$tdef = str_replace(".)",")",$tdef);
 							$metadados['idx'.$idx][1] = $tdef;
 							$idx++;
-							$metadados['idx'.$idx][0] = $tascol."_DATA";
-							$metadados['idx'.$idx][1] = "Data da medição da variável.". $tascol;
+							$metadados['idx'.$idx][0] = $tascol."_DATA".$cen;
+							$metadados['idx'.$idx][1] = "Data da medição da variável ". $tascol." no censo ".$cen;
 							$idx++;
-							$qq = $qq.", censotrait($tid,pltb.PlantaID, ".$cen.", 0,0 ) AS ".$tascol.", censotrait($tid,pltb.PlantaID, ".$cen.", 1, 0) AS ".$tascol."_DATA";
-						
+							$qq = $qq.", censotrait($tid,pltb.PlantaID, ".$cen.", 0,0 ) AS ".$tascol.$cen.", censotrait($tid,pltb.PlantaID, ".$cen.", 1, 0) AS ".$tascol."_DATA".$cen;
 					}
 					}
 				}
@@ -434,12 +434,12 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 			$metadados['idx'.$idx][1] = 'Data da marcação da planta no campo';
 			$idx++;
 		}
-		if (!empty($basvar['projeto'])) {
-			$qq .= ", projetostring(pltb.ProjetoID,1,0) as PROJETO";
-			$metadados['idx'.$idx][0] = "PROJETO";
-			$metadados['idx'.$idx][1] = 'Projeto a que se refere o trabalho';
-			$idx++;
-		}
+		//if (!empty($basvar['projeto'])) {
+			//$qq .= ", projetostring(pltb.ProjetoID,1,0) as PROJETO";
+			//$metadados['idx'.$idx][0] = "PROJETO";
+			//$metadados['idx'.$idx][1] = 'Projeto a que se refere o trabalho';
+			//$idx++;
+		//}
 		$qq = $qq." FROM Plantas as pltb";
 		if (!empty($basvar['nomenoautor']) || !empty($basvar['nomeautor']) || !empty($basvar['taxacompleto'])) {
 			$qq .= " LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID LEFT JOIN Tax_Especies as spectb ON iddet.EspecieID=spectb.EspecieID LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID  LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
@@ -447,9 +447,9 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 		if (!empty($basvar['localidade']) || !empty($basvar['gps'])) {
 			$qq .= " LEFT JOIN Gazetteer as gaz ON gaz.GazetteerID=pltb.GazetteerID LEFT JOIN GPS_DATA as gpspt ON gpspt.PointID=pltb.GPSPointID LEFT JOIN Gazetteer as gazgps ON gazgps.GazetteerID=pltb.GazetteerID LEFT JOIN Municipio as muni ON gaz.MunicipioID=muni.MunicipioID LEFT JOIN Province  ON Province.ProvinceID=muni.ProvinceID LEFT JOIN Country  ON Country.CountryID=Province.CountryID";
 		}
-		if (!empty($basvar['projeto'])) {
-			$qq .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";	
-		}
+		//if (!empty($basvar['projeto'])) {
+			//$qq .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
+		//}
 		if ($formhabitat>0) { 
 			$qq .=" LEFT JOIN Habitat as hablocal ON hablocal.LocalityID=pltb.GazetteerID";
 		}
@@ -461,13 +461,13 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 $qz = "SELECT * FROM Plantas WHERE FiltrosIDS LIKE '%filtroid_".$filtro."%'";
 $rz = mysql_query($qz,$conn);
 $nrz = mysql_numrows($rz);
-$_SESSION['exportnresult'] = $nrz;
+//$_SESSION['exportnresult'] = $nrz;
 		
 
 unlink("temp/".$export_filename);
 unlink("temp/".$export_filename_metadados);
 
-$qnu = "UPDATE `".$progesstable."` SET percentage=1"; 
+$qnu = "UPDATE `".$progesstable."` SET percentage=0"; 
 mysql_query($qnu);
 session_write_close();
 
@@ -481,62 +481,67 @@ $stepsize = 100;
 //echopre($breaks);
 $lixao=999934;
 if ($lixao==999934) {
+$qdt = "DROP TABLE ".$distincttbname;
+@mysql_query($qdt,$conn);
+
 $counter = 0;
 while($counter<=$nrz)  {
-//for ($st1=0; $st1<= $nrz; $st1=($st1+$stepsize+1)) {
-//	while($st1<=$nrz) {
-		$qqq = $qq." LIMIT $counter,$stepsize";
-		$res = mysql_query($qqq,$conn);
-		if ($res) {
-			if ($counter==0) {
-				$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
-				$count = mysql_num_fields($res);
-				$_SESSION['exportnfields'] = $count;
-				$message=  $nrz.";".$count;
-				$header = '';
-				for ($i = 0; $i < $count; $i++){
-					if ($i<($count-1)) {
-						$header .=  '"'. mysql_field_name($res, $i).'"'."\t";
-					} else {
-						$header .=  '"'. mysql_field_name($res, $i).'"';
-					}
-				}
-				$header .= "\n";
-				fwrite($fh, $header);
-			} else {
-				$fh = fopen("temp/".$export_filename, 'a') or die("nao foi possivel abrir o arquivo");
-			}
-			while($rsw = mysql_fetch_assoc($res)){
-				$line = '';
-				foreach($rsw as $value){
-					if(!isset($value) || $value == ""){
-						$value = "\t";
-					} else{
-						//important to escape any quotes to preserve them in the data.
-						$value = str_replace('"', '""', $value);
-						//needed to encapsulate data in quotes because some data might be multi line.
-						//the good news is that numbers remain numbers in Excel even though quoted.
-						$value = '"' . $value . '"' . "\t";
-					}
-					$line .= $value;
-				}
-				$lin = trim($line)."\n";
-				fwrite($fh, $lin);
-			}
-			fclose($fh);
+		if ($counter==0) {
+			$qqq = "CREATE TABLE IF NOT EXISTS ".$distincttbname." (".$qq." LIMIT ".$counter.",".$stepsize.")";
+			//echo $qqq."<br >";
+			$res = mysql_query($qqq,$conn);
+		} else {
+			$qqq = "INSERT INTO ".$distincttbname." (".$qq." LIMIT ".$counter.",".$stepsize.")";
+			$res = mysql_query($qqq,$conn);
 		}
 		$porc = ($counter/$nrz)*99;
 		$perc = floor($porc);
-		$qnu = "UPDATE `temp_exportplantas".substr(session_id(),0,10)."` SET percentage=".$perc; 
+		$qnu = "UPDATE `".$progresstable."` SET percentage=".$perc; 
 		mysql_query($qnu);
 		session_write_close();
-		//$mm = ($counter+$stepsize+1);
-		//$m2 = $nrz-$mm;
-		//if ($m2<$stepsize) { $step = $m2+1;} else {$step=$stepsize;}
 		$counter = $counter+$stepsize+1;
-		//$step++;
-		usleep(500);
+}
+//$qalt = "ALTER TABLE ".$distincttbname." ADD PRIMARY KEY (`PlantaID`)";
+//@mysql_query($qalt,$conn);
+
+
+#SALVA A QUERY NUM ARQUIVO ARQUIVO 
+$nsql = "SELECT DISTINCT * FROM ".$distincttbname;
+$newres = mysql_query($nsql,$conn);
+
+$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
+$count = mysql_num_fields($newres);
+$nrz = mysql_num_rows($newres);
+$message=  $nrz.";".$count;
+$header = '';
+for ($i = 0; $i < $count; $i++){
+	if ($i<($count-1)) {
+		$header .=  '"'. mysql_field_name($newres, $i).'"'."\t";
+	} else {
+		$header .=  '"'. mysql_field_name($newres, $i).'"';
 	}
+}
+$header .= "\n";
+fwrite($fh, $header);
+while($rsw = mysql_fetch_assoc($newres)) {
+	$line = '';
+	foreach($rsw as $value){
+		if(!isset($value) || $value == ""){
+			$naval  = "NA";
+			$value = '"' .$naval. '"' . "\t";
+		} else{
+			//important to escape any quotes to preserve them in the data.
+			$value = str_replace('"', '""', $value);
+			//needed to encapsulate data in quotes because some data might be multi line.
+			//the good news is that numbers remain numbers in Excel even though quoted.
+			$value = '"' . $value . '"' . "\t";
+		}
+		$line .= $value;
+	}
+	$lin = trim($line)."\n";
+	fwrite($fh, $lin);
+}
+fclose($fh);
 
 ###GERA METADADOS
 $fh = fopen("temp/".$export_filename_metadados, 'w') or die("nao foi possivel gerar o arquivo");
@@ -549,7 +554,7 @@ fclose($fh);
 
 echo $message;
 
-$qnu = "UPDATE `temp_exportplantas".substr(session_id(),0,10)."` SET percentage=100"; 
+$qnu = "UPDATE `".$progresstable."` SET percentage=100"; 
 mysql_query($qnu);
 session_write_close();
 }
