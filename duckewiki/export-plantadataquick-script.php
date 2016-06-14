@@ -102,7 +102,7 @@ while($counter<=$nrz)  {
 		$qnu = "UPDATE `".$progresstable."` SET percentage=".$perc; 
 		mysql_query($qnu,$conn);
 		session_write_close();
-		$counter = $counter+$stepsize+1;
+		$counter = $counter+$stepsize;
 }
 
 //session_write_close();

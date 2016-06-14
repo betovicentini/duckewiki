@@ -90,7 +90,20 @@ echo "
   <td colspan='2'><hr></td>
 </tr>
 <tr>
-  <td colspan='2' style='font-size: 1.2em; color: red;' ><b>ATENÇÃO</b>: Este arquivo está formatado para o BRAHMS e portanto o tem encoding de caracteres <b>latin1 (= ISO-8859-1)</b> e quebra de linha no formato Windows. Utilizar sempre o Open(Libre, BR) Office para abrir isso em outra plataforma que não seja windows para poder controlar essa opções.</td>
+  <td colspan='2' >
+  <ul>
+  <li>Baixe o arquivo e abra no OpenOffice (Libre ou BR) com opções:
+    <ul>
+      <li>Character Set = Western Europe (ISO-8859-1)</li>
+      <li>Separated by = Tab</li>  
+    </ul>
+  </li>
+  <li>Exporte o arquivo em formato DBF</li>
+  </ul>
+  </td>
+</tr>
+<tr>
+  <td colspan='2' style='font-size: 1em; color: red;' ><b>ATENÇÃO</b>: Este arquivo está formatado para o BRAHMS e windows: tem encoding de caracteres <b>latin1 (= ISO-8859-1)</b> e quebra de linha no formato Windows</td>
 </tr>";
 }
 }

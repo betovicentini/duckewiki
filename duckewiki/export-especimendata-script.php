@@ -9,7 +9,7 @@ session_start();
 //INCLUI FUNCOES PHP E VARIAVEIS
 include "functions/HeaderFooter.php";
 include "functions/MyPhpFunctions.php";
-include_once("functions/class.Numerical.php") ;
+//include_once("functions/class.Numerical.php") ;
 
 //FAZ A CONEXAO COM O BANCO DE DADOS
 //$lang = $_SESSION['lang'];
@@ -31,11 +31,11 @@ $export_filename_metadados = "especimenes_export_".$_SESSION['userlastname']."_"
 $progesstable = "temp_exportespecimenes".$_SESSION['userid']."_".substr(session_id(),0,10);
 
 
-
+//echopre($_SESSION);
 //EXTRAI VARIAVEIS DO POST
 $dd = @unserialize($_SESSION['destvararray']);
 @extract($dd);
-
+//echopre($dd);
 unset($_SESSION['metadados']);
 unset($metadados);
 unset($_SESSION['qq']);
@@ -65,10 +65,21 @@ if (empty($herbariumsigla)) {
 		$herbariumsigla = 'HERB_NO';
 }
 
-$qqbrahms = " SELECT DISTINCT pltb.EspecimenID AS WikiEspecimenID, prcc.".$herbariumsigla." AS accession, colpessoa.Abreviacao as collector, '' as prefix, pltb.Number as number, '' as suffix, addcolldescr(AddColIDS) as addcoll";
-$qqbrahms .= ", IF (pltb.Day>0,pltb.Day,'')  as colldd, IF (pltb.Mes>0,pltb.Mes,'')  as collmm, IF (pltb.Ano>0,pltb.Ano,'')  as collyy";
+$qqbrahms = " SELECT DISTINCT 
+pltb.EspecimenID AS WikiEspecimenID, 
+prcc.".$herbariumsigla." AS accession, 
+colpessoa.Abreviacao as collector, 
+'' as prefix, 
+pltb.Number as number, 
+'' as suffix, 
+addcolldescr(AddColIDS) as addcoll, 
+IF (pltb.Day>0,pltb.Day,'')  as colldd, 
+IF (pltb.Mes>0,pltb.Mes,'')  as collmm, 
+IF (pltb.Ano>0,pltb.Ano,'')  as collyy";
 if ($duplicatesTraitID>0) {
 	$qqbrahms .=", traitvaluespecs(".$duplicatesTraitID.",0,pltb.EspecimenID,'',0,0) as inicial";
+} else {
+	$qqbrahms .=", '' as inicial";
 }
 $qqbrahms .=", 
 famtb.Familia as family, 
@@ -85,18 +96,16 @@ $qqbrahms .= ",
 localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID,'COUNTRY')  as country,
 localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'MAJORAREA')  as majorarea,
 localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'MINORAREA')  as minorarea, 
-localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZETTEER')  as gazetteer_completo,
-localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZfirstPARENT')  as gazetteer_parent";
+localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZETTEER')  as gazetteer";
 	if ($localidadetraitid>0) {
 	$qqbrahms .=", traitvaluespecs(".$localidadetraitid.",0,pltb.EspecimenID,'',0,0) as locnotes";
 	} else {
 	$qqbrahms .=", '' as locnotes";
 	}
 	if ($formidhabitat>0) {
-	
-		$qqbrahms .= ", habitatstring2(pltb.HabitatID, ".$formidhabitat.", TRUE,FALSE)  as habitatnotes";
+		$qqbrahms .= ", habitatstring2(pltb.HabitatID, ".$formidhabitat.", TRUE,FALSE)  as habitattxt";
 	} else {
-		$qqbrahms .=", '' as habitatnotes";
+		$qqbrahms .=", '' as habitattxt";
 	}
 	$qqbrahms .= ", 
 abs(getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID, CountryID, 1,5))  as `lat`,
@@ -107,14 +116,14 @@ getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 
 getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as alt";
 	if ($monidata==1) {
 		$qqbrahms .= ", labeldescricao(pltb.EspecimenID,pltb.PlantaID,".($formnotas+0).",1,0) as plantdesc";
-	} 
-	else {
+	} else {
 		$qqbrahms .= ", labelnotes_nomoni(pltb.EspecimenID,0,".($formnotas+0).",1,0) as plantdesc";
 	}
 	$qqbrahms .= ", vernaculars(pltb.VernacularIDS) as vernacular";
-	if ($traitsilica>0) {
-		$qqbrahms .= ", checkspecsilica(pltb.EspecimenID,".$traitsilica.") as HasSilica";
-	}
+	$qqbrahms .= ", '".$herbariumsigla."' as dups";
+	//if ($traitsilica>0) {
+		//$qqbrahms .= ", checkspecsilica(pltb.EspecimenID,".$traitsilica.") as HasSilica";
+	//}
 	if ($exsicatatrait>0) {
 		//EXTRAI A URL 
 		$url = $_SERVER['HTTP_REFERER'];
@@ -124,10 +133,8 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as alt";
 		$httppath = implode("/",$uu);
 		$qqbrahms .= ", getspecexsicataimg(pltb.EspecimenID,'".$httppath."/img/originais',".$exsicatatrait.") as ImagesLinks";
 	}
-	
-	
-	$qqbrahms .=", pltb.Herbaria as Herbaria";
-	$qqbrahms .= ", projetostringbrahms(pltb.ProjetoID) as project";
+	//$qqbrahms .=", pltb.Herbaria as Herbaria";
+	$qqbrahms .= ", projetostringbrahmsnovo(pltb.EspecimenID) as project";
 	
 ////////////////////
 	$qq = " SELECT DISTINCT pltb.EspecimenID AS WikiEspecimenID, CONCAT(
@@ -370,8 +377,7 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 
 	if ($monidata==1) {
 		$quq = ", labeldescricao(pltb.EspecimenID,pltb.PlantaID,".($formnotas+0).",1,0) as NOTAS";
-	} 
-	else {
+	} else {
 		$quq = ", labelnotes_nomoni(pltb.EspecimenID,0,".($formnotas+0).",1,0) as NOTAS";
 	}
 		$metadados['idx'.$idx][0] = "NOTAS";
@@ -422,8 +428,7 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 						$metadados['idx'.$idx][1] = "Unidade da medicao da variavel $tascol";
 						$idx++;
 						$qq .= ", habitatvariation($tid,pltb.HabitatID,0,$habmean) AS ".$tascol.", habitatvariation($tid,pltb.HabitatID,1,$habmean) AS  ".$tascol."_UNIT";
-				} 
-				else {
+				} else {
 					$tti = explode("|",$ttipo);
 					$tdef = $ttname.". (".$tdefini."). Variavel ".$tti[1].".";
 					$tdef = str_replace("..",".",$tdef);
@@ -464,8 +469,7 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 				$metadados['idx'.$idx][1] = "Unidade da medicao da variavel $tascol";
 				$idx++;
 				$qq .= ", traitvariation_specimens($tid,pltb.EspecimenID,0,$fmean) AS ".$tascol.", traitvariation_specimens($tid,pltb.EspecimenID,1,$fmean) AS  ".$tascol."_UNIT";
-			} 
-			else {
+			} else {
 				$tti = explode("|",$ttipo);
 				$tdef = $ttname.". (".$tdefini."). Variavel ".$tti[1].".";
 				$tdef = str_replace("..",".",$tdef);
@@ -486,7 +490,8 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 	}
 	//marcado por 
 	if (!empty($basvar['projeto'])) {
-		$qq .= ", projetostring(pltb.ProjetoID,1,0) as PROJETO";
+		//$qq .= ", projetostring(pltb.ProjetoID,1,0) as PROJETO";
+		$qq .= ", projetostringbrahmsnovo(pltb.EspecimenID,1,0) as PROJETO";
 		$metadados['idx'.$idx][0] = "PROJETO";
 		$metadados['idx'.$idx][1] = 'Projeto a que se refere o trabalho';
 		$idx++;
@@ -516,10 +521,10 @@ LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID
 LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID 
 LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 		} 
-	if (!empty($basvar['projeto'])) {
-		$qq .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
-		$qqbrahms .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
-	}
+	//if (!empty($basvar['projeto'])) {
+		//$qq .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
+		//$qqbrahms .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
+	//}
 	$qqff0 = '';
 	if ($filtro>0) {
 		$qqff = " WHERE pltb.FiltrosIDS LIKE '%filtroid_".$filtro.";%' OR pltb.FiltrosIDS LIKE '%filtroid_".$filtro."'";
@@ -556,69 +561,65 @@ LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 				} 
 		}
 	}
-	$qqbrahms .= $qqff;
-	$qq .= $qqff;
+	
+	
+	//$qqbrahms .= $qqff;
+	//$qq .= $qqff;
+	$qwhere = $qqff;
 
-//$qz = "SELECT * FROM Especimenes as pltb ".$qqff0." ".$qqff;
-//$rz = mysql_query($qz,$conn);
-//$nrz = mysql_numrows($rz);
-//
 //$_SESSION['metadados'] = serialize($metadados);
-
 if ($forbrahms==1) {
 		$qq = $qqbrahms;
-}
-unlink("temp/".$export_filename);
-unlink("temp/".$export_filename_metadados);
-
-if ($forbrahms==1) {
 		mysql_set_charset('latin1', $conn);
 		$qblin = "\r\n";
-	} 
-	else {
+	} else {
 		$qblin = "\n";
 }
 
+unlink("temp/".$export_filename);
+unlink("temp/".$export_filename_metadados);
 
-$qnu = "UPDATE `".$progesstable."` SET percentage=1"; 
-mysql_query($qnu);
-session_write_close();
 
-//EXECUTA A QUERY E SALVA O ARQUIVO
-$qqq = $qq; #." LIMIT ".$st1.",".$stepsize;
-//$_SESSION['qz'] = $_SESSION['qz']."<br /><br />".$qqq;
-echo $qqq."<br />";
-$res = mysql_query($qqq,$conn);
+//CONTA REGISTROS
+$qz = "SELECT * FROM Especimenes as pltb ".$qqff0." ".$qqff;
+$rz = mysql_query($qz,$conn);
+$nrecs = mysql_num_rows($rz);
+//$perc = 2;
 $step=0;
-if ($res) {
-	$nnres = mysql_numrows($res);
-	$fieldscount = mysql_num_fields($res);
-	//$_SESSION['exportnfields'] = $count;
-	//$_SESSION['exportnresult'] = $nnres;
-	if ($step==0) {
-		$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
-		$count = mysql_num_fields($res);
-		$header = '';
-		for ($i = 0; $i < $count; $i++){
+
+//EXECUTA A QUERY E SALVA LINHA POR LINHA NO ARQUIVO DE DADOS
+//echo "<br ><br >aqui 3<br >".$qz."<br><br ><br >";
+while($linha = mysql_fetch_assoc($rz)) {
+//echo "<br ><br >aqui 4<br >".$qq."<br><br ><br >";
+	$qqq = $qq." WHERE pltb.EspecimenID=".$linha['EspecimenID']; 
+	//echo $qqq."  aqui<br />";
+	$res = mysql_query($qqq,$conn);
+	if ($res) {
+		//$nnres = mysql_numrows($res);
+		$fieldscount = mysql_num_fields($res);
+		//$_SESSION['exportnfields'] = $count;
+		//$_SESSION['exportnresult'] = $nnres;
+		if ($step==0) {
+			$fh = fopen("temp/".$export_filename, 'w') or die("nao foi possivel gerar o arquivo");
+			$count = $fieldscount;
+			$header = '';
+			for ($i = 0; $i < $count; $i++){
 				if ($i<($count-1)) {
 					$header .=  '"'. mysql_field_name($res, $i).'"'."\t";
 				} else {
 					$header .=  '"'. mysql_field_name($res, $i).'"';
 				}
+			}
+			$header .= $qblin;
+			fwrite($fh, $header);
 		}
-		$header .= $qblin;
-		fwrite($fh, $header);
-	}
-	while($rsw = mysql_fetch_row($res)){
-			//else {
-			//	$fh = fopen("temp/".$export_filename, 'a') or die("nao foi possivel abrir o arquivo");
-			//}
-			$line = '';
-			$nff  = count($rsw);
-			$nii = 1;
-			foreach($rsw as $value){
+		$rsw = mysql_fetch_row($res);
+		$line = '';
+		$nff  = count($rsw);
+		$nii = 1;
+		foreach($rsw as $value){
 				if(!isset($value) || $value == ""){
-					$value = "NA\t";
+					$value = "\"\"\t";
 				} else {
 					//apagar quebra de linhas
 					$value = preg_replace( "/\r|\n|\t/", "", $value);
@@ -639,38 +640,38 @@ if ($res) {
 				$nii++;
 				$line .= $value;
 			}
-			$lin = trim($line).$qblin;
-			fwrite($fh, $lin);
-			
-			//SAVE LOG
-			$perc = ceil(($step/$nnres)*99);
-			$qnu = "UPDATE `".$progesstable."` SET percentage=".$perc; 
-			mysql_query($qnu);
-			session_write_close();
-			$step++;
-		}
-	
-	fclose($fh);
-
-	//$metadados = unserialize($_SESSION['metadados']);
-	$fh = fopen("temp/".$export_filename_metadados, 'w') or die("nao foi possivel gerar o arquivo");
-	$stringData = "COLUNA\tDEFINICAO"; 
-	if (!$forbrahms==1) {
-		foreach ($metadados as $kk => $vv) {
-			$stringData = $stringData."\n".$vv[0]."\t".$vv[1];
-		}
-	} else {
-		$stringData .= "\n\nPlanilha para o Brahms, não tem metadados ainda"; 
+		$lin = trim($line).$qblin;
+		fwrite($fh, $lin);
+		
+		//SAVE LOG
+		$total = $nrecs;
+		$perc = ($step/$total)*9.9;
+		$qnu = "UPDATE `".$progesstable."` SET percentage=".$perc; 
+		//echo $qnu."<br >";
+		mysql_query($qnu);
+		session_write_close();
+		$step++;
 	}
-	fwrite($fh, $stringData);
-	fclose($fh);
 }
+fclose($fh);
 
-$qnu = "UPDATE `".$progesstable."` SET percentage=100"; 
+//$metadados = unserialize($_SESSION['metadados']);
+$fh = fopen("temp/".$export_filename_metadados, 'w') or die("nao foi possivel gerar o arquivo");
+$stringData = "COLUNA\tDEFINICAO"; 
+if (!$forbrahms==1) {
+	foreach ($metadados as $kk => $vv) {
+		$stringData = $stringData."\n".$vv[0]."\t".$vv[1];
+	}
+} 
+else {
+	$stringData .= "\n\nPlanilha para o Brahms, não tem metadados ainda"; 
+}
+fwrite($fh, $stringData);
+fclose($fh);
+
+$qnu = "UPDATE `".$progesstable."` SET percentage=10"; 
 mysql_query($qnu);
-$message=  $nnres.";".$fieldscount;
+$message=  $nrecs.";".$fieldscount;
 echo $message;
 session_write_close();
-
-
 ?>

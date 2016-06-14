@@ -499,7 +499,7 @@ while($counter<=$nrz)  {
 		$qnu = "UPDATE `".$progresstable."` SET percentage=".$perc; 
 		mysql_query($qnu);
 		session_write_close();
-		$counter = $counter+$stepsize+1;
+		$counter = $counter+$stepsize;
 }
 //$qalt = "ALTER TABLE ".$distincttbname." ADD PRIMARY KEY (`PlantaID`)";
 //@mysql_query($qalt,$conn);

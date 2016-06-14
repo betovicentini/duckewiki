@@ -29,9 +29,7 @@ $gget = cleangetpost($_GET,$conn);
 
 //CABECALHO
 $menu = FALSE;
-$which_css = array(
-"<link href='css/geral.css' rel='stylesheet' type='text/css' />"
-);
+$which_css = array("<link href='css/geral.css' rel='stylesheet' type='text/css' />");
 $which_java = array();
 $title = 'Formulários de variáveis';
 $body = '';
@@ -43,10 +41,9 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 echo "
 <br />
 <form action='formularios-form.php' method='post' name='formform'>
-  <input type='hidden' name='ispopup' value='$ispopup' />
-<table align='center' cellpadding='7' class='myformtable'>
+<table align='left' cellpadding='7' class='myformtable'>
 <thead>
-  <tr ><td colspan='4'>".GetLangVar('nameformulario')."&nbsp;&nbsp;<img height=15 style='cursor:pointer;' src=\"icons/icon_question.gif\" ";
+  <tr ><td colspan='3'>".GetLangVar('nameformulario')."&nbsp;&nbsp;<img height=15 style='cursor:pointer;' src=\"icons/icon_question.gif\" ";
 	$help = strip_tags(GetLangVar('formulario_help'));
 	echo " onclick=\"javascript:alert('$help');\" /></td></tr>
 </thead>
@@ -56,8 +53,7 @@ echo "
     <table>
       <tr>
         <td class='tdsmallbold'>".GetLangVar('nameformulario')."</td>
-        <td class='tdformnotes'>
-          <select name='formid' >";
+        <td class='tdformnotes'><select name='formid' >";
 	if (!empty($formid)) {
 		$qq = "SELECT * FROM Formularios WHERE FormID='$formid'";
 		$rr = mysql_query($qq,$conn);
@@ -89,12 +85,12 @@ echo "
   <input type='hidden' value='' name='final' /> 
   <input type='submit' value='".GetLangVar('nameeditar')."' style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   onclick=\"javascript:document.formform.final.value=1\" /> </td>
   <td><input  type=submit value='".GetLangVar('namenovo')."' style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  onclick=\"javascript:document.formform.final.value=2\" /> </td>
-  <td><input  type=submit value='Organizar variáveis' style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  onclick=\"javascript:document.formform.final.value=3\" /> </td>
+  <!---<td><input  type=submit value='Organizar variáveis' style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  onclick=\"javascript:document.formform.final.value=3\" /> </td>--->
 </tr>
 <tr>
-<td colspan='2' align='center'><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Apagar formulários'  onclick = \"javascript:small_window('formularios-delete.php?&ispopup=1',800,400,'Apagar formulários');\" ></td>
-<td><input  type='submit'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Duplicar formulário'  onclick=\"javascript:document.formform.final.value=4\"></td>
-<td colspan='1' align='center'><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Unir formulários'  onclick = \"javascript:small_window('formularios-merge.php',800,600,'Unir formulários');\" ></td>
+<td align='center'><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Apagar formulários'  onclick = \"javascript:small_window('formularios-delete.php?&ispopup=1',800,400,'Apagar formulários');\" ></td>
+<td align='center'><input  type='submit'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Duplicar formulário'  onclick=\"javascript:document.formform.final.value=4\"></td>
+<td align='center'><input  type='button'  style=\"color:#339933; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"   value='Unir formulários'  onclick = \"javascript:small_window('formularios-merge.php',800,600,'Unir formulários');\" ></td>
 
 </tr>
 </tbody>
@@ -103,10 +99,10 @@ echo "
 ";
 } else {
  if ($final==1) {
- 	header("location: formularios-exec.php?ispopup=$ispopup&formid=".$formid);
+ 	header("location: formulariosnovo-exec.php?ispopup=$ispopup&formid=".$formid);
  }
  if ($final==2) {
- 	header("location: formularios-exec.php?ispopup=$ispopup");
+ 	header("location: formulariosnovo-exec.php?ispopup=$ispopup");
  }
  if ($final==3) {
  	header("location: formularios-batchedit.php?ispopup=$ispopup&formid=".$formid);

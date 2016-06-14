@@ -6,6 +6,7 @@ DECLARE contador INT DEFAULT 0;
 DECLARE tvariation VARCHAR(1000) DEFAULT '';
 DECLARE tvar VARCHAR(1000)  DEFAULT '';
 DECLARE tname CHAR(255) DEFAULT '';
+DECLARE tttname CHAR(255) DEFAULT '';
 DECLARE tname2 CHAR(255)  DEFAULT '';
 DECLARE tname3 CHAR(255) DEFAULT '';
 DECLARE tunit CHAR(100)  DEFAULT '';
@@ -151,14 +152,20 @@ IF ttipo='Variavel|Categoria' THEN
 		END IF;
 	END WHILE;
 	SET statevariation = TRIM(statevariation);
+	IF (UPPER(acentostosemacentos(tname))='TIPO DE AMOSTRAS' OR UPPER(acentostosemacentos(tname))="FERTILIDADE") THEN
+		SET tttname = "";
+		SELECT CONCAT(UCASE(LEFT(statevariation, 1)),  SUBSTRING(statevariation, 2)) INTO statevariation;
+	ELSE
+		SET tttname = tname;
+	END IF;
 	IF (statevariation<>'') THEN
 		IF contador=0 THEN
-			SET descricao = CONCAT(tname,' ',statevariation);
+			SET descricao = CONCAT(tttname,' ',statevariation);
 		ELSE
 			IF (tname='' OR tname3=tname2) THEN
 				SET descricao = CONCAT(descricao,'; ',statevariation);
 			ELSE 
-				SET descricao = CONCAT(descricao,'. ',tname,' ',statevariation);
+				SET descricao = CONCAT(descricao,'. ',tttname,' ',statevariation);
 			END IF;
 		END IF;
 		SET contador = contador+1;

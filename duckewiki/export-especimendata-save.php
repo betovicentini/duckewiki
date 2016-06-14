@@ -32,8 +32,9 @@ $gget = cleangetpost($_GET,$conn);
 //echopre($_SESSION);
 
 $restb = explode(";",$resultado);
-$nrecs = $restb[0]+0;
-$nfields = $restb[1]+0;
+//echopre($restb);
+$nrecs = $restb[0];
+$nfields = $restb[1];
 //CABECALHO
 $menu = FALSE;
 $which_css = array(

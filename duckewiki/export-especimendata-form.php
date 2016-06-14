@@ -43,9 +43,6 @@ $_SESSION['destvararray'] = serialize($ppost);
 
 //PREPARA ARQUIVO PARA LOOP DE PROGRESSO
 
-
-
-
 $tempfile = "temp_exportespecimenes".$_SESSION['userid']."_".substr(session_id(),0,10);
 $qqz = "DROP TABLE `".$tempfile."`";
 mysql_query($qqz,$conn);
@@ -65,17 +62,15 @@ $which_java = array(
 "<script>
     function CheckProgress() {
       var time = new Date().getTime();
-      $.get('export-especimendata-progress.php', { t: time }, function (data) {
-          var progress = parseInt(data, 10);
-          document.getElementById('probar').value = progress;
+      $.get('export-especimendata-progress.php', { t: time }, function (odado) {
+        //var progress = parseInt(odado, 10);
+        var progress = odado+0;
+        document.getElementById('probar').value = progress;
         if (progress < 100) {
           document.getElementById('probarperc').innerHTML = 'Processando ' + progress + '%';
-          setTimeout(function() { CheckProgress();}, 1);
-    	} else {
-          document.getElementById('probarperc').innerHTML = progress + '%' +' CONCLUIDO';
-          document.getElementById('loaderimg').style.visibility= 'hidden';
-          //window.location = 'export-especimendata-save.php';
-    	}
+          setTimeout(function() { CheckProgress();}, 100);
+        } 
+
       });
 	}
     //start your long-running process 
@@ -88,8 +83,8 @@ $which_java = array(
                 success:
                     function (data) {
                         //document.getElementById('probarperc').innerHTML = data ;
-                        //document.getElementById('loaderimg').style.visibility= 'hidden';
-                        //document.getElementById('coffeeid').style.visibility= 'hidden';
+                        document.getElementById('loaderimg').style.visibility= 'hidden';
+                        document.getElementById('coffeeid').style.visibility= 'hidden';
                         window.location = 'export-especimendata-save.php?resultado='+data;
                     }
             });

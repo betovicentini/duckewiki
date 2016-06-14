@@ -29,11 +29,7 @@ $gget = cleangetpost($_GET,$conn);
 //echopre($ppost);
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 $which_css = array(
 "<link href='css/geral.css' rel='stylesheet' type='text/css' />",
 "<link rel='stylesheet' type='text/css' href='css/colorbuttons.css' />",
@@ -45,6 +41,8 @@ $which_java = array(
 $title = 'Configurações';
 $body = '';
 FazHeader($title,$body,$which_css,$which_java,$menu);
+
+//echopre($ppost);
 
 if (!isset($final)) {
 
@@ -531,22 +529,19 @@ else {
 	$numvars = array( 'habitotraitid','pomtraitid', 'statustraitid', 'traitfertid', 'alturatraitid', 'daptraitid', 'duplicatesTraitID', 'exsicatatrait', 'formidhabitat', 'formnotes','traitsilica','localidadetraitid','folhaimgtraitid','florimgtraitid','frutoimgtraitid');
 	$strsim = array('databaseconnection', 'databaseconnection_clean', 'relativepathtoroot', 'lang', 'herbariumnome', 'herbariumsigla', 'blockacess', 'herbariumlogo','sitetitle','sitelogo','introtext');
 
-//echopre($_POST);
-	
+$nc = $_FILES['herbariumlogo']['tmp_name']; 
+if (!empty($nc)) {
+	$ext = explode(".",$_FILES['herbariumlogo']['name']);
+	$ll = count($ext)-1;
+	$imgext = strtoupper($ext[$ll]);
+	$newname = 'herbariumlogo_default.'.strtolower($imgext);
 
-	$nc = $_FILES['herbariumlogo']['tmp_name']; 
-	if (!empty($nc)) {
-		$ext = explode(".",$_FILES['herbariumlogo']['name']);
-		$ll = count($ext)-1;
-		$imgext = strtoupper($ext[$ll]);
-		$newname = 'herbariumlogo_default.'.strtolower($imgext);
-
-		//move o arquivo para a pasta de icones
-		move_uploaded_file($_FILES['herbariumlogo']["tmp_name"],"icons/".$newname); 
-		$ppost['herbariumlogo'] = $newname;
-	} else {
-		$ppost['herbariumlogo'] = $oldherbariumlogo;
-	}
+	//move o arquivo para a pasta de icones
+	move_uploaded_file($_FILES['herbariumlogo']["tmp_name"],"icons/".$newname); 
+	$ppost['herbariumlogo'] = $newname;
+} else {
+	$ppost['herbariumlogo'] = $oldherbariumlogo;
+}
 
 	$nc = $_FILES['sitelogo']['tmp_name']; 
 	//echopre($_FILES);

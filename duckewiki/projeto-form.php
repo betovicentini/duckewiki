@@ -54,6 +54,11 @@ if ($submitted=='editando') {
 	$projetonome = $rww['ProjetoNome'];
 	//$projformidmorfo = $rww['MorfoFormID'];
 	$projformidmorfo = explode(";",$rww['MorformsIDs']);
+	$prj01 = $rww['MorfoFormID'];
+	if ($prj01>0 && !in_array($prj01,$projformidmorfo)) {
+		$projformidmorfo[] = $prj01;
+	}
+	//echopre($projformidmorfo);
 	$projformidhab = $rww['HabitatFormID'];
 	$projetourl = $rww['ProjetoURL'];
 	$logofile = $rww['LogoFile'];

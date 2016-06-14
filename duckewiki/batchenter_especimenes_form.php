@@ -146,7 +146,7 @@ for($curcolnum=$colnum1;$curcolnum<=$colnum2;$curcolnum++) {
 		}
 		$gpspointid=0;
 		if ($search_gps_waypoints==1) {
-				$qgis = "SELECT PointID FROM GPS_DATA WHERE (cleansppname(Name)+0)=".$curcolnum."  AND DateOriginal='".$datacol."'";
+				$qgis = "SELECT PointID FROM GPS_DATA WHERE (cleansppname(Name)+0)=".$curcolnum."  AND DateOriginal='".$datacol."'   AND (Type LIKE 'Waypoint')";
 				//echo $qgis."<br />";
 				$rgis = mysql_query($qgis,$conn);
 				$nrgis = mysql_numrows($rgis);

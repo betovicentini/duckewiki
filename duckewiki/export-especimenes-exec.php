@@ -3,10 +3,10 @@ session_start();
 //INCLUI FUNCOES PHP E VARIAVEIS
 include "functions/HeaderFooter.php";
 include "functions/MyPhpFunctions.php";
-include_once("functions/class.Numerical.php") ;
+//include_once("functions/class.Numerical.php") ;
 
 //FAZ A CONEXAO COM O BANCO DE DADOS
-$lang = $_SESSION['lang'];
+//$lang = $_SESSION['lang'];
 $dbname = $_SESSION['dbname'];
 $conn = ConectaDB($dbname);
 
@@ -24,7 +24,6 @@ if(!isset($uuid) ||
 $ppost = cleangetpost($_POST,$conn);
 @extract($ppost);
 $arval = $ppost;
-
 $gget = cleangetpost($_GET,$conn);
 @extract($gget);
 
@@ -77,11 +76,20 @@ if (!isset($prepared)) {
 	}
 	if (empty($herbariumsigla)) {
 		$herbariumsigla = 'HERB_NO';
-	}
-	
-	$qqbrahms = " SELECT DISTINCT pltb.EspecimenID AS WikiEspecimenID, prcc.".$herbariumsigla." AS accession, colpessoa.Abreviacao as collector, '' as prefix, pltb.Number as number, '' as suffix, addcolldescr(AddColIDS) as addcoll";
-	$qqbrahms .= ", IF (pltb.Day>0,pltb.Day,'')  as colldd, IF (pltb.Mes>0,pltb.Mes,'')  as collmm, IF (pltb.Ano>0,pltb.Ano,'')  as collyy";
-	if ($duplicatesTraitID>0) {
+}
+
+$qqbrahms = " SELECT DISTINCT 
+pltb.EspecimenID AS WikiEspecimenID, 
+prcc.".$herbariumsigla." AS accession, 
+colpessoa.Abreviacao as collector, 
+'' as prefix, 
+pltb.Number as number, 
+'' as suffix, 
+addcolldescr(AddColIDS) as addcoll, 
+IF (pltb.Day>0,pltb.Day,'')  as colldd, 
+IF (pltb.Mes>0,pltb.Mes,'')  as collmm, 
+IF (pltb.Ano>0,pltb.Ano,'')  as collyy";
+if ($duplicatesTraitID>0) {
 	$qqbrahms .=", traitvaluespecs(".$duplicatesTraitID.",0,pltb.EspecimenID,'',0,0) as inicial";
 	}
 	$qqbrahms .=", 
@@ -95,22 +103,21 @@ detpessoa.Abreviacao as detby,
 IF(DAY(iddet.DetDate)>0,DAY(iddet.DetDate),IF(iddet.DetDateDD>0,iddet.DetDateDD,'')) as detdd, 
 IF(MONTH(iddet.DetDate)>0,MONTH(iddet.DetDate),IF(iddet.DetDateMM>0,iddet.DetDateMM,'')) as detmm,
 IF(YEAR(iddet.DetDate)>0,YEAR(iddet.DetDate),IF(iddet.DetDateYY>0,iddet.DetDateYY,'')) as detyy";
-	$qqbrahms .= ",  
+$qqbrahms .= ",  
 localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID,'COUNTRY')  as country,
 localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'MAJORAREA')  as majorarea,
 localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'MINORAREA')  as minorarea, 
-localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZETTEER')  as gazetteer_completo,
-localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZfirstPARENT')  as gazetteer_parent";
+localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZETTEER')  as gazetteer";
+//"localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZETTEER')  as gazetteer_completo, localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 'GAZfirstPARENT')  as gazetteer_parent";
 	if ($localidadetraitid>0) {
 	$qqbrahms .=", traitvaluespecs(".$localidadetraitid.",0,pltb.EspecimenID,'',0,0) as locnotes";
 	} else {
 	$qqbrahms .=", '' as locnotes";
 	}
 	if ($formidhabitat>0) {
-	
-		$qqbrahms .= ", habitatstring2(pltb.HabitatID, ".$formidhabitat.", TRUE,FALSE)  as habitatnotes";
+		$qqbrahms .= ", habitatstring2(pltb.HabitatID, ".$formidhabitat.", TRUE,FALSE)  as habitattxt";
 	} else {
-		$qqbrahms .=", '' as habitatnotes";
+		$qqbrahms .=", '' as habitattxt";
 	}
 	$qqbrahms .= ", 
 abs(getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID, CountryID, 1,5))  as `lat`,
@@ -125,9 +132,10 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as alt";
 		$qqbrahms .= ", labelnotes_nomoni(pltb.EspecimenID,0,".($formnotas+0).",1,0) as plantdesc";
 	}
 	$qqbrahms .= ", vernaculars(pltb.VernacularIDS) as vernacular";
-	if ($traitsilica>0) {
-		$qqbrahms .= ", checkspecsilica(pltb.EspecimenID,".$traitsilica.") as HasSilica";
-	}
+	$qqbrahms .= ", '".$herbariumsigla."' as dups";
+	//if ($traitsilica>0) {
+		//$qqbrahms .= ", checkspecsilica(pltb.EspecimenID,".$traitsilica.") as HasSilica";
+	//}
 	if ($exsicatatrait>0) {
 		//EXTRAI A URL 
 		$url = $_SERVER['HTTP_REFERER'];
@@ -137,13 +145,11 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as alt";
 		$httppath = implode("/",$uu);
 		$qqbrahms .= ", getspecexsicataimg(pltb.EspecimenID,'".$httppath."/img/originais',".$exsicatatrait.") as ImagesLinks";
 	}
+	//$qqbrahms .=", pltb.Herbaria as Herbaria";
+	$qqbrahms .= ", projetostringbrahmsnovo(pltb.EspecimenID) as project";
 	
-	
-	$qqbrahms .=", pltb.Herbaria as Herbaria";
-	$qqbrahms .= ", projetostringbrahms(pltb.ProjetoID) as project";
-	
-////////////////////	
-	$qq = " SELECT pltb.EspecimenID AS WikiEspecimenID, CONCAT(
+////////////////////
+	$qq = " SELECT DISTINCT pltb.EspecimenID AS WikiEspecimenID, CONCAT(
 colpessoa.SobreNome,'_',IF(pltb.Prefixo IS NULL OR pltb.Prefixo='','',CONCAT(pltb.Prefixo,'-')),pltb.Number,IF(pltb.Sufix IS NULL OR pltb.Sufix='','',CONCAT('-',pltb.Sufix))) as IDENTIFICADOR, colpessoa.Abreviacao as COLLECTOR, pltb.Number as NUMBER
 	"; 
 	$idx=0;
@@ -209,7 +215,8 @@ colpessoa.SobreNome,'_',IF(pltb.Prefixo IS NULL OR pltb.Prefixo='','',CONCAT(plt
 		$metadados['idx'.$idx][1] = 'Taxonomia no nivel de identificacao sem autores';
 		$idx++;
 		$qq .=", 
-getidentidade(pltb.DetID, 0, 0, 0,0, 1) as NOME";
+gettaxonname(pltb.DetID,1,0) as NOME";
+//getidentidade(pltb.DetID, 0, 0, 0,0, 1) as NOME";
 		//$qq .=", IF(iddet.InfraEspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie,' ',infsptb.InfraEspecie),IF(iddet.EspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie),IF(iddet.GeneroID>0,gentb.Genero,famtb.Familia))) as NOME";
 	} 
 	//getidentidade(identid INT(10), morftp BOOLEAN, autors BOOLEAN, famonly BOOLEAN, genonly BOOLEAN, modif BOOLEAN)
@@ -218,7 +225,8 @@ getidentidade(pltb.DetID, 0, 0, 0,0, 1) as NOME";
 		$metadados['idx'.$idx][1] = 'Taxonomia no nivel de identificacao, se em nivel de especie ou de infraespecie, nome dos autores incluidos';
 		$idx++;
 		$qq .=", 
-getidentidade(pltb.DetID, 0, 1, 0,0, 1) as NOMEeAUTOR";
+gettaxonname(pltb.DetID,1,1) as NOME_AUTOR";
+//getidentidade(pltb.DetID, 0, 1, 0,0, 1) as NOMEeAUTOR";
 		//$qq .=", IF(iddet.InfraEspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie,' ',sptb.EspecieAutor,' ',infsptb.InfraEspecieNivel,' ',infsptb.InfraEspecie,' ',infsptb.InfraEspecieAutor),IF(iddet.EspecieID>0,CONCAT(gentb.Genero,' ',sptb.Especie,' ',sptb.EspecieAutor),IF(iddet.GeneroID>0,gentb.Genero,famtb.Familia))) as NOMEeAUTOR";
 	}
 
@@ -335,11 +343,6 @@ localidadefields(pltb.GazetteerID, pltb.GPSPointID,pltb.MunicipioID, pltb.Provin
 		$metadados['idx'.$idx][0] = 'ALTITUDE';
 		$metadados['idx'.$idx][1] = "Altitude em m sobre o nivel do mar";
 		$idx++;
-		//$metadados['idx'.$idx][0] = 'COORD_PRECISION';
-		//$metadados['idx'.$idx][1] = "Precisao das coordenadas, onde GPS_planta indica que a coordenada e do individuo; GPS quando for a coordenada de um ponto de GPS da proximidade do individuo; Localidade indica que a coordenada se refere a uma das localidades em GAZETTEER; Municipio e a coordenada de MINORAREA";
-		//$idx++;
-//IF(ABS(pltb.Longitude)>0, pltb.Longitude, getlocallatlong( pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, 0)) AS LONGITUDE,
-//IF(ABS(pltb.Longitude)>0, pltb.Latitude, getlocallatlong( pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, 1)) AS LATITUDE,
 		$qq .= ", 
 getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID, CountryID, 1,5)  as LATITUDE,
 getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 0,5)  as LONGITUDE,
@@ -352,8 +355,6 @@ getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, 
 getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 0,3)  as LONGSS,
 getlatlongdms(pltb.Latitude, pltb.Longitude, pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID, pltb.ProvinceID,pltb.CountryID, 0,4)  as LONGEW,
 getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
-//getcoorprec( pltb.GPSPointID, pltb.GazetteerID, pltb.MunicipioID)) AS COORD_PRECISION,
-//IF(ABS(pltb.Longitude)>0,'GPS-planta',IF(pltb.GPSPointID>0,'GPS',IF(ABS(gaz.Longitude)>0,'Localidade','Municipio'))) as COORD_PRECISION";
 	}
 
 	$metadados['idx'.$idx][0] = 'TAG_PlantaMarcada';
@@ -361,8 +362,6 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 	$idx++;
 	$qq .=", IF(pltb.PlantaID>0,plspectb.PlantaTag,'') as TAG_PlantaMarcada";
 
-		//$qq .= ", traitvariation_nota($formnotes,EspecimenID) as NOTAS";
-	//echo "monidata ".$monidata;
 	if ($daptraitid>0) {
 	$qq .=", traitvaluespecs(".$daptraitid.",pltb.PlantaID,pltb.EspecimenID,'mm',0,1) as DAPmm";
 		$metadados['idx'.$idx][0] = "DAPmm";
@@ -374,7 +373,20 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 		$metadados['idx'.$idx][0] = "ALTURAm";
 		$metadados['idx'.$idx][1] = "ALTURA em metros, o valor máximo se houver mais de 1";
 		$idx++;
-	}	
+	}
+	if ($habitotraitid>0) {
+		$qq .= ", (traitvaluespecs(".$habitotraitid.", pltb.PlantaID, pltb.EspecimenID,'', 0, 1)) as HABITO";
+		$metadados['idx'.$idx][0] = "HABITO";
+		$metadados['idx'.$idx][1] = "Forma de vida da planta";
+		$idx++;
+	}
+	if ($traitfertid>0) {
+		$qq .= ", (traitvaluespecs(".$traitfertid.", 0, pltb.EspecimenID,'', 0, 1)) as FERTILIDADE";
+		$metadados['idx'.$idx][0] = "FERTILIDADE";
+		$metadados['idx'.$idx][1] = "Estado do especímene";
+		$idx++;
+	}
+
 	if ($monidata==1) {
 		$quq = ", labeldescricao(pltb.EspecimenID,pltb.PlantaID,".($formnotas+0).",1,0) as NOTAS";
 	} else {
@@ -490,7 +502,8 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 	}
 	//marcado por 
 	if (!empty($basvar['projeto'])) {
-		$qq .= ", projetostring(pltb.ProjetoID,1,0) as PROJETO";
+		//$qq .= ", projetostring(pltb.ProjetoID,1,0) as PROJETO";
+		$qq .= ", projetostringbrahmsnovo(pltb.EspecimenID,1,0) as PROJETO";
 		$metadados['idx'.$idx][0] = "PROJETO";
 		$metadados['idx'.$idx][1] = 'Projeto a que se refere o trabalho';
 		$idx++;
@@ -572,8 +585,8 @@ LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 				} 
 		}
 	}
-	$qqbrahms .= $qqff;
-	$qq .= $qqff;
+	$qqbrahms = $qqbrahms.$qqff;
+	$qq = $qq.$qqff;
 
 	$prepared = 1;
 	$qz = "SELECT * FROM Especimenes as pltb ".$qqff0." ".$qqff;
@@ -626,11 +639,11 @@ if ($prepared==1 && $step<=$nsteps) {
 			$count = mysql_num_fields($res);
 			$header = '';
 			for ($i = 0; $i < $count; $i++){
-					if ($i<($count-1)) {
-						$header .=  '"'. mysql_field_name($res, $i).'"'."\t";
-					} else {
-						$header .=  '"'. mysql_field_name($res, $i).'"';
-					}
+				if ($i<($count-1)) {
+					$header .=  '"'. mysql_field_name($res, $i).'"'."\t";
+				} else {
+					$header .=  '"'. mysql_field_name($res, $i).'"';
+				}
 			}
 			$header .= $qblin;
 			//$tmp = chr(255).chr(254).mb_convert_encoding( $header, 'UTF-16LE', 'UTF-8'); 
@@ -645,8 +658,11 @@ if ($prepared==1 && $step<=$nsteps) {
 			$nii = 1;
 			foreach($rsw as $value){
 				if(!isset($value) || $value == ""){
-					$value = "\t";
+					$value = "\"\"\t";
 				} else {
+					//apagar quebra de linhas
+					$value = preg_replace( "/\r|\n|\t/", "", $value);
+
 					//important to escape any quotes to preserve them in the data.
 					$value = str_replace('"', '""', $value);
 					//needed to encapsulate data in quotes because some data might be multi line.

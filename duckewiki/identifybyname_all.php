@@ -157,8 +157,8 @@ else {
 	else {
 		$qwhere = " WHERE idd.EspecieID=".$speciesid;
 	}
-	$sql = "SELECT EspecimenID FROM Especimenes LEFT JOIN Identidade as idd  USING(DetID) ";
-	$sql2 = "SELECT PlantaID FROM Plantas LEFT JOIN Identidade as idd  USING(DetID) ";
+	$sql = "SELECT EspecimenID FROM Especimenes LEFT JOIN Identidade as idd  USING(DetID) ".$qwhere;
+	$sql2 = "SELECT PlantaID FROM Plantas LEFT JOIN Identidade as idd  USING(DetID) ".$qwhere;
 
 	$res1 = mysql_query($sql,$conn);
 	$numspecs = mysql_numrows($res1);
@@ -224,6 +224,7 @@ if ($newdetid>0) {
 		mysql_query($qu,$conn);
 		$sql = "UPDATE Especimenes, temp_detall_".$chgby." as llixo SET Especimenes.DetID='".$newdetid."' WHERE Especimenes.EspecimenID=llixo.EspecimenID";
 		$updatedpls = mysql_query($sql,$conn);
+		//echo $sql."<br />";
 		if ($updatedpls) {
 			$salvo++;
 		} else {
@@ -231,7 +232,7 @@ if ($newdetid>0) {
 		}
 	}
 	if ($numplantas>0) {
-		$qq = "CREATE TABLE temp_detall_".$chgby." (SELECT Plantas.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Plantas JOIN Identidade USING(DetID) ".$qwhere.")";
+		$qq = "CREATE TABLE temp_detall_".$chgby." (SELECT Plantas.*,".$chgby." as ChangedBy, '".$udate."' as ChangedDate FROM Plantas JOIN Identidade as idd USING(DetID) ".$qwhere.")";
 		mysql_query($qq,$conn);
 		//echo $qq."<br />";
 		
@@ -278,14 +279,14 @@ if ($newdetid>0) {
 		echo "
 <br />
   <table cellpadding=\"1\" width='50%' align='center' class='success'>
-    <tr><td class='tdsmallbold' align='center'>".$numspecs."  e ".$numplantas." foram alteradas e o nome ".$nomesearch." foi apagado do checklist</td></tr>
+    <tr><td class='tdsmallbold' align='center'>A identificação de ".$numspecs."  especímenes e ".$numplantas."  plantas foram alteradas e o nome ".$nomesearch." foi apagado do checklist</td></tr>
   </table>
 <br />";
 		} else {
 		echo "
 <br />
   <table cellpadding=\"1\" width='50%' align='center' class='success'>
-    <tr><td class='tdsmallbold' align='center'>".$numspecs."  e ".$numplantas." foram alteradas MAS o nome ".$nomesearch." não foi apagado do checklist</td></tr>
+    <tr><td class='tdsmallbold' align='center'>A identificação de ".$numspecs."  especímenes e ".$numplantas."  plantas foram alteradas, MAS o nome ".$nomesearch." não foi apagado do checklist</td></tr>
   </table>
 <br />";
 		
@@ -308,16 +309,6 @@ else {
 </table>
 <br />";
 }
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 	}
 }
 
