@@ -32,11 +32,7 @@ $gget = cleangetpost($_GET,$conn);
 
 //CABECALHO
 $ispopup=1;
-if ($ispopup==1) {
-	$menu = FALSE;
-} else {
-	$menu = TRUE;
-}
+$menu = FALSE;
 
 //VARIAVEIS QUE VEM DE OUTROS LINKS
 $detid =0;

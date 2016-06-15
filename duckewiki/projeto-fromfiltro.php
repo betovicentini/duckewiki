@@ -42,7 +42,7 @@ FazHeader($title,$body,$which_css,$which_java,$menu);
 if (empty($filtroid)) {
 echo "
 <br />
-<table class='myformtable' align='center' cellpadding='7'>
+<table class='myformtable' align='left' cellpadding='7'>
 <thead>
 <tr>
   <td >Selecione o filtro</td>
@@ -91,7 +91,7 @@ echo "
 
 } else {
 	$filtrocode = "filtroid_".$filtroid;
-	echo $saoplantas."  aqui 1";
+	//echo $saoplantas."  aqui 1";
 	if (!isset($saoplantas) || $saoplantas!=1) {
 		echo $saoplantas."  aqui 2";
 		$qt = "SELECT EspecimenID FROM Especimenes WHERE FiltrosIDS LIKE '%".$filtrocode."' OR FiltrosIDS LIKE '%".$filtrocode.";%'";

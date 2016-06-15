@@ -434,12 +434,12 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 			$metadados['idx'.$idx][1] = 'Data da marcação da planta no campo';
 			$idx++;
 		}
-		//if (!empty($basvar['projeto'])) {
-			//$qq .= ", projetostring(pltb.ProjetoID,1,0) as PROJETO";
-			//$metadados['idx'.$idx][0] = "PROJETO";
-			//$metadados['idx'.$idx][1] = 'Projeto a que se refere o trabalho';
-			//$idx++;
-		//}
+		if (!empty($basvar['projeto'])) {
+			$qq .= ", projetostringbrahmsnovo(0,pltb.PlantaID) as PROJETO";
+			$metadados['idx'.$idx][0] = "PROJETO";
+			$metadados['idx'.$idx][1] = 'Projeto a que se refere o trabalho';
+			$idx++;
+		}
 		$qq = $qq." FROM Plantas as pltb";
 		if (!empty($basvar['nomenoautor']) || !empty($basvar['nomeautor']) || !empty($basvar['taxacompleto'])) {
 			$qq .= " LEFT JOIN Identidade as iddet ON pltb.DetID=iddet.DetID LEFT JOIN Tax_InfraEspecies as infsptb ON iddet.InfraEspecieID=infsptb.InfraEspecieID LEFT JOIN Tax_Especies as spectb ON iddet.EspecieID=spectb.EspecieID LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID  LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";

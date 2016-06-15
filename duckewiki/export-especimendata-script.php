@@ -134,7 +134,7 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as alt";
 		$qqbrahms .= ", getspecexsicataimg(pltb.EspecimenID,'".$httppath."/img/originais',".$exsicatatrait.") as ImagesLinks";
 	}
 	//$qqbrahms .=", pltb.Herbaria as Herbaria";
-	$qqbrahms .= ", projetostringbrahmsnovo(pltb.EspecimenID) as project";
+	$qqbrahms .= ", projetostringbrahmsnovo(pltb.EspecimenID,0) as project";
 	
 ////////////////////
 	$qq = " SELECT DISTINCT pltb.EspecimenID AS WikiEspecimenID, CONCAT(
@@ -490,8 +490,7 @@ getaltitude(pltb.Altitude, pltb.GPSPointID,pltb.GazetteerID) as ALTITUDE";
 	}
 	//marcado por 
 	if (!empty($basvar['projeto'])) {
-		//$qq .= ", projetostring(pltb.ProjetoID,1,0) as PROJETO";
-		$qq .= ", projetostringbrahmsnovo(pltb.EspecimenID,1,0) as PROJETO";
+		$qq .= ", projetostringbrahmsnovo(pltb.EspecimenID,0) as PROJETO";
 		$metadados['idx'.$idx][0] = "PROJETO";
 		$metadados['idx'.$idx][1] = 'Projeto a que se refere o trabalho';
 		$idx++;
@@ -521,10 +520,6 @@ LEFT JOIN Tax_Generos as gentb ON iddet.GeneroID=gentb.GeneroID
 LEFT JOIN Tax_Familias as famtb ON iddet.FamiliaID=famtb.FamiliaID 
 LEFT JOIN Pessoas as detpessoa ON detpessoa.PessoaID=iddet.DetbyID ";
 		} 
-	//if (!empty($basvar['projeto'])) {
-		//$qq .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
-		//$qqbrahms .=" LEFT JOIN Projetos ON pltb.ProjetoID=Projetos.ProjetoID";
-	//}
 	$qqff0 = '';
 	if ($filtro>0) {
 		$qqff = " WHERE pltb.FiltrosIDS LIKE '%filtroid_".$filtro.";%' OR pltb.FiltrosIDS LIKE '%filtroid_".$filtro."'";

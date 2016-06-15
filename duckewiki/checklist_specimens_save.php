@@ -160,9 +160,9 @@ $herbariumsigla => 50,
 		$exportcols[] = "true";
 		$headexplan[] = 'O estado de fertilidade da amostra coletada';
 	}
-$headd = array_merge((array)$headd,(array)array("LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","MAP","OBS","HABT","HABT_CLASSE","IMG","NIRSpectra","PRJ","PROJETOstr"));
+$headd = array_merge((array)$headd,(array)array("LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","MAP","OBS","HABT","HABT_CLASSE","IMG","NIRSpectra","PROJETOstr"));
 $numericfilters[]  = 'NIRSpectra'; 
-$headexplan = array_merge((array)$headexplan,(array)array("Longitude em décimos de grau","Latitude em décimos de grau", "Altitude em metros","Número de duplicatas","Visualizar o ESPECIMENE num mapa","Visualizar ou baixar em PDF etiqueta para o ESPECIMENE incluindo todas as observações associadas a ele","Descreve o hábitat da amostra","Classe de hábitat da amostra","Visualiza imagens associadas à amostra","Visualiza dados NIR associados ao especímene","Link para projeto de Pesquisa à qual a planta está associada","Nome do projeto de Pesquisa à qual a planta está associada"));
+$headexplan = array_merge((array)$headexplan,(array)array("Longitude em décimos de grau","Latitude em décimos de grau", "Altitude em metros","Número de duplicatas","Visualizar o ESPECIMENE num mapa","Visualizar ou baixar em PDF etiqueta para o ESPECIMENE incluindo todas as observações associadas a ele","Descreve o hábitat da amostra","Classe de hábitat da amostra","Visualiza imagens associadas à amostra","Visualiza dados NIR associados ao especímene","Nome do projeto de Pesquisa à qual a planta está associada"));
 $exportcols = array_merge((array)$exportcols,(array)array("true", "true", "true", "false","false","false","false","true","false","true","false","true"));
 $colw = array_merge((array)$colw,(array)array("LONGITUDE" => 40,
 "LATITUDE" => 0,
@@ -174,21 +174,20 @@ $colw = array_merge((array)$colw,(array)array("LONGITUDE" => 40,
 "HABT_CLASSE" => 100,
 "IMG" => 40,
 "NIRSpectra" => 70,
-"PRJ" => 40,
 "PROJETOstr" => 0
 ));
 	$listvisible = $headd;
 	$filt = $headd;
 	$filt2 = $headd;
 	$coltipos = $headd;
-	$nofilter = array("Marcado", "OBS", "IMG", "PRJ", "EDIT", "HABT","MAP");
-	$imgfields = array("OBS", "IMG", "PRJ", "EDIT", "HABT","MAP","NIRSpectra");
+	$nofilter = array("Marcado", "OBS", "IMG", "EDIT", "HABT","MAP");
+	$imgfields = array("OBS", "IMG", "EDIT", "HABT","MAP","NIRSpectra");
 	//$numericfilter = array("DAPmm","ALTURA");
 	if(!isset($uuid) || (trim($uuid)=='') || $acceslevel=='visitor' || $uuid==0) {
-		$hidefields = array("EspecimenID","PRJ", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","EDIT","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","DETBY",
+		$hidefields = array("EspecimenID","LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","EDIT","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","DETBY",
 "DETYY","MORFOTIPO",'FERTILIDADE',"NIRSpectra","HERBARIA");
 	} else {
-		$hidefields = array("EspecimenID", "PRJ", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","DETBY",
+		$hidefields = array("EspecimenID", "LONGITUDE", "LATITUDE", "ALTITUDE", "DUPS","DetID","GazetteerID","GPSPointID","PlantaTag","PlantaID","NOME_AUTOR","DETBY",
 "DETYY","MORFOTIPO", "FERTILIDADE","NIRSpectra","HABT_CLASSE","HERBARIA");
 	}
 	$i=1;
@@ -397,11 +396,6 @@ $stringData .= "
       //\"<img style='cursor:pointer;' src='icons/question-red.png' height='18' onclick=\\\"javascript:alert('Latitude & Longitude Faltando');\\\" onmouseover=\\\"Tip('Latitude e Longitude faltando para amostra # \".\$pltag.\"');\\\"  >\";
     }
     \$data->set_value(\"MAP\",\$imagen);
-    \$pj = \$data->get_value(\"PRJ\");
-    if (!empty(\$pj)) {
-      \$imagen=\"<img style='cursor:pointer;' src='\".\$data->get_value(\"PRJ\").\"' height='20' onclick=\\\"javascript:alert('\".\$data->get_value(\"PROJETOstr\").\"');\\\" onmouseover=\\\"Tip('\".\$data->get_value(\"PROJETOstr\").\"');\\\" >\";
-      \$data->set_value(\"PRJ\",\$imagen);
-    }
     \$nir = \$data->get_value(\"NIRSpectra\");
     if (\$nir>0) {
           \$imagen=  \"<sup>  \".\$nir.\"</sup>&nbsp;<img style='  -webkit-box-shadow:inset 0 0 6px #cccccc; -moz-box-shadow: inset 0 0 6px #cccccc; cursor: pointer;' src='icons/nirspectra.png' height='16' onmouseover=\\\"Tip('Existem \$nir espectros associados esse ESPECIMENE');\\\" title=''>\";

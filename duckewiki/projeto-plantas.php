@@ -122,9 +122,9 @@ if ($habitotraitid>0) {
 	$exportcols[] = "true";
 	$headexplan[] = 'Se a planta está viva ou morta';
 }
-$headd = array_merge((array)$headd,(array)array("ESPECIMENES","PLOT", "DUPS","MAP","OBS","HABT","IMG","NIRSpectra","PRJ","PROJETOstr"));
+$headd = array_merge((array)$headd,(array)array("ESPECIMENES","PLOT", "DUPS","MAP","OBS","HABT","IMG","NIRSpectra","PROJETOstr"));
 
-$headexplan = array_merge((array)$headexplan,(array)array("Número de ESPECIMENES associados à planta","GazetteerID do plot em que a planta se encontra", "DUPS","Visualizar a PLANTA num mapa","Visualizar ou baixar em PDF etiqueta para a planta incluindo todas as observações associadas à ela","Descreve o hábitat da planta","Visualiza imagens associadas à planta","Visualiza dados NIR associados à planta","Link para projeto de Pesquisa à qual a planta está associada","Nome do projeto de Pesquisa à qual a planta está associada"));
+$headexplan = array_merge((array)$headexplan,(array)array("Número de ESPECIMENES associados à planta","GazetteerID do plot em que a planta se encontra", "DUPS","Visualizar a PLANTA num mapa","Visualizar ou baixar em PDF etiqueta para a planta incluindo todas as observações associadas à ela","Descreve o hábitat da planta","Visualiza imagens associadas à planta","Visualiza dados NIR associados à planta","Nome do projeto de Pesquisa à qual a planta está associada"));
 
 $exportcols = array_merge((array)$exportcols,(array)array("true","true", "true","false","false","false","true","true","false","true"));
 
@@ -136,7 +136,6 @@ $colw = array_merge((array)$colw,(array)array("ESPECIMENES" => 40,
 "HABT" => 40,
 "IMG" => 40,
 "NIRSpectra" => 70,
-"PRJ" => 40,
 "PROJETOstr" => 0
 //,"EXSICATA_IMG" => 0
 //,
@@ -146,8 +145,8 @@ $colw = array_merge((array)$colw,(array)array("ESPECIMENES" => 40,
 $listvisible = $headd;
 $filt = $headd;
 $filt2 = $headd;
-$nofilter = array("Marcado", "OBS", "IMG", "PRJ", "EDIT", "HABT","MAP","LONGITUDE","LATITUDE","ALTITUDE");
-$imgfields = array("OBS", "IMG", "PRJ", "EDIT", "HABT","MAP","ESPECIMENES","NIRSpectra");
+$nofilter = array("Marcado", "OBS", "IMG", "EDIT", "HABT","MAP","LONGITUDE","LATITUDE","ALTITUDE");
+$imgfields = array("OBS", "IMG", "EDIT", "HABT","MAP","ESPECIMENES","NIRSpectra");
 
 if(!isset($uuid) || (trim($uuid)=='') || $acceslevel=='visitor' || $uuid==0) {
 	$hidefields = array("PlantaID", "TAGtxt", "DetID","PROJETOstr", "LONGITUDE", "LATITUDE", "ALTITUDE", "PLOT","DUPS","EDIT","GazetteerID","GPSPointID","NOME_AUTOR","MORFOTIPO","DETBY","DETYY");
@@ -348,12 +347,6 @@ $stringData .= "
    //\"<img style='cursor:pointer;' src='icons/question-red.png' height='18' onclick=\\\"javascript:alert('Latitude & Longitude Faltando');\\\" onmouseover=\\\"Tip('Latitude e Longitude faltando para planta # \".\$pltag.\"');\\\" title=''>\";
   }
     \$data->set_value(\"MAP\",\$imagen);
-    \$pj = \$data->get_value(\"PRJ\");
-    if (!empty(\$pj)) {
-      \$imagen=\"<img style='cursor:pointer;' src='\".\$data->get_value(\"PRJ\").\"' height='20' onclick=\\\"javascript:alert('\".\$data->get_value(\"PROJETOstr\").\"');\\\" onmouseover=\\\"Tip('\".\$data->get_value(\"PROJETOstr\").\"');\\\" >\";
-      \$data->set_value(\"PRJ\",\$imagen);
-    }
-    
     \$nir = \$data->get_value(\"NIRSpectra\");
     if (\$nir>0) {
           \$imagen=  \"<sup>  \".\$nir.\"</sup>&nbsp;<img style='  -webkit-box-shadow:inset 0 0 6px #cccccc; -moz-box-shadow: inset 0 0 6px #cccccc; cursor: pointer;' src='icons/nirspectra.png' height='16' onmouseover=\\\"Tip('Existem \$nir espectros associados essa PLANTA');\\\" title=''>&nbsp;<sup>  \".\$nir.\"</sup>\";

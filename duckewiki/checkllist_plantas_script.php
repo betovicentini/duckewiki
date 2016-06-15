@@ -119,14 +119,16 @@ IF((gaz.DimX+gaz.DimY)>0,pltb.GazetteerID,'') AS PLOT,
 checkplantaspecimens(pltb.PlantaID) AS ESPECIMENES,
 '' as OBS,
 IF(pltb.HabitatID>0,'environment_icon.png','') as HABT,
-IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ,
-(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) AS PROJETOstr,
+projetostringbrahmsnovo(0,pltb.PlantaID) as PROJETOstr,
 if (checkimgs(0, pltb.PlantaID)>0,'camera.png','') as IMG,
 traitvalueplantas(".$duplicatesTraitID.", pltb.PlantaID, '', 0, 0) as DUPS,
 checknir(0,pltb.PlantaID) as NIRSpectra,
 pltb.GazetteerID,
 pltb.GPSPointID";
 //checktrait(0, pltb.PlantaID,".$exsicatatrait.") as EXSICATA_IMG";
+//IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ,
+//(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) AS PROJETOstr,
+
 if ($quickview>0 && !empty($quicktbname)) {
 	$qq .= " FROM ".$quicktbname." as filtertab JOIN Plantas as pltb USING(PlantaID)"; 
 } else {
@@ -258,14 +260,14 @@ if ($step>$nsteps) {
 	//unset($_SESSION['qq']);
 	//unset($_SESSION['exportnresult']);
 }
-$qnu = "UPDATE `temp_prog".$tbname."` SET percentage='100'"; 
+$qnu = "UPDATE `temp_prog".$tbname."` SET percentage=100"; 
 mysql_query($qnu);
 echo "Concluido";
 session_write_close();
 } 
 else {
-	echo 'houve erro geral';
-	$qnu = "UPDATE `temp_prog".$tbname."` SET percentage='100'"; 
+	//echo 'houve erro geral';
+	$qnu = "UPDATE `temp_prog".$tbname."` SET percentage=100"; 
 	mysql_query($qnu);
 	echo "Concluido";
 }

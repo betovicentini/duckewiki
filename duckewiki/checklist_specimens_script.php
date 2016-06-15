@@ -124,8 +124,8 @@ if ($traitfertid>0) {
 	$qq .= "
 (traitvaluespecs(".$traitfertid.", 0, pltb.EspecimenID,'', 0, 1)) as FERTILIDADE,";
 }
-$qq .= "IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ,
-(IF(projetostring(pltb.ProjetoID,0,0)<>'',projetostring(pltb.ProjetoID,0,0),'NÃO FOI DEFINIDO')) as PROJETOstr";
+//$qq .= "IF(projetologo(pltb.ProjetoID)<>'',projetologo(pltb.ProjetoID),'') as PRJ,
+$qq .= "(IF(projetostringbrahmsnovo(pltb.EspecimenID,0)<>'',projetostringbrahmsnovo(pltb.EspecimenID,0),'NÃO FOI DEFINIDO')) as PROJETOstr";
 //,checktrait(pltb.EspecimenID, pltb.PlantaID,".$exsicatatrait.") as EXSICATA_IMG";
 if ($quickview>0 && !empty($quicktbname)) {
 	$qq .= " FROM ".$quicktbname." as filtertab JOIN Especimenes as pltb USING(EspecimenID)"; 

@@ -79,6 +79,23 @@ if ($nsamples>0) {
  }
 }
 //CHECA POR ARQUIVOS
+
+$qpl = "SELECT * FROM ProjetosEspecs WHERE ProjetoID=".$projetoid." AND PlantaID>0";
+$rqpl = mysql_query($qpl,$conn);
+$npl = mysql_numrows($rqpl);
+if ($npl>0) {
+	$files['Plantas marcadas'] = "dadosPlantas_".$projetoid.".csv";
+	$files['Plantas marcadas -Metadados'] =  "dadosPlantas_".$projetoid."_metadados.csv";
+	
+	
+	$qpl = "SELECT * FROM ProjetosEspecs as oprj JOIN Monitoramento as moni on moni.PlantaID=oprj.PlantaID WHERE oprj.ProjetoID=".$projetoid;
+	$rsql = mysql_query($qpl, $conn);
+	$nrsql = mysql_numrows($rsql);
+	if ($nrsql>0) {
+		$files['Dados de Censos'] = "dadosPlantasCensos_".$projetoid.".csv";
+		$files['Dados de Censos - Metadados'] =  "dadosPlantasCensos_".$projetoid."_metadados.csv";
+	}
+}
 $existem=0;
 foreach($files as $ff) {
 	if (file_exists("temp/".$ff)) {
@@ -102,10 +119,7 @@ foreach($files as $kk => $ff) {
 	if (file_exists("temp/".$ff)) {
 	  echo "
 <tr><td>".$kk."</td><td><a href=\"download.php?file=temp/".$ff."\">".$ff."</a></td></tr>";
-	} else {
-	  echo "
-<tr><td>".$kk."</td><td>Existem dados mas o arquivo não foi ainda gerado!</td></tr>";
-	}
+	} 
 }
 echo "
 <tr><td colspan='2'><hr></td></tr>

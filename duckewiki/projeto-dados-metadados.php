@@ -34,11 +34,11 @@ $gget = cleangetpost($_GET,$conn);
 $menu = FALSE;
 
 //PREPARA ARQUIVO PARA LOOP DE PROGRESSO
-$qqz = "DROP TABLE `temp_projdadosmeta.".substr(session_id(),0,10)."`";
+$qqz = "DROP TABLE `temp_projdadosmeta".substr(session_id(),0,10)."`";
 mysql_query($qqz,$conn);
-$qqz = "CREATE TABLE `temp_projdadosmeta.".substr(session_id(),0,10)."`  (`percentage` INT(10) NOT NULL) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
+$qqz = "CREATE TABLE `temp_projdadosmeta".substr(session_id(),0,10)."`  (`percentage` INT(10) NOT NULL) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci";
 mysql_query($qqz,$conn);
-$qqz = "INSERT INTO `temp_projdadosmeta.".substr(session_id(),0,10)."` (`percentage`) VALUES ('1')";
+$qqz = "INSERT INTO `temp_projdadosmeta".substr(session_id(),0,10)."` (`percentage`) VALUES ('1')";
 mysql_query($qqz,$conn);
 
 $which_css = array(
@@ -51,8 +51,8 @@ $which_java = array(
 "<script>
     function CheckProgress() {
       var time = new Date().getTime();
-      $.get('projeto-dados-metadados-progress.php', { t: time }, function (data) {
-          var progress = parseInt(data, 10);
+      $.get('projeto-dados-metadados-progress.php', { t: time }, function (odata) {
+          var progress = parseInt(odata, 10);
           document.getElementById('probar').value = progress;
         if (progress < 100) {
           document.getElementById('probarperc').innerHTML = 'Processando ' + progress + '%';
@@ -60,7 +60,7 @@ $which_java = array(
     	} else {
           document.getElementById('probarperc').innerHTML = progress + '%' +' CONCLUIDO';
           document.getElementById('loaderimg').style.visibility= 'hidden';
-          //window.location = 'projeto-dados-metadados-save.php?projetoid=".$projetoid."';
+          window.location = 'projeto-dados-metadados-save.php?projetoid=".$projetoid."';
     	}
       });
 	}

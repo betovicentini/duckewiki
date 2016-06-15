@@ -33,6 +33,8 @@ if (count($ppost)==0 && count($gget)==0 && isset($_SESSION['arrtopass'])) {
 	@extract($aarr);
 }
 
+//echopre($aarr);
+
 //CABECALHO
 $menu = FALSE;
 $title = 'Plantas  Projeto';
@@ -129,7 +131,7 @@ function fecharwin() {
         var txt = 'Foram ' + oque + '  ' + conta + ' registros de um total de ' + tot ;
         }
         divbar.innerHTML = txt;
-        var loader = dhtmlxAjax.postSync(\"projeto-plantas-process.php\", encodeURI('especimenes='+tt+'&projetoid=".$projetoid."&status='+status+'&uuid=".$uuid."') );
+        var loader = dhtmlxAjax.postSync(\"projeto-plantas-process.php\", encodeURI('plantas='+tt+'&projetoid=".$projetoid."&status='+status+'&uuid=".$uuid."') );
         var res = loader.xmlDoc.responseText;
         document.getElementById('counter').innerHTML = res;
         res = txt + '  '+ res;
@@ -197,7 +199,7 @@ O Projeto contém <span id='counter'>".$nrr."</span> plantas
 &nbsp;
 <input type='button'  onmouseover=\"Tip('Marca como do projeto plantas que estão em um filtro');\"  style=\"color:#33C4FF; font-size: 1.2em; font-weight:bold; padding: 4px; cursor:pointer;\"  value='Importar de filtro' ";
 $myurl ="projeto-fromfiltro.php?saoplantas=1&projetoid=".$projetoid;
-echo " onclick = \"javascript:small_window('".$myurl."',350,280,'Importa amostras de um filtro');\" />
+echo " onclick = \"javascript:small_window('".$myurl."',500,300,'Importa amostras de um filtro');\" />
 <span id='pgbar' ></span>
 <table>";
 $stilo =" border:1px solid #cccccc;  -webkit-box-shadow:inset 0 0 6px #cccccc; -moz-box-shadow: inset 0 0 6px #cccccc; cursor: pointer;";
@@ -254,7 +256,7 @@ mygrid.attachEvent(\"onCheckbox\", doOnCheck);
 mygrid.init();
 mygrid.adjustColumnSize(".$collist.");
 mygrid.enableHeaderMenu(\"".$hidemenu."\");
-mygrid.enablePaging(true,200,10,'pagingArea',true);
+mygrid.enablePaging(true,500,10,'pagingArea',true);
 mygrid.setPagingSkin('bricks');
 mygrid.loadXML(\"temp/".$fname."\");
 dp = new dataProcessor(\"temp/".$fname."\");

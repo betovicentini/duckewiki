@@ -10,7 +10,7 @@ include "functions/HeaderFooter.php";
 $dbname = $_SESSION['dbname'];
 $conn = ConectaDB($dbname);
 
-$qqn = "SELECT * FROM `temp_projdadosmeta.".substr(session_id(),0,10)."`";
+$qqn = "SELECT * FROM `temp_projdadosmeta".substr(session_id(),0,10)."`";
 $rqn = mysql_query($qqn,$conn);
 $rzn = mysql_fetch_assoc($rqn);
 $progresso = $rzn['percentage'];
