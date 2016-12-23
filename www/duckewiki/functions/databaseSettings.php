@@ -1,0 +1,37 @@
+<?php
+$dbname = "duckewiki";
+$databaseconnection = "includes/duckewiki.php";
+$databaseconnection_clean = "includes/duckewiki_clean.php";
+$relativepathtoroot = "../../";
+$metatitle = "Duckewiki";
+$metadesc = "Duckewiki";
+$metakeyw = "duckewiki";
+$metacompany = "INSTITUTO NACIONAL DE PESQUISAS DA AMAZÔNIA - INPA";
+$lang = "Portuguese";
+$herbariumnome = "INSTITUTO NACIONAL DE PESQUISAS DA AMAZÔNIA - INPA";
+$herbariumsigla = "INPA";
+$blockacess = "";
+$herbariumlogo = "herbariumlogo_default.jpg";
+$sitetitle = "Duckewiki";
+$sitelogo = "sitelogo_default.jpg";
+$introtext = "Duckewiki";
+$metaurl = "http://localhost/duckewiki/www/duckewiki";
+$habitotraitid = 104;
+$pomtraitid = 1109;
+$statustraitid = 1120;
+$traitfertid = 99;
+$alturatraitid = 265;
+$daptraitid = 264;
+$duplicatesTraitID = 496;
+$exsicatatrait = 350;
+$formidhabitat = 43;
+$formnotes = 89;
+$traitsilica = 115;
+$localidadetraitid = 1487;
+$folhaimgtraitid = 351;
+$florimgtraitid = 353;
+$frutoimgtraitid = 354;
+$listsarepublic = array();
+$listsarepublic['species'] = "on";
+$listsarepublic['specimenes'] = "on";
+?>

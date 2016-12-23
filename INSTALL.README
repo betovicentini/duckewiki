@@ -1,46 +1,83 @@
-INSTALACAO
+BREVE TUTORIAL DE INSTALAÇÃO
 
-LEIA O ARQUIVO duckewiki/dhtmlxconnecto_README.txt - essa é uma restrição que iremos brevemente solucionar pela substituição do plugin pela solução jQuery que não envolve o dhtmlX.
-
-1) COPIAR PARA PASTA PÚBLICA DO SEU SERVIDOR (htdocs em XAMPP) AS SEGUINTES PASTAS:
-	duckewiki
+1) VOCÊ PRECISA TER UM SERVIDOR (e.g.localhost) COM:
+	Apache 
+	PHP
+	MYSQL
+	ImageMagick - para processamento de imagens
+	
+2) COPIAR PARA PASTA PÚBLICA DO SEU SERVIDOR (geralmente www) AS SEGUINTES PASTAS
+	duckewiki - contém os principais arquivos do software
 	cgi-local (requer imagemagick instalado no seu servidor para que os scripts nesta pasta possam trabalhar imagens)
-  Atenção, as pastas:
-        duckewiki/img (se houver)
-        duckewiki/icons
-	duckewiki/temp
-	duckewiki/uploads
-	duckewiki/uploads/batch_images
-	duckewiki/uploads/bibtex
-	duckewiki/uploads/data_files
-	duckewiki/uploads/gazetteer_files
-	duckewiki/uploads/gps_files
- devem ter permissão de escrita para o usuário do apache (normalmente usuário www-data), no linux:
-	sudo chwon www-data:www-data  temp
-	sudo chwon -R www-data:www-data  uploads
-2) COPIAR PARA A PASTA NÃO PÚBLICA DO SEU SERVIDOR (../htdocs; ou seja, onde a pasta pública está) A PASTA:
-	includes
 
-3) CRIAR o banco de dados duckewiki e EXECUTAR O ARQUIVO duckewiki.sql NO SEU MYSQL, o qual irá criar uma base de dados chamada duckewiki. 
-   mysql -u root -p 
-   CREATE DATABASE duckewiki;
-   USE duckewiki;
-   SOURCE duckewiki.sql;
+3) COPIAR PARA A PASTA NÃO-PÚBLICA DO SEU SERVIDOR (../www; ou seja, a mesma pasta onde a pasta pública está):
+	includes - contém a conexão com o banco MYSQL, incluindo a senha que o PHP irá usar para interagir com a base
+	
+4) CRIAR UM banco de dados NO MYSQL CHAMADO duckewiki E IMPORTAR UMA DAS BASES DE DADOS DA PASTA dbs
+	   mysql -u root -p
+	   CREATE DATABASE duckewiki DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 
-4) EDITAR OS ARQUIVOS NA PASTA includes ALTERANDO A CONFIGURAÇÃO PARA CONEXAO DA BASE COM O MYSQL CONFORME ESPECIFICACOES DE SUA INSTALACAO
+	   A PASTA dbs CONTÉM DOIS ARQUIVOS sql
+			duckewiki_database.sql #este arquivo está limpo, não contém dados
+	  		duckewiki_database_dev.sql  #para desenvolvedores: este arquivo contém dadosreais com identificadores aleatorizados e pode ser usado para entender o funcionamento do sistema. INSTALE ESTA VERSÃO CASO QUEIRA TESTAR O SISTEMA
+
+	   IMPORTE UM DESSES ARQUIVOS PARA O MYSQL
+			USE duckewiki
+			SOURCE duckewiki_database.sql;
+
+5) EDITAR OS ARQUIVOS NA PASTA includes ALTERANDO A CONFIGURAÇÃO PARA CONEXAO DA BASE COM O MYSQL CONFORME ESPECIFICACOES DE SUA INSTALACAO (host, usuario, senha e nome da base)
 	duckewiki_clean.php
 	duckewiki.php
 
-5) ENTRAR NO SITE:
-localhost
-LOGIN:
-usuario: admin
-senha: @dm!n
+	Se você importou a base com dados duckewiki_database_dev.sql utilize também esta versão dos arquivos (apagar os arquivo acima e renomear este removendo o '_dev'):
+	duckewiki_clean_dev.php - inclui definições de variáveis cadastradas
+	duckewiki_dev.php - inclui definições de variáveis cadastradas
 
-6) NO MENU ADMINISTRACAO:
-	a) Executar funções mysql;
+6) AJUSTES DE PERMISSÕES DAS PASTAS
+	Alguns scripts PHP salvam arquivos no servidor e por isso o usuário do Apache (www-data, daemon, etc) precisa de permissão de escrita. A forma mais simples de ter isso é alterando recursivamente o usuário e grupo de todas as pastas em duckewiki para o usuário e grupo do Apache.
 	
-7) PODE COMEÇAR A IMPORTAR DADOS. USE A INTERFACE, NAO O PHPMYADMIN PARA FAZER ISSO.
+	#change owner to apache user:group recursively for the duckewiki folder
+	cd www
+	sudo chown -R daemon:daemon duckewiki
+
+	#certifique-se que para as pastas abaixo o usuário do apache tem permissão de escrita
+		duckewiki/img (se houver)
+	    duckewiki/icons
+		duckewiki/temp
+		duckewiki/uploads
+		duckewiki/uploads/batch_images
+		duckewiki/uploads/bibtex
+		duckewiki/uploads/data_files
+		duckewiki/uploads/gazetteer_files
+		duckewiki/uploads/gps_files
+
+	cd www/duckewiki
+	ls -dl `find img temp uploads icons -type d` #para ver essas permissoes
+
+6) ALGUMAS CONFIGURACOES IMPORTANTES
+	Em php.ini
+		post_max_size = 20M  #pelo menos 20M
+		upload_max_filesize = 20M #pelo menos 20M - importante para importação de imagens
+		
+		#se estiver aparecendo muitos avisos, modifique o parâmetro abaixo:
+		error_reporting = E_ERROR | E_PARSE #para uso normal
+		error_reporting = E_ERROR | E_PARSE | E_WARNING |  E_DEPRECATE #para desenvolvimento
+
+		
 
 
+	Em my.conf #configuracao do mysql
+		lower_case_table_names=1  #seguindo recomendação em http://dev.mysql.com/doc/refman/5.7/en/identifier-case-sensitivity.html para bases innodb, esta definição implica que o nome das tabelas são salvos em caixa baixa, mas comparações ignoram a caixa (os scripts tem definições em caixa alta) NOTA - alguns bugs podem decorrer disso!
 
+	Reiniciar o apache e o mysql depois de fazer essas alterações
+
+7) ENTRAR NO SISTEMA
+	localhost/duckewiki
+	LOGIN:
+		usuario: admin
+		senha: @dm!n
+
+7) NO MENU ADMINISTRACAO:
+	Selecione a opção "Executar funções mysql" - vai criar funções mysql que estão na pasta duckewiki/functions/mysql_functions
+	
+PRONTO PODE USAR O SISTEMA!

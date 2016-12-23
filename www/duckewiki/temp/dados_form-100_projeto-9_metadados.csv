@@ -1,0 +1,8 @@
+"COLUNA"	"DEFINICAO"
+"HAB_ESTDAVEG"	"Estrutura da vegetação. (Estrutura predominante da vegetação local. Que fisionomia geral tem o hábitat. Pode selecionar mais de uma opção). Variavel Categoria."
+"SUB_INU"	"Inundação. (Quanto a peridiocidade, profundidade e tempo de inundação quando aplicável). Variavel Categoria."
+"HAB_VEGVER"	"Vegetação verticalmente. (Estrutura vertical do habitat). Variavel Categoria."
+"DOS_ALTDODOS"	"Altura do dossel. (Altura dossel em metros). Variavel Quantitativo. Unidade de medida padrao m."
+"DOS_ALTDODOS_UNIT"	"Unidade da medicao da variavel DOS_ALTDODOS"
+"SUB_TEXDOSOL"	"Textura do solo. (Aspecto geral da textura predominante do solo superficial). Variavel Categoria."
+"HAB_DENDEHAB"	"Densidade de habitat. (Se a vegetação é densa ou aberta). Variavel Categoria."

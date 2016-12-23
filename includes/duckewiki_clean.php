@@ -2,7 +2,7 @@
 ///////ALTERAR AQUI PARA SUA CONFIGURACAO/////////////////////
 $host = 'localhost';
 $user = 'root';
-$pws = '';
+$pws = 'av123';
 $dbname = 'duckewiki';
 /////////////////////////////////////////////////////////////////////////////////////////////
 $res = mysql_connect($host,$user,$pws);

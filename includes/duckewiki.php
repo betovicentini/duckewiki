@@ -6,7 +6,7 @@ function ConectaDB($dbname)
 	///////ALTERAR AQUI PARA SUA CONFIGURACAO
 	$host = 'localhost';
 	$user = 'root';
-	$pws = '';
+	$pws = 'av123';
 	///////////////////////////////
 	
 	//database conexao
@@ -24,12 +24,16 @@ function ConectaDB($dbname)
 }
 function ReturnAcessList($acclevel) {
 if ($acclevel=='admin') {
-$quais = array( 'inicio', 'especimen' , 'planta' ,'taxonomia', 'local' , 'habitat' , 'pessoas' ,'variaveis'  , 'variaveistable', 'formularios' ,  'editbytable', 'processos', 'definicoes'  , 'ferramentas'  ,'bibtex', 'graficos'  , 'buscas'  , 'filtros' , 'exportar' , 'importar' , 'imprimir' , 'admim' , 'teste' ,'imagens');
+$quais = array( 'inicio', 'especimen' , 'especimenbatch', 'planta' ,'taxonomia', 'local' , 'habitat' , 'pessoas' ,'variaveis'  , 'variaveistable', 'formularios' ,  'editbytable', 'processos', 'definicoes'  , 'ferramentas'  ,'bibtex', 'graficos'  , 'buscas'  , 'filtros' , 'exportar' , 'importar' , 'imprimir' , 'admim' , 'teste', 'meuprojetos');
 } else {
 	if ($acclevel=='manager') {
-	$quais = array( 'inicio', 'especimen' , 'planta' ,  'taxonomia', 'local' , 'habitat' , 'pessoas' , 'variaveis'  , 'formularios' ,  'editbytable' ,  'processos', 'definicoes'  , 'ferramentas'  , 'graficos'  , 'buscas'  , 'filtros' , 'exportar' , 'importar' , 'imprimir');
+	$quais = array( 'inicio', 'especimen' ,'especimenbatch', 'planta' ,  'taxonomia', 'local' , 'habitat' , 'pessoas' , 'variaveis'  , 'formularios' ,  'editbytable' ,  'processos', 'definicoes'  , 'ferramentas'  , 'graficos'  , 'buscas'  , 'filtros' , 'exportar' , 'importar' , 'imprimir','meuprojetos');
 	} elseif (!empty($acclevel)) {
-	$quais = array( 'inicio', 'especimen' , 'planta' , 'taxonomia', 'local' , 'habitat' , 'pessoas' , 'formularios' ,  'editbytable',   'processos',  'definicoes'  ,  'buscas'  , 'filtros' , 'exportar' , 'importar' , 'imprimir');
+		  if ($accelevel=='user') {
+				$quais = array( 'inicio', 'especimen' ,'especimenbatch', 'planta' , 'taxonomia', 'local' , 'habitat' , 'pessoas' , 'formularios' ,  'editbytable',   'processos',  'definicoes'  ,  'buscas'  , 'filtros' , 'exportar' , 'importar' , 'imprimir','meuprojetos');
+	  	} else {
+				$quais = array( 'inicio', 'buscas'  , 'filtros' , 'exportar' ,'imprimir');
+	  	}
 	}
 }
 return($quais);

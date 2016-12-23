@@ -1,0 +1,61 @@
+DADOS GERADOS DINAMICAMENTE
+DATA: December 23 2016 10:16:19.
+URL: http://localhost/duckewiki/www/duckewiki
+
+LOCALIDADE:
+Parque Nacional Viruá - GRID PPBIO - Parcela L02-4500 [Caracaraí- Roraima - Brasil]
+
+CENSOS INCLUIDOS:
+CENSONOME	DATA_INICIO	DATA_FIM	RESPONSAVEL	EMAIL
+Censo01_Area1	2006-11-20	2008-02-21	 	
+Censo00_Area1	2001-11-21	2003-02-22	Alberto Vicentini	
+Censo02_Area1	2011-11-19	2013-02-19	Alberto Vicentini	
+
+
+***CADA LINHA DA TABELA DE DADOS REPRESENTA UMA MEDIÇÃO DE UM INDIVIDUO NUMA DATA***
+
+EXPLICAÇÃO DAS COLUNAS NA TABELA DE DADOS:
+
+COLUNA	DEFINICAO	ACESSO
+WikiMonitoramentoID	Id de referência da medição na base de dados - valores unicos, identificador das linhas	aberto
+WikiPlantaID	Id de referência da planta na base de dados	aberto
+TAG_NUM	Número da placa da árvore no campo	aberto
+FAMILIA	Familia taxonômica, se vazio a planta não está identificada neste nível	aberto
+GENERO	Gênero taxonômico, se vazio a planta não está identificada neste nível	aberto
+NOME	Identificação completa da planta (sem autores), no nível que estiver identificada	aberto
+HABITO	Forma de vida, se não anotado, provavelmente é arvore	aberto
+GAZETTEER	As demais subdivisoes de MINORAREA. Quando houver mais de uma, concatenadas de forma hierarquica do maior para o menor	aberto
+PAR_GAZ_SPEC	A localidade a qual pertence GAZETTEER_SPEC	aberto
+PAR_GAZ_DIMx	A dimensão X da parcela PAR_GAZ_SPEC	aberto
+PAR_GAZ_DIMy	A dimensão Y da parcela PAR_GAZ_SPEC	aberto
+GAZETTEER_SPEC	A localidade mais especifica da planta	aberto
+GAZ_DIMx	A dimensão X da parcela GAZETTEER_SPEC	aberto
+GAZ_DIMy	A dimensão Y da parcela GAZETTEER_SPEC	aberto
+GAZ_Startx	A posicao X da subparcela GAZETTEER_SPEC na parcela PAR_GAZ_SPEC	aberto
+GAZ_Starty	A posicao Y da subparcela GAZETTEER_SPEC na parcela PAR_GAZ_SPEC	aberto
+Pos_X	Posicao X da planta marcada em relacao a GAZETTEER_SPEC quando este for uma parcela	aberto
+Pos_Y	Posicao Y da planta marcada em relacao a GAZETTEER_SPEC quando este for uma parcela	aberto
+Pos_LADO	Para dados da grade do PPBio no PNVirua, indicando o lado das coordenadas X,Y	aberto
+Referencia	Qual a referencia dos valores X e Y, em relacao a que vertice da parcela	aberto
+Pos_DIST	Distancia em linha reta do GAZETTEER_SPEC a planta marcada, para ser usada em combinacao com Pos_ANGULO, para as situacoes em que GAZETTEER_SPEC e um marco de uma grade, numa trilha, etc.	aberto
+Pos_ANGULO	O angulo de direcao da planta a partir do GAZETTEER_SPEC em relacao ao norte magnetico	aberto
+HABITAT_CLASSE	Classe de habitat ou ambiente da planta	aberto
+CensoNome	Nome do censo em que a medição está inserida	aberto
+DATA_OBS	Data da observação	aberto
+UNIDADE_MEDIDA	Unidade de medida da medição, quando for variável quantitativa	aberto
+DAP_number	Diâmetro a altura do peito, geralmente 1.3 metros - se houver mais de uma coluna estas representam múltiplos fustes do mesmo individuo medidos no censo	aberto
+CO_DAP_POM	Point of Measurement. Altura em que o DAP ou CAP foi medido	aberto
+
+
+***ATENÇÃO  --  algumas colunas podem não ter valores de fato (ou 0) porque não são necessárias para este conjunto de dados. Simplesmente ignore!***
+
+
+DETALHES DOS CENSOS:
+	Censo01_Area1
+		EQUIPE:   []
+	Censo00_Area1
+		EQUIPE:   []
+	Censo02_Area1
+		EQUIPE:   []
+
+***DADOS PODEM CONTER ERROS!***
