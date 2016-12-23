@@ -3,6 +3,8 @@ ini_set('max_execution_time',400);
 ini_set('max_input_time',400);
 function ConectaDB($dbname)
 {
+    global $dbcache;
+    if (isset($dbcache)) return $dbcache;
 	///////ALTERAR AQUI PARA SUA CONFIGURACAO
 	$host = 'localhost';
 	$user = 'root';
@@ -15,11 +17,13 @@ function ConectaDB($dbname)
 	@define ('DB_HOST', $host);
 	@define ('DB_NAME', $dbname);
 	
-	$dbc =  @mysql_connect(DB_HOST, DB_USER, DB_PASSWORD) 
+	$dbc =  mysql_connect(DB_HOST, DB_USER, DB_PASSWORD) 
 	or die('Você não tem acesso. Não foi possível conectar <font color = "red">'.mysql_error().'</font>');
 	(mysql_select_db(DB_NAME, $dbc)) or die( 'Precisa Logar! Você não tem acesso.<br /> 
 	Sem conexão<font color ="red">'.mysql_error().'</font>');
-	@mysql_set_charset('utf8',$dbc);
+	mysql_set_charset('utf8',$dbc);
+    // Salva a conexão para não precisar conectar novamente
+    $dbcache = $dbc;
 	return $dbc;
 }
 function ReturnAcessList($acclevel) {
